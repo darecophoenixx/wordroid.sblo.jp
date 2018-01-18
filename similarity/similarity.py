@@ -152,7 +152,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         wq = query.tocsc().multiply(self.idfs)
         '''wd'''
         wd = self.index
-        '''内積'''
+        '''inner product'''
         naiseki = wd * wq
         '''norm'''
         ones = np.ones(self.index.shape[1])
@@ -174,9 +174,9 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         wd(t|d) = TF(t|d)
         '''
         nonzero_idx2 = self.get_nonzero_idx2(nonzero_idx[0])
-        wd = self.index[nonzero_idx2,:].copy() # 必要な文書のみを抽出
+        wd = self.index[nonzero_idx2,:].copy()
         
-        '''内積'''
+        '''inner product'''
         naiseki = wd.dot(wq)
         
         '''
@@ -204,9 +204,9 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         wd(t|d) = TF(t|d)
         '''
         nonzero_idx2 = self.get_nonzero_idx2(nonzero_idx[0])
-        wd = self.index[nonzero_idx2,:].copy() # 必要な文書のみを抽出
+        wd = self.index[nonzero_idx2,:].copy()
         
-        '''内積'''
+        '''inner product'''
         naiseki = wd.dot(wq)
         
         '''
@@ -241,10 +241,10 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         tf_n(t|d) = 1 + log(TF(t|d))
         '''
         nonzero_idx2 = self.get_nonzero_idx2(nonzero_idx[0])
-        wd = self.index[nonzero_idx2,].astype(self.DTYPE) # 必要な文書のみを抽出
+        wd = self.index[nonzero_idx2,].astype(self.DTYPE)
         wd = self.calc_tfn_mx(wd)
         
-        '''内積'''
+        '''inner product'''
         naiseki = wd.dot(wq)
         
         '''
@@ -270,10 +270,10 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         wd
         '''
         nonzero_idx2 = self.get_nonzero_idx2(nonzero_idx[0])
-        wd = self.index[nonzero_idx2,].astype(self.DTYPE) # 必要な文書のみを抽出
+        wd = self.index[nonzero_idx2,].astype(self.DTYPE)
         wd = self.calc_wd(wd, method=method)
         
-        '''内積'''
+        '''inner product'''
         naiseki = wd.dot(wq)
         
         '''
