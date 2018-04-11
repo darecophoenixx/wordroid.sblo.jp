@@ -13,8 +13,8 @@ Keras
 ## Demo
 
 ## Usage
-num_landmark:
-    number of landmark
+- num_landmark:
+-- number of landmark
     
 num_features:
     depth of landmark
