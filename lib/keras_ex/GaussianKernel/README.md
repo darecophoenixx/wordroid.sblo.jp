@@ -11,7 +11,17 @@ Overview
 Keras
 
 ## Demo
-[demo/demo01.ipynb](demo/demo01.ipynb)
+[demo/demo01.ipynb](demo/demo01.ipynb)  
+simple stacked example  
+GaussianKernel x2 -> Dense
+
+demo02  
+simple example  
+GaussianKernel -> Dense
+
+demo03  
+fixed landmark example
+GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 
 ## Usage
     oup_gk1 = GaussianKernel(num_landmark=20, num_features=5, kernel_gamma='auto')(inp)
