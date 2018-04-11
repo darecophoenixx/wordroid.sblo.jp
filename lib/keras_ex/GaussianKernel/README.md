@@ -2,7 +2,7 @@ GaussianKernel
 ====
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
-![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_02-a3333.png)
+![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo03_02.png)
 
 Do you need a stronger classifier machine with neural network? Try this.
 
