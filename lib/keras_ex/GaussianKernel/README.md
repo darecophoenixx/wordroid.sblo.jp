@@ -20,7 +20,7 @@ simple example
 GaussianKernel -> Dense
 
 demo03  
-fixed landmark example
+fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 
 ## Usage
