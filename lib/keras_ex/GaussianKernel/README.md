@@ -2,6 +2,9 @@ GaussianKernel
 ====
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
+![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_02.png)
+
+
 Overview
 
 # learn
