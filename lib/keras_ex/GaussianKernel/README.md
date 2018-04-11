@@ -36,5 +36,11 @@ if 'auto', use 1/(2 * d_mean**2)
 d is distance between samples and landmark  
 d_mean is mean of d  
 
+## Licence
+Copyright (c) 2018 Norio Tamada  
+Released under the MIT license  
+https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/GaussianKernel/LICENSE.md
+
+
 ## Author
 [darecophoenixx](https://github.com/darecophoenixx)
