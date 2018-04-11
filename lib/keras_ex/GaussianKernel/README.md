@@ -4,8 +4,7 @@ GaussianKernel
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_02-a3333.png)
 
-Overview
-
+Do you need a stronger classifier machine with neural network? Try this.
 
 ## Requirement
 Keras
