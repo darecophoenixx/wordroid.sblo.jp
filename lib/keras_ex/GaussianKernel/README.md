@@ -11,6 +11,7 @@ Overview
 Keras
 
 ## Demo
+[demo/demo01.ipynb](demo/demo01.ipynb)
 
 ## Usage
     oup_gk1 = GaussianKernel(num_landmark=20, num_features=5, kernel_gamma='auto')(inp)
