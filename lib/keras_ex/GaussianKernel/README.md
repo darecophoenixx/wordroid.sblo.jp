@@ -13,6 +13,8 @@ Keras
 ## Demo
 
 ## Usage
+    oup_gk1 = GaussianKernel(num_lm, 2, kernel_gamma='auto', name='gkernel1')(oup)
+
 * num_landmark:  
 number of landmark
 * num_features:  
