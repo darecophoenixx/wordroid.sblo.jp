@@ -13,14 +13,17 @@ Keras
 [demo/demo01.ipynb](demo/demo01.ipynb)  
 simple stacked example  
 GaussianKernel x2 -> Dense
+moon data
 
 demo02  
 simple example  
 GaussianKernel -> Dense
+moon data
 
 demo03  
 fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
+moon data
 
 ## Usage
     oup_gk1 = GaussianKernel(num_landmark=20, num_features=5, kernel_gamma='auto')(inp)
