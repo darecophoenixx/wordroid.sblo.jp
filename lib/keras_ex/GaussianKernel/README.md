@@ -15,7 +15,7 @@ simple stacked example
 GaussianKernel x2 -> Dense  
 moon data
 
-demo02  
+[demo/demo02.ipynb](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
 moon data
