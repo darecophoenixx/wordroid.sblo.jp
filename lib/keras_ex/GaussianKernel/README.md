@@ -12,17 +12,17 @@ Keras
 ## Demo
 [demo/demo01.ipynb](demo/demo01.ipynb)  
 simple stacked example  
-GaussianKernel x2 -> Dense
+GaussianKernel x2 -> Dense  
 moon data
 
 demo02  
 simple example  
-GaussianKernel -> Dense
+GaussianKernel -> Dense  
 moon data
 
 demo03  
 fixed landmark example  
-GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
+GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
 moon data
 
 ## Usage
