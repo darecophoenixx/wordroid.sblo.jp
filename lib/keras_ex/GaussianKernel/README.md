@@ -27,7 +27,7 @@ GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 
 * num_landmark:  
 number of landmark
-* num_features:  
+* num_feature:  
 depth of landmark  
 equal to inputs.shape\[1]  
 * kernel_gamma:  
