@@ -1,10 +1,10 @@
-GaussianKernel
+GaussianKernel layer
 ====
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo03_02.png)
 
-Do you need a stronger classifier machine with neural network? Try this.
+Do you need a strong classifier machine with neural network? Try this.
 
 ## Requirement
 Keras
@@ -32,12 +32,10 @@ depth of landmark
 equal to inputs.shape\[1]  
 * kernel_gamma:  
 kernel parameter  
+exp(-kernel_gamma * (x-landmark)**2)  
 if 'auto', use 1/(2 * d_mean**2)  
 d is distance between samples and landmark  
 d_mean is mean of d  
-
-
-    exp(-kernel_gamma * (x-landmark)**2)
 
 ## Licence
 Copyright (c) 2018 Norio Tamada  
