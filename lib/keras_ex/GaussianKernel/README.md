@@ -12,19 +12,30 @@ Do you need a strong classifier machine with neural network? Try this.
 Keras
 
 ## Demo
-[demo/demo01.ipynb](demo/demo01.ipynb)  
+### [demo/demo01.ipynb](demo/demo01.ipynb)  
 simple stacked example  
 GaussianKernel x2 -> Dense  
 moon data
 
-[demo/demo02.ipynb](demo/demo02.ipynb)  
+### [demo/demo01_1.ipynb](demo/demo01_1.ipynb)  
+simple stacked example  
+moon data  
+GaussianKernel x2 -> Dense  
+* GaussianKernel #1  
+landmarks = 10
+* GaussianKernel #2  
+landmarks = 5  
+fixed gamma
+
+### [demo/demo02.ipynb](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
 moon data
 
-demo03  
+### [demo/demo03.ipynb](demo/demo03.ipynb)  
 fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
+trainable=False means landmarks fixed  
 moon data
 
 ## Usage
