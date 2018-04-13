@@ -27,14 +27,15 @@ landmarks = 10
 landmarks = 5  
 fixed gamma
 
-[demo/demo02.ipynb](demo/demo02.ipynb)  
+### [demo/demo02.ipynb](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
 moon data
 
-demo03  
+### demo03  
 fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
+trainable=False means landmarks fixed  
 moon data
 
 ## Usage
