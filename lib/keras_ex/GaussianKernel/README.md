@@ -21,11 +21,11 @@ moon data
 simple stacked example  
 moon data  
 GaussianKernel x2 -> Dense  
-* GaussianKernel #1
- * landmarks = 10
-* GaussianKernel #2
- * landmarks = 5
- * fixed gamma
+* GaussianKernel #1  
+landmarks = 10
+* GaussianKernel #2  
+landmarks = 5  
+fixed gamma
 
 [demo/demo02.ipynb](demo/demo02.ipynb)  
 simple example  
