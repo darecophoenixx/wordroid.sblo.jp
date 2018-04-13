@@ -26,7 +26,7 @@ GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 moon data
 
 ## Usage
-    oup_gk1 = GaussianKernel(num_landmark=20, num_features=5, kernel_gamma='auto')(inp)
+    oup_gk1 = GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')(inp)
 
 * num_landmark:  
 number of landmark
@@ -35,8 +35,8 @@ depth of landmark
 equal to inputs.shape\[1]  
 * kernel_gamma:  
 kernel parameter  
-exp(-kernel_gamma * (x-landmark)**2)  
-if 'auto', use 1/(2 * d_mean**2)  
+exp(-kernel_gamma * (x-landmark)\**2)  
+if 'auto', use 1/(2 * d_mean\**2)  
 d is distance between samples and landmark  
 d_mean is mean of d  
 
