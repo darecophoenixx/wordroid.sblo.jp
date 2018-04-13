@@ -6,6 +6,8 @@ GaussianKernel layer
 
 Do you need a strong classifier machine with neural network? Try this.
 
+(see __init__.py)
+
 ## Requirement
 Keras
 
