@@ -32,7 +32,7 @@ simple example
 GaussianKernel -> Dense  
 moon data
 
-### demo03  
+### [demo/demo03.ipynb](demo/demo03.ipynb)  
 fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
 trainable=False means landmarks fixed  
