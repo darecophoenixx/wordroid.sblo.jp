@@ -12,7 +12,7 @@ Do you need a strong classifier machine with neural network? Try this.
 Keras
 
 ## Demo
-### [demo/demo01.ipynb](demo/demo01.ipynb)  
+### [demo01](demo/demo01.ipynb)  
 simple stacked example  
 GaussianKernel x2 -> Dense  
 moon data
