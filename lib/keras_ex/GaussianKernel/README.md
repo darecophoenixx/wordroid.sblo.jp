@@ -38,7 +38,16 @@ GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 trainable=False means landmarks fixed  
 moon data
 
+### demo04
+GaussianKernel2 example  
+![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png)
+
+### demo_digit_01.ipynb
+scikit-learn digits dataset example
+
+
 ## Usage
+### GaussianKernel
     oup_gk1 = GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')(inp)
 
 * num_landmark:  
@@ -52,6 +61,13 @@ exp(-kernel_gamma * (x-landmark)\**2)
 if 'auto', use 1/(2 * d_mean\**2)  
 d is distance between samples and landmark  
 d_mean is mean of d  
+
+### GaussianKernel2
+    oup_gk1 = GaussianKernel2(landmarks)(inp)
+
+this layer uses fixed landmark  
+estimate kernel_gamma  
+see demo04
 
 ## Licence
 Copyright (c) 2018 Norio Tamada  
