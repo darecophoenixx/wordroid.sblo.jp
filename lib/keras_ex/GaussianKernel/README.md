@@ -12,12 +12,12 @@ Do you need a strong classifier machine with neural network? Try this.
 Keras
 
 ## Demo
-### [demo/demo01.ipynb](demo/demo01.ipynb)  
+### [demo01](demo/demo01.ipynb)  
 simple stacked example  
 GaussianKernel x2 -> Dense  
 moon data
 
-### [demo/demo01_1.ipynb](demo/demo01_1.ipynb)  
+### [demo01_1](demo/demo01_1.ipynb)  
 simple stacked example  
 moon data  
 GaussianKernel x2 -> Dense  
@@ -27,22 +27,22 @@ landmarks = 10
 landmarks = 5  
 fixed gamma
 
-### [demo/demo02.ipynb](demo/demo02.ipynb)  
+### [demo02](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
 moon data
 
-### [demo/demo03.ipynb](demo/demo03.ipynb)  
+### [demo03](demo/demo03.ipynb)  
 fixed landmark example  
 GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
 trainable=False means landmarks fixed  
 moon data
 
-### [demo/demo04.ipynb](demo/demo04.ipynb)
+### [demo04](demo/demo04.ipynb)
 GaussianKernel2 example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png" width="320px">
 
-### demo04_1
+### [demo04_1](demo/demo04_1.ipynb)
 big kernel_gamma example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
 
