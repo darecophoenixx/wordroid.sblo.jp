@@ -38,9 +38,13 @@ GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 trainable=False means landmarks fixed  
 moon data
 
-### demo04
+### [demo/demo04.ipynb](demo/demo04.ipynb)
 GaussianKernel2 example  
-![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png)
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png" width="320px">
+
+### demo04_1
+big kernel_gamma example  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
 
 ### demo_digit_01.ipynb
 scikit-learn digits dataset example
