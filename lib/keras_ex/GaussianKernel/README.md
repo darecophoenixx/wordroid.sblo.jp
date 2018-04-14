@@ -66,7 +66,8 @@ d_mean is mean of d
     oup_gk1 = GaussianKernel2(landmarks)(inp)
 
 this layer uses fixed landmark  
-estimate kernel_gamma
+estimate kernel_gamma  
+see demo04
 
 ## Licence
 Copyright (c) 2018 Norio Tamada  
