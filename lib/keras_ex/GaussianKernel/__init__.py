@@ -75,7 +75,7 @@ class GaussianKernel2(Layer):
     def __init__(self, landmarks, **kwargs):
         '''
         landmarks:
-            fixed landmarks
+            fixed landmarks using
         '''
         super(GaussianKernel2, self).__init__(**kwargs)
         self.landmarks = landmarks.astype(np.float32)
