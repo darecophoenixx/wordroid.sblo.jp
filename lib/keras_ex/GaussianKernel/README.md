@@ -38,6 +38,9 @@ GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense
 trainable=False means landmarks fixed  
 moon data
 
+### demo_digit_01.ipynb
+scikit-learn digits dataset example
+
 ## Usage
     oup_gk1 = GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')(inp)
 
