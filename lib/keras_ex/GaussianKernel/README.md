@@ -41,6 +41,7 @@ moon data
 ### [demo/demo04.ipynb](demo/demo04.ipynb)
 GaussianKernel2 example  
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png)
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png" width="320px">
 
 ### demo_digit_01.ipynb
 scikit-learn digits dataset example
