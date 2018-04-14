@@ -44,6 +44,7 @@ GaussianKernel2 example
 
 ### demo04_1
 big kernel_gamma example  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
 
 ### demo_digit_01.ipynb
 scikit-learn digits dataset example
