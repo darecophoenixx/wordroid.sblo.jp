@@ -74,17 +74,8 @@ class GaussianKernel2(Layer):
     
     def __init__(self, landmarks, **kwargs):
         '''
-        num_landmark:
-            number of landmark
-            that was number of features (output)
-        num_feature:
-            depth of landmark
-            equal to inputs.shape[1]
-        kernel_gamma:
-            kernel parameter
-            if 'auto', use 1/(2 * d_mean**2)
-            d is distance between samples and landmark
-            d_mean is mean of d
+        landmarks:
+            fixed landmarks
         '''
         super(GaussianKernel2, self).__init__(**kwargs)
         self.landmarks = landmarks.astype(np.float32)
