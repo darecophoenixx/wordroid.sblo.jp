@@ -50,7 +50,7 @@ big kernel_gamma example
 scikit-learn digits dataset example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_01.png" width="320px">
 
-### demo_digit_02
+### [demo_digit_02](demo/demo_digit_02.ipynb)
 scikit-learn digits dataset example  
 using only 2 landmarks in GaussianKernel #2  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_02.png" width="320px">
