@@ -51,7 +51,7 @@ scikit-learn digits dataset example
 
 ### demo_digit_02
 scikit-learn digits dataset example  
-use only 2 landmarks in GaussianKernel #2
+use only 2 landmarks in GaussianKernel #2  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_02.png" width="320px">
 
 
