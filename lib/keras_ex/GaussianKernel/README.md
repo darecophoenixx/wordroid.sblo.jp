@@ -55,7 +55,7 @@ big kernel_gamma example
 
 ### [demo04_2](demo/demo04_2.ipynb)
 big kernel_gamma example  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_2_01.png">
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_2_01.png" width="320px">
 
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
 scikit-learn digits dataset example  
