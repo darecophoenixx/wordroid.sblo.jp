@@ -27,6 +27,14 @@ landmarks = 10
 landmarks = 5  
 fixed gamma
 
+### [demo01_2](demo/demo01_2.ipynb)
+simple stacked example  
+moon data  
+Dense -> GaussianKernel x2 -> Dense  
+fixed kernel_gamma  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_01.png" width="320px">  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_02.png" width="320px">
+
 ### [demo02](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
