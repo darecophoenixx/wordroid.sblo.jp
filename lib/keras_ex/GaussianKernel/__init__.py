@@ -64,6 +64,9 @@ class GaussianKernel(Layer):
         d2 = K.map_fn(fn, self.indx, dtype='float32')
         d2 = K.transpose(d2)
         if gamma == 'auto':
+            '''
+            gamma is calculated by each batch
+            '''
             d = K.sqrt(d2)
             d_mean = K.mean(d)
             gamma = 1. / (2. * d_mean**2)
