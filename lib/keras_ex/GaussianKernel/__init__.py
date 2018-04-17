@@ -20,7 +20,7 @@ class GaussianKernel(Layer):
         '''
         num_landmark:
             number of landmark
-            that was number of features (output)
+            that was number of output features
         num_feature:
             depth of landmark
             equal to inputs.shape[1]
