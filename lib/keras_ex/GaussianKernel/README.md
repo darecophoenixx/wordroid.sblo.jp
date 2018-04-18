@@ -85,7 +85,9 @@ d is distance between samples and landmark
 d_mean is mean of d  
 
 ### GaussianKernel2
-    oup_gk1 = GaussianKernel2(landmarks)(inp)
+```python
+GaussianKernel2(landmarks)
+```
 
 this layer uses fixed landmark  
 estimate kernel_gamma  
