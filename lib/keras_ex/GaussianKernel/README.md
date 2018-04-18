@@ -68,7 +68,9 @@ using only 2 landmarks in GaussianKernel #2
 
 ## Usage
 ### GaussianKernel
-    oup_gk1 = GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')(inp)
+```python
+GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')
+```
 
 * num_landmark:  
 number of landmark
