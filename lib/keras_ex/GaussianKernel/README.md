@@ -39,12 +39,14 @@ simple stacked example
 moon data  
 GaussianKernel x 3 -> Dense  
 fixed kernel_gamma  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_3_01.png" width="320px">
 
 ### [demo01_4](demo/demo01_4.ipynb)
 simple stacked example  
 moon data  
 GaussianKernel x 2 -> Dense  
 fixed kernel_gamma  
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_4_01.png" width="320px">
 
 ### [demo02](demo/demo02.ipynb)  
 simple example  
