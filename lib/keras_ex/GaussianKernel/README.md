@@ -34,6 +34,18 @@ Dense -> GaussianKernel x2 -> Dense
 fixed kernel_gamma  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_01.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_02.png" width="320px">
 
+### [demo01_3](demo/demo01_3.ipynb)
+simple stacked example  
+moon data  
+GaussianKernel x 3 -> Dense  
+fixed kernel_gamma  
+
+### [demo01_4](demo/demo01_4.ipynb)
+simple stacked example  
+moon data  
+GaussianKernel x 2 -> Dense  
+fixed kernel_gamma  
+
 ### [demo02](demo/demo02.ipynb)  
 simple example  
 GaussianKernel -> Dense  
@@ -54,7 +66,6 @@ big kernel_gamma example
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
 
 ### [demo04_2](demo/demo04_2.ipynb)
-big kernel_gamma example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_2_01.png" width="320px">
 
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
@@ -69,7 +80,9 @@ using only 2 landmarks in GaussianKernel #2
 
 ## Usage
 ### GaussianKernel
-    oup_gk1 = GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')(inp)
+```python
+GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')
+```
 
 * num_landmark:  
 number of landmark
@@ -84,7 +97,9 @@ d is distance between samples and landmark
 d_mean is mean of d  
 
 ### GaussianKernel2
-    oup_gk1 = GaussianKernel2(landmarks)(inp)
+```python
+GaussianKernel2(landmarks)
+```
 
 this layer uses fixed landmark  
 estimate kernel_gamma  
