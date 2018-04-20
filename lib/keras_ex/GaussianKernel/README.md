@@ -99,7 +99,7 @@ d is distance between samples and landmark
 d_mean is mean of d  
 
 ### GaussianKernel2
-this layer uses fixed landmark  
+this layer uses fixed landmarks  
 train kernel_gamma  
 see demo04
 
