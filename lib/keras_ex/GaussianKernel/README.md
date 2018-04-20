@@ -104,6 +104,19 @@ GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), name='gkernel1')
 GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
 ```
 
+### [demo_digit_04](demo/demo_digit_04.ipynb)
+scikit-learn digits dataset example  
+fixed gamma
+```python
+num_lm = 200
+num_lm2 = 100
+num_lm3 = 50
+
+GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name='gkernel1')
+GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
+GaussianKernel(num_lm3, num_lm2, kernel_gamma=1./(2.*num_lm2*0.1), name='gkernel3')
+```
+
 
 ## Usage
 ### GaussianKernel
