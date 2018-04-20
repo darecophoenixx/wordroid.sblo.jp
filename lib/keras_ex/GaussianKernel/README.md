@@ -73,6 +73,9 @@ big kernel_gamma example
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
 scikit-learn digits dataset example  
 ```python
+num_lm0 = 10
+num_lm = num_lm0 * 10
+num_lm2 = 20
 GaussianKernel2(init_wgt, name='gkernel1', weights=[np.log(np.array([0.078125]))])
 GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
 ```
@@ -81,6 +84,13 @@ GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2'
 ### [demo_digit_02](demo/demo_digit_02.ipynb)
 scikit-learn digits dataset example  
 using only 2 landmarks in GaussianKernel #2  
+```python
+num_lm0 = 10
+num_lm = num_lm0 * 10
+num_lm2 = 2
+GaussianKernel2(init_wgt, name='gkernel1', weights=[np.log(np.array([0.078125]))])
+GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
+```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_02.png" width="320px">
 
 
