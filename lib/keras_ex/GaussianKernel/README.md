@@ -99,13 +99,17 @@ d is distance between samples and landmark
 d_mean is mean of d  
 
 ### GaussianKernel2
+this layer uses fixed landmark  
+train kernel_gamma  
+see demo04
+
 ```python
 GaussianKernel2(landmarks)
 ```
 
-this layer uses fixed landmark  
-estimate kernel_gamma  
-see demo04
+### GaussianKernel3
+this layer train both landmarks and kernel_gamma  
+
 
 ## Licence
 Copyright (c) 2018 Norio Tamada  
