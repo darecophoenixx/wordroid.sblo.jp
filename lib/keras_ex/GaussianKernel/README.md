@@ -74,7 +74,8 @@ big kernel_gamma example
 scikit-learn digits dataset example  
 ```python
 GaussianKernel2(init_wgt, name='gkernel1', weights=[np.log(np.array([0.078125]))])
-GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')```
+GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
+```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_01.png" width="320px">
 
 ### [demo_digit_02](demo/demo_digit_02.ipynb)
