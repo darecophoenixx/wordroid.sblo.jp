@@ -113,3 +113,52 @@ class GaussianKernel2(Layer):
         return K.exp(-gamma * d2)
 
 
+class GaussianKernel3(Layer):
+    
+    def __init__(self, num_landmark, num_feature,
+                 kernel_initializer='glorot_uniform',
+                 **kwargs):
+        '''
+        num_landmark:
+            number of landmark
+            that was number of output features
+        num_feature:
+            depth of landmark
+            equal to inputs.shape[1]
+        '''
+        super(GaussianKernel3, self).__init__(**kwargs)
+        
+        self.output_dim = num_landmark
+        self.num_feature = num_feature
+        self.kernel_initializer = initializers.get(kernel_initializer)
+        
+        # for loop
+        self.indx = K.arange(self.output_dim)
+    
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], self.output_dim)
+    
+    def build(self, input_shape):
+        assert len(input_shape) == 2
+        input_dim = input_shape[1]
+        
+        self.kernel = self.add_weight(name='kernel',
+                                      shape=(self.output_dim, self.num_feature),
+                                      initializer=self.kernel_initializer)
+        self.gamma_elm = self.add_weight(name='gamma_elm',
+                                      shape=(1, ),
+                                      initializer=initializers.random_uniform(-2, -1))
+        super(GaussianKernel3, self).build(input_shape)  # Be sure to call this somewhere!
+    
+    def call(self, x, training=None):
+        return self.gauss(x, self.kernel, K.exp(self.gamma_elm))
+    
+    def gauss(self, x, K_tf, gamma):
+        def fn(ii):
+            lm = K.gather(K_tf, ii)
+            return K.sum(K.square(x - lm), axis=1)
+        d2 = K.map_fn(fn, self.indx, dtype='float32')
+        d2 = K.transpose(d2)
+        
+        return K.exp(-gamma * d2)
+
