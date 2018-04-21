@@ -155,13 +155,20 @@ d_mean is mean of d
 this layer uses fixed landmarks  
 train kernel_gamma  
 see demo04
-
 ```python
 GaussianKernel2(landmarks)
 ```
 
 ### GaussianKernel3
 this layer train both landmarks and kernel_gamma  
+```python
+GaussianKernel3(num_landmark, num_feature, name='gkernel1')
+```
+* num_landmark:  
+number of landmark
+* num_feature:  
+depth of landmark  
+equal to inputs.shape\[1]  
 
 
 ## Licence
