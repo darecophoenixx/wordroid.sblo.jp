@@ -131,7 +131,7 @@ MaxPooling2D(pool_size=(2,2))
 GaussianKernel(num_lm, 288, kernel_gamma=1./(2.*288*0.1), name='gkernel1')
 GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
 ```
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_05.png" width="320px">
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_05.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_05_2.png" width="320px">
 
 ## Usage
 ### GaussianKernel
