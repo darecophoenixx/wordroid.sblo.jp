@@ -42,14 +42,14 @@ GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name
 
 ### [demo_digit_02](demo/demo_digit_02.ipynb)
 scikit-learn digits dataset example  
-using only 2 landmarks in GaussianKernel #2  
+using only 2 factors  
 ```python
 num_lm = 100
-num_lm2 = 2
-GaussianKernel2(init_wgt, name='gkernel1', weights=[np.log(np.array([0.078125]))])
-GaussianKernel(num_lm2, num_lm, kernel_gamma=1./(2.*num_lm*0.1), name='gkernel2')
+GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name='gkernel1')
+Dense(2)
+Dense(10, activation='softmax')
 ```
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_02.png" width="320px">
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_102.png" width="320px">
 
 ### [demo_digit_03](demo/demo_digit_03.ipynb)
 scikit-learn digits dataset example  
