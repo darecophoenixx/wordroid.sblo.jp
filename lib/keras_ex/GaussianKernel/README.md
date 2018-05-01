@@ -41,13 +41,6 @@ Dense -> GaussianKernel x2 -> Dense
 fixed kernel_gamma  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_01.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_02.png" width="320px">
 
-### [demo01_3](demo/demo01_3.ipynb)
-simple stacked example  
-moon data  
-GaussianKernel x 3 -> Dense  
-fixed kernel_gamma  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_3_01.png" width="320px">
-
 ### [demo01_4](demo/demo01_4.ipynb)
 simple stacked example  
 moon data  
