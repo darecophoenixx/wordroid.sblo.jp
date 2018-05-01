@@ -13,9 +13,11 @@ Keras
 
 ## Demo
 ### [demo01](demo/demo01.ipynb)  
-simple stacked example  
-GaussianKernel x2 -> Dense  
+simple example  
+GaussianKernel (fixed gamma) -> Dense  
 moon data
+
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo101_01.png" width="320px">
 
 ### [demo01_1](demo/demo01_1.ipynb)  
 simple stacked example  
