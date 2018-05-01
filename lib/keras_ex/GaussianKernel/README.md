@@ -12,14 +12,21 @@ Do you need a strong classifier machine with neural network? Try this.
 Keras
 
 ## Demo
-### [demo01](demo/demo01.ipynb)  
+### [demo01](demo/demo01.ipynb)
 simple example  
 GaussianKernel (fixed gamma) -> Dense  
 moon data
 
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo101_01.png" width="320px">
 
-### [demo02](demo/demo02.ipynb)  
+### [demo01_2](demo/demo01_2.ipynb)
+simple example  
+GaussianKernel (fixed gamma) -> Dense  
+moon data (fat)
+
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo101_2.png" width="320px">
+
+### [demo02](demo/demo02.ipynb)
 simple example  
 GaussianKernel (kernel_gamma='auto') -> Dense  
 moon data
