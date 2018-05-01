@@ -28,12 +28,9 @@ moon data
 GaussianKernel2 example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo103_01.png" width="320px">
 
-### [demo04_1](demo/demo04_1.ipynb)
+### [demo04](demo/demo04.ipynb)
 big kernel_gamma \(small Sigma\) example  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
-
-### [demo04_2](demo/demo04_2.ipynb)
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_2_01.png" width="320px">
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo104_01.png" width="320px">
 
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
 scikit-learn digits dataset example  
