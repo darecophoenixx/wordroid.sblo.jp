@@ -58,7 +58,7 @@ add conv layers
 num_lm = 100
 
 Conv2D(32, (2, 2), activation="relu")
-Conv2D(32, (2, 2), activation="relu")
+Conv2D(32, (2, 2), activation="sigmoid")
 MaxPooling2D(pool_size=(2,2))
 GaussianKernel(num_lm, 288, kernel_gamma=1./(2.*288*0.1), name='gkernel1')
 ```
