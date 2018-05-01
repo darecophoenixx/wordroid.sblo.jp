@@ -24,39 +24,9 @@ simple example
 GaussianKernel (kernel_gamma='auto') -> Dense  
 moon data
 
-### [demo01_1](demo/demo01_1.ipynb)  
-simple stacked example  
-moon data  
-GaussianKernel x2 -> Dense  
-* GaussianKernel #1  
-landmarks = 10
-* GaussianKernel #2  
-landmarks = 5  
-fixed gamma
-
-### [demo01_2](demo/demo01_2.ipynb)
-simple stacked example  
-moon data  
-Dense -> GaussianKernel x2 -> Dense  
-fixed kernel_gamma  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_01.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_2_02.png" width="320px">
-
-### [demo01_4](demo/demo01_4.ipynb)
-simple stacked example  
-moon data  
-GaussianKernel x 2 -> Dense  
-fixed kernel_gamma  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_4_01.png" width="320px">
-
-### [demo03](demo/demo03.ipynb)  
-fixed landmark example  
-GaussianKernel(trainable=False) -> GaussianKernel(trainable=True) -> Dense  
-trainable=False means landmarks fixed  
-moon data
-
-### [demo04](demo/demo04.ipynb)
+### [demo03](demo/demo03.ipynb)
 GaussianKernel2 example  
-<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png" width="320px">
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo103_01.png" width="320px">
 
 ### [demo04_1](demo/demo04_1.ipynb)
 big kernel_gamma \(small Sigma\) example  
