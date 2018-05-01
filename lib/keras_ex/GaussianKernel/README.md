@@ -64,7 +64,7 @@ GaussianKernel2 example
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_01.png" width="320px">
 
 ### [demo04_1](demo/demo04_1.ipynb)
-big kernel_gamma example  
+big kernel_gamma (small Sigma) example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo04_1_01.png" width="320px">
 
 ### [demo04_2](demo/demo04_2.ipynb)
