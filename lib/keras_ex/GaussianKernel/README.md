@@ -53,8 +53,7 @@ Dense(10, activation='softmax')
 
 ### [demo_digit_03](demo/demo_digit_03.ipynb)
 scikit-learn digits dataset example  
-using fixed gamma  
-add conv layers
+add conv layers  
 ```python
 num_lm = 100
 
