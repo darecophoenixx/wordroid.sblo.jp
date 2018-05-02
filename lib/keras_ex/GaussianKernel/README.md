@@ -39,6 +39,9 @@ GaussianKernel2 example
 big kernel_gamma \(small Sigma\) example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo104_01.png" width="320px">
 
+### [demo05](demo/demo05.ipynb)
+GaussianKernel3 example  
+
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
 scikit-learn digits dataset example  
 ```python
@@ -100,6 +103,7 @@ GaussianKernel2(landmarks)
 
 ### GaussianKernel3
 this layer train both landmarks and kernel_gamma  
+see demo05
 ```python
 GaussianKernel3(num_landmark, num_feature)
 ```
