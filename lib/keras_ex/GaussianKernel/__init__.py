@@ -8,7 +8,6 @@ import numpy as np
 from keras import initializers
 from keras.engine.topology import Layer
 from keras import backend as K
-from tensorflow.python.framework.errors_impl import InvalidArgumentError
 
 class GaussianKernel(Layer):
     
