@@ -75,6 +75,16 @@ GaussianKernel(num_lm, 288, kernel_gamma=1./(2.*288*0.1), name='gkernel1')
 ```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_103_2.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_103.png" width="320px">
 
+### [demo_digit_AE_01]
+scikit-learn digits dataset Auto-Encoder example  
+Projection on high dimensional space(64 -> 200)
+```python
+num_lm = 200
+GaussianKernel3(num_lm, 64, name='gkernel1', weights=[init_wgt, np.log(np.array([1./(2.*64*0.1)]))])
+Dense(64, activation='sigmoid')
+```
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_AE_01.png" width="320px">
+
 ## Usage
 ### GaussianKernel
 ```python
