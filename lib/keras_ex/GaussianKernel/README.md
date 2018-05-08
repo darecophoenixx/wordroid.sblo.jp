@@ -47,6 +47,7 @@ scikit-learn digits dataset example
 ```python
 num_lm = 100
 GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name='gkernel1')
+Dense(10, activation='softmax')
 ```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_101.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_101_2.png" width="320px">
 
