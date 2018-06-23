@@ -4,8 +4,8 @@ GaussianKernel layer
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo03_02.png)
 
-Do you need a strong classifier machine with neural network? Try this.
-
+Do you need a strong classifier machine with neural network? Try this.  
+This layer is implemented using Gaussian kernel.  
 (see \_\_init\_\_.py)
 
 ## Requirement
