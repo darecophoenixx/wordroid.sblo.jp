@@ -5,7 +5,7 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/Gaus
 '''
 
 import numpy as np
-from keras import initializers
+from keras import initializers, constraints
 from keras.engine.topology import Layer
 from keras import backend as K
 
@@ -13,6 +13,7 @@ class GaussianKernel(Layer):
     
     def __init__(self, num_landmark, num_feature,
                  kernel_initializer='glorot_uniform',
+                 kernel_constraint=None,
                  kernel_gamma='auto',
                  **kwargs):
         '''
@@ -33,7 +34,8 @@ class GaussianKernel(Layer):
         self.output_dim = num_landmark
         self.num_feature = num_feature
         self.kernel_initializer = initializers.get(kernel_initializer)
-        
+        self.kernel_constraint = constraints.get(kernel_constraint)
+
         # for loop
         self.indx = K.arange(self.output_dim)
         
@@ -49,7 +51,8 @@ class GaussianKernel(Layer):
         
         self.kernel = self.add_weight(name='kernel',
                                       shape=(self.output_dim, self.num_feature),
-                                      initializer=self.kernel_initializer)
+                                      initializer=self.kernel_initializer,
+                                      constraint=self.kernel_constraint)
         super(GaussianKernel, self).build(input_shape)  # Be sure to call this somewhere!
     
     def call(self, x, training=None):
