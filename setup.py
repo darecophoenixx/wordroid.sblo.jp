@@ -7,3 +7,4 @@ setup(
     package_dir={'feature_eng': 'lib/feature_eng', 'keras_ex.GaussianKernel': 'lib/keras_ex/GaussianKernel',},
     packages=['feature_eng', 'keras_ex.GaussianKernel',],
 )
+
