@@ -17,3 +17,5 @@ pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 # 'Humanistic' Machine Learning
 ['Humanistic' Machine Learning](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/'Humanistic'-Machine-Learning)  
 ['Humanistic' Machine Learning : Detail](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/'Humanistic'-Machine-Learning-:-Detail)
+
+<img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/ttt00038.png">
