@@ -129,7 +129,7 @@ equal to inputs.shape\[1]
 ## Licence
 Copyright (c) 2018 Norio Tamada  
 Released under the MIT license  
-https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/GaussianKernel/LICENSE.md
+https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 
 
 ## Author
