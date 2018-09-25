@@ -1,5 +1,9 @@
 Welcome to GaussianKernel layer page!
 ====
+```
+pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
+```
+
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
 
 (see \_\_init\_\_.py)  
