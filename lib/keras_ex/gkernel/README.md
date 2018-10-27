@@ -8,6 +8,7 @@ The GaussianKernel layer is a keras layer that projects to arbitrary high dimens
 
 [Dense vs. GaussianKernel in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)
 
+[handwritten digit](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM003_150.gif) -> [final](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/ttt00089.png)  
 [Landmarks Animation (3 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM.gif) / [Landmarks Animation (10 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM001.gif)  
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
