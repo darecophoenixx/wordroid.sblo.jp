@@ -10,6 +10,7 @@ The GaussianKernel layer is a keras layer that projects to arbitrary high dimens
 
 [handwritten digit animation (10 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM003_150.gif) -> [final](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/ttt00089.png)  
 [Landmarks Animation (3 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM.gif) / [Landmarks Animation (10 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM001.gif)  
+[Landmarks Animation another example (5 sec)](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/LM002_050.gif)
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
