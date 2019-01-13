@@ -20,7 +20,7 @@ from keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
     multiply, dot, add
 from keras.models import Model, Sequential
 from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History
+from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History, LearningRateScheduler
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras import regularizers
 from keras import initializers
@@ -455,13 +455,12 @@ class Dic4seq(Mapping):
         return list(self.col_dic.token2id.keys())
 
 
-
 class Seq(object):
     
     def __init__(self, dic4seq,
-                 num_neg=3, batch_size=32, max_num_prod=5, shaffle=False, state=None):
+                 num_neg=3, batch_size=32, max_num_prod=5, shuffle=False, state=None):
         self.dic4seq = dic4seq
-        self.shaffle = shaffle
+        self.shuffle = shuffle
         self.state = state
         self.max_num_prod = max_num_prod
         self.batch_size = batch_size
@@ -484,7 +483,7 @@ class Seq(object):
         self.initialize_it()
     
     def initialize_it(self):
-        if self.shaffle:
+        if self.shuffle:
             '''not implemented yet'''
             #random.seed(self.state)
             #random.shuffle(self.user_list)
@@ -634,6 +633,86 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     }
     return models
 
+def make_model_cor(num_user=20, num_product=100, num_neg=3, max_num_prod=5,
+                   num_features=8, gamma=0.0):
+    user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                               embeddings_regularizer=regularizers.l2(gamma),
+                               name='user_embedding')
+    prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+                               embeddings_regularizer=regularizers.l2(gamma),
+                               name='prod_embedding')
+    
+    input_user = Input(shape=(1,), name='input_user')
+    input_prod = Input(shape=(max_num_prod,), name='input_prod')
+    input_neg = Input(shape=(max_num_prod, num_neg), name='input_neg')
+    
+    embed_user = user_embedding(input_user)
+    embed_prod = prod_embedding(input_prod)
+    embed_neg = prod_embedding(input_neg)
+    
+    model_user = Model(input_user, Activation('linear')(embed_user))
+    model_prod = Model(input_prod, Activation('linear')(embed_prod))
+    model_neg = Model(input_neg, Activation('linear')(embed_neg))
+    
+    cor1 = dot([embed_prod, embed_user], axes=2, normalize=True)
+    cor1 = Flatten()(cor1)
+    model_cor1 = Model([input_user, input_prod], cor1)
+#     return {
+#         'model_neg': model_neg,
+#         'model_user': model_user,
+#         'model_prod': model_prod,
+#         'model_cor1': model_cor1,
+#     }
+
+    def fn_cor(x):
+        landmarks = x[0]
+        landmarks = K.permute_dimensions(landmarks, (1,0,2))
+        #print('int_shape(landmarks) >>>', K.int_shape(landmarks))
+        negs = x[1]
+        negs = K.permute_dimensions(negs, (1,0,3,2))
+        #print('int_shape(negs) >>>', K.int_shape(negs))
+        def fn(ii):
+            lm = K.gather(landmarks, ii)
+            lm = K.l2_normalize(lm, 1)
+            #print('int_shape(lm) >>>', K.int_shape(lm))
+            x = K.gather(negs, ii)
+            x = K.l2_normalize(x, 1)
+            #print('int_shape(x) >>>', K.int_shape(x))
+            res = K.batch_dot(lm, x, axes=1)
+            return res
+        res = K.map_fn(fn, np.arange(max_num_prod), dtype='float32')
+        res = K.permute_dimensions(res, (1,0,2))
+        #print('int_shape(res) >>>', K.int_shape(res))
+        return res
+    #cor2 = dot([embed_prod, embed_neg], axes=(2,3), normalize=True)
+    cor2 = Lambda(fn_cor, name='fn_cor')([embed_prod, embed_neg])
+    cor2 = Flatten()(cor2)
+    model_cor2 = Model([input_neg, input_prod], cor2)
+#     return {
+#         'model_neg': model_neg,
+#         'model_user': model_user,
+#         'model_prod': model_prod,
+#         'model_cor1': model_cor1,
+#         'model_cor2': model_cor2
+#     }
+    
+    cor = concatenate([cor1, cor2])
+    model_cor = Model([input_user, input_prod, input_neg], cor)
+    #prob = Activation(lambda x: (x+1) / 2)(cor)
+    prob = Activation('sigmoid')(cor)
+    
+    model = Model([input_user, input_prod, input_neg], prob)
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return {
+        'model': model,
+        'model_neg': model_neg,
+        'model_user': model_user,
+        'model_prod': model_prod,
+        'model_cor1': model_cor1,
+        'model_cor2': model_cor2,
+        'model_cor': model_cor,
+    }
+
 class IlligalDocIndexException(Exception):
     pass
 
@@ -682,9 +761,6 @@ class WordAndDoc2vec(object):
         tfidf = gensim.models.TfidfModel((self.word_dic.doc2bow(ee) for ee in self.doc_seq), id2word=self.word_dic)
         self.tfidf = tfidf
     
-#     def make_model(self, num_user=20, num_product=10, max_num_prod=5,
-#                    num_neg=3, num_features=8, gamma=0.0,
-#                    embeddings_val=1.05):
     def make_model(self, max_num_prod=5, num_neg=3, num_features=8,
                    gamma=0.0, embeddings_val=0.5):
         #self.num_user = num_user
@@ -702,11 +778,16 @@ class WordAndDoc2vec(object):
         self.model = models['model']
         return models
     
-    def train(self, epochs=50, batch_size=32, verbose=1):
+    def train(self, epochs=50, batch_size=32, verbose=1, lr=0.001):
         self.seq = Seq(self.dic4seq, num_neg=self.num_neg, max_num_prod=self.max_num_prod, batch_size=batch_size)
         print('len(seq) >>>', len(self.seq))
+        def get_lr(epoch):
+            print(lr)
+            return lr
+        lr_scheduler = LearningRateScheduler(get_lr)
+        callbacks = [lr_scheduler]
         self.hst = self.model.fit_generator(self.seq, steps_per_epoch=len(self.seq),
-                          epochs=epochs, verbose=verbose)
+                          epochs=epochs, verbose=verbose, callbacks=callbacks)
     
     def get_wgt_byrow(self):
         wgt_user = self.model.get_layer('user_embedding').get_weights()[0]
@@ -732,6 +813,5 @@ class WordAndDoc2vec(object):
         sim = WordAndDocSimilarity(wgt_row_unit, self.doc_dic, wgt_col_unit, self.word_dic)
         return sim
     sim = property(get_sim)
-    
-    
-    
+
+

@@ -5,4 +5,4 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/Huma
 '''
 
 from keras_ex.HumanisticML.classifier import HML, HMLx, Seq
-from keras_ex.HumanisticML.ensemble import Ensemble, Stopping
+#from keras_ex.HumanisticML.ensemble import Ensemble, Stopping
