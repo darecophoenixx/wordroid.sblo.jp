@@ -5,7 +5,11 @@ setup(
     authoer='Norio Tamada',
     url='https://github.com/darecophoenixx/wordroid.sblo.jp',
     version='0.00.01',
-    package_dir={'feature_eng': 'lib/feature_eng', 'keras_ex.gkernel': 'lib/keras_ex/gkernel',},
+    package_dir={
+        'feature_eng': 'lib/feature_eng',
+        'keras_ex.gkernel': 'lib/keras_ex/gkernel',
+        'keras_ex.HumanisticML': 'lib/keras_ex/HumanisticML',
+        },
     packages=['feature_eng', 'keras_ex.gkernel',],
     install_requires=['gensim',],
 )
