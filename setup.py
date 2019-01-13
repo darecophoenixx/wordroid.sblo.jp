@@ -10,7 +10,11 @@ setup(
         'keras_ex.gkernel': 'lib/keras_ex/gkernel',
         'keras_ex.HumanisticML': 'lib/keras_ex/HumanisticML',
         },
-    packages=['feature_eng', 'keras_ex.gkernel',],
+    packages=[
+        'feature_eng',
+        'keras_ex.gkernel',
+        'keras_ex.HumanisticML'
+        ],
     install_requires=['gensim',],
 )
 
