@@ -14,7 +14,7 @@ setup(
     packages=[
         'feature_eng',
         'keras_ex.gkernel',
-        'keras_ex.HumanisticML'
+        'keras_ex.HumanisticML',
         'som',
         ],
     install_requires=['gensim',],
