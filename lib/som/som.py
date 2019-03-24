@@ -105,10 +105,9 @@ class SimpleSOM(object):
         
         delta = np.zeros(K.shape)
         for ii in range(X.shape[0]):
-            x = X[ii]
-            iqd = np.square(K - x).sum(axis=1).argmin()
+            iqd = np.square(K - X[ii]).sum(axis=1).argmin()
             h = (alpha * np.exp(-gamma * self.qd[iqd])).reshape((K.shape[0],1))
-            delta0 = h * (x - K)
+            delta0 = h * (X[ii] - K)
             delta += delta0
             
         return delta
