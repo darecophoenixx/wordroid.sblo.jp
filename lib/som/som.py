@@ -2,6 +2,7 @@
 import random
 import numpy as np
 from sklearn.decomposition import PCA
+from tqdm import tqdm
 
 class SimpleSOM(object):
     
@@ -64,7 +65,7 @@ class SimpleSOM(object):
         return K
     
     def update_iter(self, X, K, r=1.5, gamma=0.01, alpha=0.05, iter=10):
-        for _ in range(iter):
+        for _ in tqdm(range(iter)):
             K = self.update_once(X, K, r, gamma, alpha)
         return K
     
