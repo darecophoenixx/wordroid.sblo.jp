@@ -64,8 +64,8 @@ class SimpleSOM(object):
         K += delta
         return K
     
-    def update_iter(self, X, K, r=1.5, gamma=0.01, alpha=0.05, iter=10):
-        for _ in tqdm(range(iter)):
+    def update_iter(self, X, K, r=1.5, gamma=0.01, alpha=0.05, it=10):
+        for _ in tqdm(range(it)):
             K = self.update_once(X, K, r, gamma, alpha)
         return K
     
