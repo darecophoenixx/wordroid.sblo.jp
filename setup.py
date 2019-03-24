@@ -9,11 +9,13 @@ setup(
         'feature_eng': 'lib/feature_eng',
         'keras_ex.gkernel': 'lib/keras_ex/gkernel',
         'keras_ex.HumanisticML': 'lib/keras_ex/HumanisticML',
+        'som': 'lib/som',
         },
     packages=[
         'feature_eng',
         'keras_ex.gkernel',
         'keras_ex.HumanisticML'
+        'som',
         ],
     install_requires=['gensim',],
 )
