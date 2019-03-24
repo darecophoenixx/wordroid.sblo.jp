@@ -68,6 +68,29 @@ class SimpleSOM(object):
             K = self.update_once(X, K, r, gamma, alpha)
         return K
     
+#    def calc_delta(self, X, K, r=1.5, gamma=0.01, alpha=0.05):
+#        '''
+#        if r is provided, gamma is ignored.
+#        '''
+#        if r:
+#            if r <= 0:
+#                raise ValueError('r must be greater than zero.')
+#            gamma = 1.0 / (2.0 * r**2)
+#        else:
+#            if gamma <= 0:
+#                raise ValueError('gamma must be greater than zero.')
+#        resp = []
+#        for ii in range(X.shape[0]):
+#            resp0 = np.square(K - X[ii]).sum(axis=1).argmin()
+#            resp.append(resp0)
+#        delta = np.zeros(K.shape)
+#        for ii in range(X.shape[0]):
+#            x = X[ii]
+#            iqd = resp[ii]
+#            h = (alpha * np.exp(-gamma * self.qd[iqd])).reshape((K.shape[0],1))
+#            delta0 = h * (x - K)
+#            delta += delta0
+#        return delta
     def calc_delta(self, X, K, r=1.5, gamma=0.01, alpha=0.05):
         '''
         if r is provided, gamma is ignored.
@@ -79,17 +102,15 @@ class SimpleSOM(object):
         else:
             if gamma <= 0:
                 raise ValueError('gamma must be greater than zero.')
-        resp = []
-        for ii in range(X.shape[0]):
-            resp0 = np.square(K - X[ii]).sum(axis=1).argmin()
-            resp.append(resp0)
+        
         delta = np.zeros(K.shape)
         for ii in range(X.shape[0]):
             x = X[ii]
-            iqd = resp[ii]
+            iqd = np.square(K - x).sum(axis=1).argmin()
             h = (alpha * np.exp(-gamma * self.qd[iqd])).reshape((K.shape[0],1))
             delta0 = h * (x - K)
             delta += delta0
+            
         return delta
 
 
