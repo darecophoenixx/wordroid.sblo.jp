@@ -1,4 +1,8 @@
-
+'''
+Copyright (c) 2019 Norio Tamada
+Released under the MIT license
+https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
+'''
 import random
 import numpy as np
 from sklearn.decomposition import PCA
