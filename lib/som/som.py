@@ -103,15 +103,68 @@ class SimpleSOM(object):
         else:
             if gamma <= 0:
                 raise ValueError('gamma must be greater than zero.')
+        self.gamma = gamma
         
         delta = np.zeros(K.shape)
         for ii in range(X.shape[0]):
             iqd = np.square(K - X[ii]).sum(axis=1).argmin()
-            h = (alpha * np.exp(-gamma * self.qd[iqd])).reshape((K.shape[0],1))
+            h = (alpha * np.exp(-self.gamma * self.qd[iqd])).reshape((K.shape[0],1))
             delta0 = h * (X[ii] - K)
             delta += delta0
             
         return delta
+
+
+from sklearn.cluster import KMeans
+class sksom(object):
+    
+    def __init__(self, kshape, init_K=None, rand_stat=0,
+                 r=1.5, gamma=0.01, alpha=0.05, it=5):
+        '''
+        predict:
+            use KMeans
+        '''
+        self.init_K = init_K
+        self.r = r
+        self.gamma = gamma
+        self.alpha = alpha
+        self.it = it
+        
+        '''
+        init must be True
+        for init qd
+        '''
+        self.som = SimpleSOM(
+            kshape,
+            init=True, initialization_func=None,
+            rand_stat=rand_stat, X=self.init_K)
+        self.landmarks_ = self.init_K
+    
+    def _kmeans(self):
+        kmeans = KMeans(n_clusters=self.som.kshape.prod(), n_init=1, max_iter=1)
+        kmeans.labels_ = np.arange(self.som.kshape.prod())
+        kmeans.cluster_centers_ = self.landmarks_
+        return kmeans
+    
+    def fit(self, X):
+        self.landmarks_ = self.som.update_iter(X, self.landmarks_,
+                            self.r, self.gamma, self.alpha, self.it)
+        self.som.K = self.landmarks_
+        self.kmeans = self._kmeans()
+        self.labels_ = self.kmeans.labels_
+    
+    def predict(self, X):
+        return self.kmeans.predict(X)
+    
+    def predict_proba(self, X):
+        p_list = []
+        for ii in self.labels_:
+            d = np.square(X - self.landmarks_[ii]).sum(axis=1)
+            p_list.append(np.exp(-self.som.gamma * d))
+        return np.vstack(p_list).T
+    
+
+
 
 
 
