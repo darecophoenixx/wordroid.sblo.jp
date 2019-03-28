@@ -6,3 +6,7 @@
 
 ## WordAndDoc2vec
 [here](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/wordanddoc2vec)
+
+## others
+### [keras_validation_curve]()
+
