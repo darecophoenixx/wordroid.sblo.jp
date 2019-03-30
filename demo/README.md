@@ -5,7 +5,7 @@
 [here](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/som)
 
 ## WordAndDoc2vec
-[here](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/wordanddoc2vec)
+[WordAndDoc2vec demos](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/WordAndDoc2vec-demos)
 
 ## others
 ### keras + validation_curve
@@ -13,3 +13,10 @@
 * keras scikit-learn api
 * KerasClassifier
 * validation_curve
+* K.clear_session()
+* MyKerasClassifier(KerasClassifier)
+
+demo_keras_validation_curve_multi_input
+* CUDA_VISIBLE_DEVICES
+* multi input
+* multi metrics
