@@ -16,7 +16,7 @@
 * K.clear_session()
 * MyKerasClassifier(KerasClassifier)
 
-demo_keras_validation_curve_multi_input
+[demo_keras_validation_curve_multi_input](https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/demo/demo_keras_validation_curve_multi_input.ipynb)
 * CUDA_VISIBLE_DEVICES
 * multi input
 * multi metrics
