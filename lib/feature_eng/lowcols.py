@@ -79,7 +79,7 @@ class Seq(object):
             },
             np.array(y))
 
-from keras_ex.GaussianKernel import GaussianKernel, GaussianKernel2, GaussianKernel3
+from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
 
 from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, Conv3D, \
