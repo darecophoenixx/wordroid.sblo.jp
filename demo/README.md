@@ -18,4 +18,5 @@
 
 demo_keras_validation_curve_multi_input
 * CUDA_VISIBLE_DEVICES
-* multi_input
+* multi input
+* multi metrics
