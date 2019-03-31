@@ -1,5 +1,5 @@
 ## GaussianKernel layer
-[here](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/gkernel)
+[Welcome to GaussianKernel layer page!](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/lib/keras_ex/gkernel)
 
 ## som
 [here](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/som)
