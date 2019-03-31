@@ -139,3 +139,36 @@ def make_model(num_user=20, num_product=39, num_features=12,
     }
     return models
 
+class WD2vec_low(object):
+    
+    def __init__(self, doc_seq):
+        self.doc_seq = doc_seq
+        
+    def make_model(self, num_user=20, num_product=39, num_features=12,
+                         gamma=0.0, embeddings_val=0.5):
+        self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features,
+                                 gamma=gamma, embeddings_val=embeddings_val)
+        return self.models
+    
+    def train(self, epochs=5, batch_size=32, verbose=1):
+        model = self.models['model']
+        seq = Seq(self.doc_seq, batch_size)
+        res = model.fit_generator(seq,
+                                  steps_per_epoch=len(seq),
+                                  epochs=epochs,
+                                  verbose=verbose)
+        return res
+    
+    def get_wgt_byrow(self, l=None):
+        wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
+        if l:
+            wgt = wgt[[self.doc_seq.doc_dic.token2id[ee] for ee in l]]
+        return wgt
+    
+    def get_wgt_bycol(self, l=None):
+        wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
+        if l:
+            wgt = wgt[[self.doc_seq.word_dic.token2id[ee] for ee in l]]
+        return wgt
+
+
