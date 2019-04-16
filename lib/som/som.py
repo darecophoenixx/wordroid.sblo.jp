@@ -174,7 +174,8 @@ class sksom(object):
         #self.labels_ = self.kmeans.labels_
         for ii in tqdm(range(self.it)):
             if self.r:
-                r = self.r - (self.r-1)/(self.it-1)*ii
+#                r = self.r - (self.r-1)/(self.it-1)*ii
+                r = self.r
             else:
                 r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
             K = self.som.update_once(X, self.landmarks_,
