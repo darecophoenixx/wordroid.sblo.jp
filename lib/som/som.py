@@ -129,11 +129,13 @@ class sksom(object):
         predict:
             use KMeans
         '''
+        self.kshape = kshape
         self.init_K = init_K
-        if r is None:
-            self.r = min(kshape)
-        else:
-            self.r = r
+        self.r = r
+#        if r is None:
+#            self.r = min(kshape)
+#        else:
+#            self.r = r
         self.gamma = gamma
         self.alpha = alpha
         self.it = it
@@ -171,7 +173,10 @@ class sksom(object):
         #self.kmeans = self._kmeans()
         #self.labels_ = self.kmeans.labels_
         for ii in tqdm(range(self.it)):
-            r = -(self.r-1)/(self.it-1)*ii+self.r
+            if self.r:
+                r = self.r - (self.r-1)/(self.it-1)*ii
+            else:
+                r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
             K = self.som.update_once(X, self.landmarks_,
                                      r=r, alpha=self.alpha)
             self.landmarks_ = self.som.K = K
