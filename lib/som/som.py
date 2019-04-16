@@ -123,16 +123,23 @@ from sklearn.cluster import KMeans
 class sksom(object):
     
     def __init__(self, kshape, init_K=None, rand_stat=0,
-                 r=1.5, gamma=0.01, alpha=0.05, it=5):
+                 r=None, gamma=None, alpha=0.01, it=5,
+                 verbose=0):
         '''
         predict:
             use KMeans
         '''
         self.init_K = init_K
-        self.r = r
+        if r is None:
+            self.r = min(kshape)
+        else:
+            self.r = r
         self.gamma = gamma
         self.alpha = alpha
         self.it = it
+        if it < 2:
+            raise Exception('"it[{}]" must be greater than one...'.format(it))
+        self.verbose = verbose
         
         '''
         init must be True
@@ -142,7 +149,10 @@ class sksom(object):
             kshape,
             init=True, initialization_func=None,
             rand_stat=rand_stat, X=self.init_K)
-        self.landmarks_ = self.init_K
+        self.landmarks_ = self.init_K.copy()
+        self.som.K = self.init_K.copy()
+        self.kmeans = self._kmeans()
+        self.labels_ = self.kmeans.labels_
     
     def _kmeans(self):
         kmeans = KMeans(n_clusters=self.som.kshape.prod(), n_init=1, max_iter=1)
@@ -150,12 +160,30 @@ class sksom(object):
         kmeans.cluster_centers_ = self.landmarks_
         return kmeans
     
+#    def fit(self, X):
+#        self.landmarks_ = self.som.update_iter(X, self.landmarks_,
+#                            self.r, self.gamma, self.alpha, self.it)
+#        self.som.K = self.landmarks_
+#        self.kmeans = self._kmeans()
+#        self.labels_ = self.kmeans.labels_
+    
     def fit(self, X):
-        self.landmarks_ = self.som.update_iter(X, self.landmarks_,
-                            self.r, self.gamma, self.alpha, self.it)
-        self.som.K = self.landmarks_
-        self.kmeans = self._kmeans()
-        self.labels_ = self.kmeans.labels_
+        #self.kmeans = self._kmeans()
+        #self.labels_ = self.kmeans.labels_
+        for ii in tqdm(range(self.it)):
+            r = -(self.r-1)/(self.it-1)*ii+self.r
+            K = self.som.update_once(X, self.landmarks_,
+                                     r=r, alpha=self.alpha)
+            self.landmarks_ = self.som.K = K
+            
+            if self.verbose:
+                print('r:', r, 'gamma:', self.som.gamma)
+#            if 1 < self.verbose:
+#                idx = self.predict(X)
+#                prob = self.predict_proba(X)
+#                res = [prob[ii, idx[ii]] for ii in range(X.shape[0])]
+#                print('progress: ', np.array(res).mean())
+        print('r:', r, 'gamma:', self.som.gamma)
     
     def predict(self, X):
         return self.kmeans.predict(X)
