@@ -63,12 +63,12 @@ class SimpleSOM(object):
         init_map = np.vstack(l)
         return init_map
     
-    def update_once(self, X, K, r=1.5, gamma=0.01, alpha=0.05):
+    def update_once(self, X, K, r=1.5, gamma=None, alpha=1.0):
         delta = self.calc_delta(X, K, r, gamma, alpha)
         K += delta
         return K
     
-    def update_iter(self, X, K, r=1.5, gamma=0.01, alpha=0.05, it=10):
+    def update_iter(self, X, K, r=1.5, gamma=None, alpha=1.0, it=10):
         for _ in tqdm(range(it)):
             K = self.update_once(X, K, r, gamma, alpha)
         return K
@@ -96,7 +96,7 @@ class SimpleSOM(object):
 #            delta0 = h * (x - K)
 #            delta += delta0
 #        return delta
-    def calc_delta(self, X, K, r=1.5, gamma=0.01, alpha=0.05):
+    def calc_delta(self, X, K, r=1.5, gamma=None, alpha=1.0):
         '''
         if r is provided, gamma is ignored.
         '''
@@ -115,7 +115,8 @@ class SimpleSOM(object):
             h = (alpha * np.exp(-self.gamma * self.qd[iqd])).reshape((K.shape[0],1))
             delta0 = h * (X[ii] - K)
             delta += delta0
-            
+        
+        return delta / X.shape[0]
         return delta
 
 
@@ -123,7 +124,7 @@ from sklearn.cluster import KMeans
 class sksom(object):
     
     def __init__(self, kshape, init_K=None, rand_stat=0,
-                 r=None, gamma=None, alpha=0.01, it=5,
+                 r=None, gamma=None, alpha=1.0, it=5,
                  verbose=0):
         '''
         predict:
