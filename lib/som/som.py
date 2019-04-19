@@ -117,7 +117,7 @@ class SimpleSOM(object):
             delta += delta0
         
         return delta / X.shape[0]
-        return delta
+        #return delta
 
 
 from sklearn.cluster import KMeans
