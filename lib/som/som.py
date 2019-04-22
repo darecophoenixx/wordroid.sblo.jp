@@ -99,7 +99,7 @@ class SimpleSOM(object):
 #            delta0 = h * (x - K)
 #            delta += delta0
 #        return delta
-    def calc_delta(self, X, K, r=1.5, gamma=None, alpha=0.05):
+    def calc_delta(self, X, K, r=1.5, gamma=None, alpha=1.0):
         '''
         if r is provided, gamma is ignored.
         '''
@@ -111,6 +111,16 @@ class SimpleSOM(object):
             if gamma <= 0:
                 raise ValueError('gamma must be greater than zero.')
         self.gamma = gamma
+        
+        return self._calc_delta(X.astype(self.dtype),
+                                (X**2).sum(axis=1).astype(self.dtype),
+                                K,
+                                delta=np.zeros(K.shape, dtype=self.dtype),
+                                h=np.zeros((K.shape[0],1), dtype=self.dtype),
+                                nn=X.shape[0],
+                                idx=np.arange(X.shape[0]),
+                                mean_dist=np.zeros((1,), dtype=self.dtype),
+                                gamma=gamma, alpha=alpha)
         
         delta = np.zeros(K.shape)
         for ii in range(X.shape[0]):
@@ -198,31 +208,37 @@ class SimpleSOM(object):
     
     def _update_once(self, X, X2s1, K,
                      delta, h , nn, idx,
+                     mean_dist,
                      gamma=None, alpha=1.0):
         delta = self._calc_delta(X, X2s1, K,
                                  delta, h , nn, idx,
+                                 mean_dist,
                                  gamma, alpha)
         K += delta
         return K
     
     def _calc_delta(self, X, X2s1, K,
                     delta, h, nn, idx,
+                    mean_dist,
                     gamma=None, alpha=1.0,
                     batch_size=100):
         self.gamma = gamma
         
         K2s1 = (K**2).sum(axis=1)
         delta[:,:] = 0
+        distance2ClosestLM_list = []
         for ii in range(0, nn, batch_size):
             idx_p = idx[ii:((ii+batch_size) if (ii+batch_size)<nn else nn)]
             KdotX = K.dot(X[idx_p].T)
             for jj in range(len(idx_p)):
                 res = K2s1 - 2*KdotX[:,jj] + X2s1[ii+jj]
                 iqd = res.argmin()
+                distance2ClosestLM = res[iqd]
+                distance2ClosestLM_list.append(distance2ClosestLM)
                 h[:,0] = (alpha * np.exp(-gamma * self.qd[iqd]))
                 delta0 = h * (X[ii+jj] - K)
                 delta += delta0
-        
+        mean_dist[0] = np.stack(distance2ClosestLM_list).mean()
         return delta / nn
 
 
@@ -287,6 +303,8 @@ class sksom(object):
         h = np.zeros((self.landmarks_.shape[0],1), dtype=self.dtype)
         nn = X.shape[0]
         idx = np.arange(nn)
+        meanDist = np.zeros((self.it,), dtype=self.dtype)
+        meanDist0 = np.zeros((1,), dtype=self.dtype)
 
         if self.r:
             if self.r <= 0:
@@ -301,12 +319,15 @@ class sksom(object):
             K = self.som._update_once(X0, X2s1,
                                      self.landmarks_,
                                      delta, h, nn, idx,
+                                     mean_dist=meanDist0,
                                      gamma=gamma, alpha=self.alpha)
+            meanDist[ii] = meanDist0[0]
             self.landmarks_ = self.som.K = K
             
             if self.verbose:
-                print('r:', r, 'gamma:', self.som.gamma)
+                print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
         print('r:', r, 'gamma:', self.som.gamma)
+        self.meanDist = meanDist
     
     def predict(self, X):
         return self.kmeans.predict(X)
