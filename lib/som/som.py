@@ -47,7 +47,7 @@ class SimpleSOM(object):
         return smpl
     
     def linear_init(self, X):
-        pca = PCA(n_components=2)
+        pca = PCA(n_components=2, random_state=self.rand_stat)
         pca.fit(X)
         if self.kshape[1] < self.kshape[0]:
             x_tick = pca.components_[0] * np.sqrt(pca.explained_variance_)[0]
