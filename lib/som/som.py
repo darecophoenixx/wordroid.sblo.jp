@@ -3,6 +3,7 @@ Copyright (c) 2019 Norio Tamada
 Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 '''
+import sys
 import random
 import numpy as np
 from sklearn.decomposition import PCA
@@ -64,12 +65,12 @@ class SimpleSOM(object):
         init_map = np.vstack(l)
         return init_map
     
-    def update_once(self, X, K, r=1.5, gamma=None, alpha=0.05):
+    def update_once(self, X, K, r=1.5, gamma=None, alpha=1.0):
         delta = self.calc_delta(X, K, r=r, gamma=gamma, alpha=alpha)
         K += delta
         return K
     
-    def update_iter(self, X, K, r=1.5, gamma=None, alpha=0.05, it=10):
+    def update_iter(self, X, K, r=1.5, gamma=None, alpha=1.0, it=10):
         X0 = X.astype(self.dtype)
         K0 = K.astype(self.dtype)
         for _ in tqdm(range(it)):
@@ -242,17 +243,21 @@ class SimpleSOM(object):
         return delta / nn
 
 
-
 from sklearn.cluster import KMeans
 class sksom(object):
     
     def __init__(self, kshape, init_K=None, rand_stat=0,
                  r=None, gamma=None, alpha=1.0, it=5,
+                 early_stopping=(5, 1.0e-7),
                  verbose=0, dtype=np.float64):
         '''
         predict:
             use KMeans
         '''
+        if early_stopping:
+            if len(early_stopping) != 2:
+                raise Exception('lenght of early_stopping must be 2...{}'.format(early_stopping))
+        self.early_stopping = early_stopping
         self.kshape = kshape
         self.init_K = init_K
         self.r = r
@@ -309,24 +314,69 @@ class sksom(object):
         if self.r:
             if self.r <= 0:
                 raise ValueError('r must be greater than zero.')
+        if self.early_stopping:
+            early_stopping = self.early_stopping[0]
+            early_stopping_cnt = 0
+            tol = self.early_stopping[1]
+            flag_stopping = False
         
-        for ii in tqdm(range(self.it)):
-            if self.r:
-                r = self.r
-            else:
-                r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
-            gamma = 1.0 / (2.0 * r**2)
-            K = self.som._update_once(X0, X2s1,
-                                     self.landmarks_,
-                                     delta, h, nn, idx,
-                                     mean_dist=meanDist0,
-                                     gamma=gamma, alpha=self.alpha)
-            meanDist[ii] = meanDist0[0]
-            self.landmarks_ = self.som.K = K
-            
-            if self.verbose:
-                print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
-        print('r:', r, 'gamma:', self.som.gamma)
+#        for ii in tqdm(range(self.it)):
+#            if self.r:
+#                r = self.r
+#            else:
+#                r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
+#            gamma = 1.0 / (2.0 * r**2)
+#            K = self.som._update_once(X0, X2s1,
+#                                     self.landmarks_,
+#                                     delta, h, nn, idx,
+#                                     mean_dist=meanDist0,
+#                                     gamma=gamma, alpha=self.alpha)
+#            meanDist[ii] = meanDist0[0]
+#            self.landmarks_ = self.som.K = K
+#            if self.verbose:
+#                print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
+#            if self.early_stopping:
+#                if meanDist[ii-1]-meanDist[ii] < tol:
+#                    early_stopping_cnt += 1
+#                else:
+#                    early_stopping_cnt = 0
+#                if early_stopping <= early_stopping_cnt:
+#                    #flag_stopping = True
+#                    print('early stopping...')
+#                    meanDist = meanDist[:(ii+1)]
+#                    break
+        with tqdm(total=self.it, file=sys.stdout) as pbar:
+            for ii in range(self.it):
+                if self.r:
+                    r = self.r
+                else:
+                    r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
+                gamma = 1.0 / (2.0 * r**2)
+                K = self.som._update_once(X0, X2s1,
+                                         self.landmarks_,
+                                         delta, h, nn, idx,
+                                         mean_dist=meanDist0,
+                                         gamma=gamma, alpha=self.alpha)
+                meanDist[ii] = meanDist0[0]
+                self.landmarks_ = self.som.K = K
+                if self.verbose:
+                    #print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
+                    pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (r, self.som.gamma, meanDist0[0]))
+                pbar.update(1)
+                if self.early_stopping:
+                    if meanDist[ii-1]-meanDist[ii] < tol:
+                        early_stopping_cnt += 1
+                    else:
+                        early_stopping_cnt = 0
+                    if early_stopping <= early_stopping_cnt:
+                        flag_stopping = True
+                        meanDist = meanDist[:(ii+1)]
+                        break
+        
+        if self.early_stopping:
+            if flag_stopping:
+                print('early stopping...')
+        print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
         self.meanDist = meanDist
     
     def predict(self, X):
@@ -340,6 +390,122 @@ class sksom(object):
         return np.vstack(p_list).T
     
 
+from sklearn.base import ClassifierMixin
+from sklearn.neighbors import NearestNeighbors
+class SomClassifier(ClassifierMixin):
+    
+    def __init__(self, kshape, rand_stat=0,
+                 r=1.5, gamma=None, alpha=1.0, it=(5,50),
+                 verbose=0, early_stopping=(5, 1.0e-6),
+                 knn=None, sksom=None,
+                 dtype=np.float64):
+        self.kshape = kshape
+        self.rand_stat = rand_stat
+        self.r = r
+        self.dtype = dtype
+        self.gamma = gamma
+        self.verbose = verbose
+        self.early_stopping = early_stopping
+        
+        if alpha <= 0:
+            raise Exception('"alpha[{}]" must be greater than zero...'.format(alpha))
+        self.alpha = alpha
+        
+        if len(it) < 1:
+            raise Exception('Length of "it[{}]" must be greater than or equal 2...'.format(it))
+        if it[0] < 0:
+            raise Exception('"it[0]({})" must be greater than or equal zero...'.format(it[0]))
+        if it[1] < 2:
+            raise Exception('"it[1]({})" must be greater than one...'.format(it[1]))
+        self.it = it
+        
+        if knn is None:
+            self.knn = NearestNeighbors()
+        else:
+            self.knn = knn
+        
+        if sksom:
+            self.sksom = sksom
+            self.no_fit = True
+        else:
+            self.sksom = None
+            self.no_fit = False
+    
+    def _fit(self, X):
+        '''phase 1'''
+        if self.rand_stat:
+            r = self.r
+        else:
+            r = None
+        self.sksom = sksom(kshape=self.kshape, init_K=self.init_lm,
+                           rand_stat=self.rand_stat,
+                           r=r, gamma=None, alpha=self.alpha,
+                           it=self.it[0] if 1<self.it[0] else 2,
+                           early_stopping=False,
+                           verbose=self.verbose, dtype=self.dtype)
+        self.sksom.fit(X)
+        '''phase 2'''
+        self.sksom.r = self.r
+        self.sksom.it = self.it[1]
+        self.sksom.early_stopping = self.early_stopping
+        self.sksom.fit(X)
+    
+    def fit(self, X, y):
+        '''
+        It is expected that X was standardized.
+        encode y
+        '''
+        if len(y.shape) == 1:
+            y = y.reshape((-1, 1))
+            self.single = True
+        y_enc = np.zeros((y.shape), dtype=self.dtype)
+        for ii in range(y.shape[1]):
+            y_enc[:,ii] = np.array([1 if ee!=0 else -1 for ee in y[:,ii]], dtype=self.dtype)
+        
+        Xy = np.concatenate([y_enc, X], axis=1)
+        if self.rand_stat:
+            som4initLM = SimpleSOM(
+                kshape=self.kshape, init=True, initialization_func=None,
+                rand_stat=self.rand_stat,
+                X=Xy, dtype=np.float64)
+        else:
+            som4initLM = SimpleSOM(
+                kshape=self.kshape, init=True, initialization_func='linear',
+                rand_stat=self.rand_stat,
+                X=Xy, dtype=np.float64)
+        self.init_lm = som4initLM.K.copy()
+        del som4initLM
+        if not self.no_fit:
+            self._fit(Xy)
+        else:
+            if self.verbose:
+                print('no fitting...')
+    
+    def predict(self, X, exclude=True):
+        y_prob = self.predict_proba(X)
+        if hasattr(self, 'single'):
+            return (0.5<y_prob).astype(int)
+        if exclude:
+            ret = y_prob.argmax(axis=1)
+            return ret
+        return (0.5<y_prob).astype(int)
+    
+    def predict_proba(self, X):
+        y_prob0_lm = self.sksom.landmarks_[:,:(self.sksom.landmarks_.shape[1]-X.shape[1])]
+        y_prob_lm = 1 / (1+np.exp(-y_prob0_lm)) # sigmoid
+        lmX = self.sksom.landmarks_[:,-X.shape[1]:]
+        self.knn.fit(lmX)
+        idx = self.knn.kneighbors(X, return_distance=False)
+        y_prob_list = []
+        for ii in range(idx.shape[1]):
+            y_prob0 = y_prob_lm[idx[:,ii]]
+            y_prob_list.append(y_prob0)
+        y_prob = np.stack(y_prob_list, axis=2).mean(axis=2)
+        if hasattr(self, 'single'):
+            y_prob = y_prob.flatten()
+        return y_prob
+        
+    
 
 
 
