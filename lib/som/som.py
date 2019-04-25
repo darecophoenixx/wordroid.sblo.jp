@@ -345,7 +345,8 @@ class sksom(object):
 #                    print('early stopping...')
 #                    meanDist = meanDist[:(ii+1)]
 #                    break
-        with tqdm(total=self.it, file=sys.stdout) as pbar:
+        with tqdm(total=self.it, file=sys.stdout,
+                  disable=False if 0<self.verbose else True) as pbar:
             for ii in range(self.it):
                 if self.r:
                     r = self.r
@@ -359,8 +360,7 @@ class sksom(object):
                                          gamma=gamma, alpha=self.alpha)
                 meanDist[ii] = meanDist0[0]
                 self.landmarks_ = self.som.K = K
-                if self.verbose:
-                    #print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
+                if 1 < self.verbose:
                     pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (r, self.som.gamma, meanDist0[0]))
                 pbar.update(1)
                 if self.early_stopping:
@@ -375,8 +375,9 @@ class sksom(object):
         
         if self.early_stopping:
             if flag_stopping:
-                print('early stopping...')
-        print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
+                if self.verbose: print('early stopping...')
+        if self.verbose:
+            print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
         self.meanDist = meanDist
     
     def predict(self, X):
