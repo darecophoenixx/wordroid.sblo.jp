@@ -58,20 +58,38 @@ class GaussianKernel(Layer):
     def call(self, x, training=None):
         return self.gauss(x, self.kernel, self.kernel_gamma)
     
+#    def gauss(self, x, landmarks, gamma):
+#        def fn(ii):
+#            lm = K.gather(landmarks, ii)
+#            return K.sum(K.square(x - lm), axis=1)
+#        d2 = K.map_fn(fn, self.indx, dtype='float32')
+#        d2 = K.transpose(d2)
+#        if gamma == 'auto':
+#            '''
+#            gamma is calculated by each batch
+#            '''
+#            d = K.sqrt(d2)
+#            d_mean = K.mean(d)
+#            gamma = 1. / (2. * d_mean**2)
+#        return K.exp(-gamma * d2)
     def gauss(self, x, landmarks, gamma):
-        def fn(ii):
-            lm = K.gather(landmarks, ii)
-            return K.sum(K.square(x - lm), axis=1)
-        d2 = K.map_fn(fn, self.indx, dtype='float32')
-        d2 = K.transpose(d2)
+        x2 = K.sum(K.square(x), axis=1)
+        x2 = K.reshape(x2, (-1,1))
+        x2 = K.repeat_elements(x2, self.output_dim, axis=1)
+        lm2 = K.sum(K.square(landmarks), axis=1)
+        xlm = K.dot(x, K.transpose(landmarks))
+        
+        ret = x2 + lm2 - 2*xlm
         if gamma == 'auto':
             '''
             gamma is calculated by each batch
             '''
-            d = K.sqrt(d2)
+            d = K.sqrt(ret)
             d_mean = K.mean(d)
             gamma = 1. / (2. * d_mean**2)
-        return K.exp(-gamma * d2)
+        ret = K.exp(-gamma * ret)
+        return ret
+
 
 
 class GaussianKernel2(Layer):
@@ -104,14 +122,22 @@ class GaussianKernel2(Layer):
     def call(self, x, training=None):
         return self.gauss(x, self.landmarks, K.exp(self.gamma_elm), training=training)
     
+#    def gauss(self, x, landmarks, gamma, training=None):
+#        def fn(ii):
+#            lm = K.gather(landmarks, ii)
+#            return K.sum(K.square(x - lm), axis=1)
+#        d2 = K.map_fn(fn, self.indx, dtype='float32')
+#        d2 = K.transpose(d2)
+#        return K.exp(-gamma * d2)
     def gauss(self, x, landmarks, gamma, training=None):
-        def fn(ii):
-            lm = K.gather(landmarks, ii)
-            return K.sum(K.square(x - lm), axis=1)
-        d2 = K.map_fn(fn, self.indx, dtype='float32')
-        d2 = K.transpose(d2)
-        
-        return K.exp(-gamma * d2)
+        x2 = K.sum(K.square(x), axis=1)
+        x2 = K.reshape(x2, (-1,1))
+        x2 = K.repeat_elements(x2, self.output_dim, axis=1)
+        lm2 = K.sum(K.square(landmarks), axis=1)
+        xlm = K.dot(x, K.transpose(landmarks))
+        ret = x2 + lm2 - 2*xlm
+        ret = K.exp(-gamma * ret)
+        return ret
 
 
 class GaussianKernel3(Layer):
@@ -154,12 +180,21 @@ class GaussianKernel3(Layer):
     def call(self, x, training=None):
         return self.gauss(x, self.kernel, K.exp(self.gamma_elm))
     
-    def gauss(self, x, landmarks, gamma):
-        def fn(ii):
-            lm = K.gather(landmarks, ii)
-            return K.sum(K.square(x - lm), axis=1)
-        d2 = K.map_fn(fn, self.indx, dtype='float32')
-        d2 = K.transpose(d2)
-        
-        return K.exp(-gamma * d2)
+#    def gauss(self, x, landmarks, gamma):
+#        def fn(ii):
+#            lm = K.gather(landmarks, ii)
+#            return K.sum(K.square(x - lm), axis=1)
+#        d2 = K.map_fn(fn, self.indx, dtype='float32')
+#        d2 = K.transpose(d2)
+#        
+#        return K.exp(-gamma * d2)
+    def gauss(self, x, landmarks, gamma, training=None):
+        x2 = K.sum(K.square(x), axis=1)
+        x2 = K.reshape(x2, (-1,1))
+        x2 = K.repeat_elements(x2, self.output_dim, axis=1)
+        lm2 = K.sum(K.square(landmarks), axis=1)
+        xlm = K.dot(x, K.transpose(landmarks))
+        ret = x2 + lm2 - 2*xlm
+        ret = K.exp(-gamma * ret)
+        return ret
 
