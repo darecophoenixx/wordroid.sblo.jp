@@ -6,6 +6,7 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gker
 import sys
 import random
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from tqdm import tqdm
 
@@ -36,7 +37,9 @@ class SimpleSOM(object):
             self.K = self.linear_init(X)
         else:
             self.K = self.initialization_func()
-        
+        self._calc_qd(X)
+    
+    def _calc_qd(self, X):
         qd = [np.array((ii,jj)) for ii in range(self.kshape[0]) for jj in range(self.kshape[1])]
         qd = np.array([np.square(p1 - p2).sum() for p1 in qd for p2 in qd]).reshape(self.kshape.prod(), self.kshape.prod())
         self.qd = qd
@@ -48,8 +51,12 @@ class SimpleSOM(object):
         return smpl
     
     def linear_init(self, X):
+        sc = StandardScaler()
+        sc.fit(X)
+        x_sc = sc.transform(X)
+        
         pca = PCA(n_components=2, random_state=self.rand_stat)
-        pca.fit(X)
+        pca.fit(x_sc)
         if self.kshape[1] < self.kshape[0]:
             x_tick = pca.components_[0] * np.sqrt(pca.explained_variance_)[0]
             y_tick = pca.components_[1] * np.sqrt(pca.explained_variance_)[1]
@@ -63,7 +70,7 @@ class SimpleSOM(object):
             tmp += xi * x_tick
             l.append(tmp)
         init_map = np.vstack(l)
-        return init_map
+        return init_map * np.sqrt(sc.var_) + sc.mean_
     
     def update_once(self, X, K, r=1.5, gamma=None, alpha=1.0):
         delta = self.calc_delta(X, K, r=r, gamma=gamma, alpha=alpha)
@@ -73,33 +80,13 @@ class SimpleSOM(object):
     def update_iter(self, X, K, r=1.5, gamma=None, alpha=1.0, it=10):
         X0 = X.astype(self.dtype)
         K0 = K.astype(self.dtype)
-        for _ in tqdm(range(it)):
-            K = self.update_once(X0, K0, r=r, gamma=gamma, alpha=alpha)
-        return K
+        #for _ in tqdm(range(it)):
+        with tqdm(total=it, file=sys.stdout) as pbar:
+            for _ in range(it):
+                K0 = self.update_once(X0, K0, r=r, gamma=gamma, alpha=alpha)
+                pbar.update(1)
+        return K0
     
-#    def calc_delta(self, X, K, r=1.5, gamma=0.01, alpha=0.05):
-#        '''
-#        if r is provided, gamma is ignored.
-#        '''
-#        if r:
-#            if r <= 0:
-#                raise ValueError('r must be greater than zero.')
-#            gamma = 1.0 / (2.0 * r**2)
-#        else:
-#            if gamma <= 0:
-#                raise ValueError('gamma must be greater than zero.')
-#        resp = []
-#        for ii in range(X.shape[0]):
-#            resp0 = np.square(K - X[ii]).sum(axis=1).argmin()
-#            resp.append(resp0)
-#        delta = np.zeros(K.shape)
-#        for ii in range(X.shape[0]):
-#            x = X[ii]
-#            iqd = resp[ii]
-#            h = (alpha * np.exp(-gamma * self.qd[iqd])).reshape((K.shape[0],1))
-#            delta0 = h * (x - K)
-#            delta += delta0
-#        return delta
     def calc_delta(self, X, K, r=1.5, gamma=None, alpha=1.0):
         '''
         if r is provided, gamma is ignored.
@@ -122,90 +109,6 @@ class SimpleSOM(object):
                                 idx=np.arange(X.shape[0]),
                                 mean_dist=np.zeros((1,), dtype=self.dtype),
                                 gamma=gamma, alpha=alpha)
-        
-        delta = np.zeros(K.shape)
-        for ii in range(X.shape[0]):
-            iqd = np.square(K - X[ii]).sum(axis=1).argmin()
-            h = (alpha * np.exp(-self.gamma * self.qd[iqd])).reshape((K.shape[0],1))
-            delta0 = h * (X[ii] - K)
-            delta += delta0
-        
-        return delta
-#    def calc_delta(self, X, X2s1, K, r=1.5, gamma=None, alpha=1.0):
-#        '''
-#        if r is provided, gamma is ignored.
-#        '''
-#        if r:
-#            if r <= 0:
-#                raise ValueError('r must be greater than zero.')
-#            gamma = 1.0 / (2.0 * r**2)
-#        else:
-#            if gamma <= 0:
-#                raise ValueError('gamma must be greater than zero.')
-#        self.gamma = gamma
-#        
-#        delta = np.zeros(K.shape)
-#        for ii in range(X.shape[0]):
-#            iqd = np.square(K - X[ii]).sum(axis=1).argmin()
-#            h = (alpha * np.exp(-self.gamma * self.qd[iqd])).reshape((K.shape[0],1))
-#            delta0 = h * (X[ii] - K)
-#            delta += delta0
-#        
-#        return delta / X.shape[0]
-#    def calc_delta(self, X, X2s1, K, r=1.5, gamma=None, alpha=1.0):
-#        '''
-#        if r is provided, gamma is ignored.
-#        '''
-#        if r:
-#            if r <= 0:
-#                raise ValueError('r must be greater than zero.')
-#            gamma = 1.0 / (2.0 * r**2)
-#        else:
-#            if gamma <= 0:
-#                raise ValueError('gamma must be greater than zero.')
-#        self.gamma = gamma
-#        
-#        K2s1 = (K**2).sum(axis=1)
-#        delta = np.zeros(K.shape, dtype=self.dtype)
-#        h = np.zeros((K.shape[0],1), dtype=self.dtype)
-#        for ii in range(X.shape[0]):
-#            res = K2s1 - 2*K.dot(X[ii]) + X2s1[ii]
-#            iqd = res.argmin()
-#            h[:,0] = (alpha * np.exp(-self.gamma * self.qd[iqd]))
-#            delta0 = h * (X[ii] - K)
-#            delta += delta0
-#        
-#        return delta / X.shape[0]
-#    def calc_delta(self, X, X2s1, K, r=1.5,
-#                   gamma=None, alpha=1.0,
-#                   batch_size=300):
-#        '''
-#        if r is provided, gamma is ignored.
-#        '''
-#        if r:
-#            if r <= 0:
-#                raise ValueError('r must be greater than zero.')
-#            gamma = 1.0 / (2.0 * r**2)
-#        else:
-#            if gamma <= 0:
-#                raise ValueError('gamma must be greater than zero.')
-#        self.gamma = gamma
-#        
-#        K2s1 = (K**2).sum(axis=1)
-#        delta = np.zeros(K.shape, dtype=self.dtype)
-#        h = np.zeros((K.shape[0],1), dtype=self.dtype)
-#        nn = X.shape[0]
-#        idx = np.arange(nn)
-#        for ii in range(0, nn, batch_size):
-#            idx_p = idx[ii:((ii+batch_size) if (ii+batch_size)<nn else nn)]
-#            KdotX = K.dot(X[idx_p].T)
-#            for jj in range(len(idx_p)):
-#                res = K2s1 - 2*KdotX[:,jj] + X2s1[ii+jj]
-#                iqd = res.argmin()
-#                h[:,0] = (alpha * np.exp(-self.gamma * self.qd[iqd]))
-#                delta0 = h * (X[ii+jj] - K)
-#                delta += delta0
-#        return delta / nn
     
     def _update_once(self, X, X2s1, K,
                      delta, h , nn, idx,
@@ -242,11 +145,26 @@ class SimpleSOM(object):
         mean_dist[0] = np.stack(distance2ClosestLM_list).mean()
         return delta / nn
 
+class SphereSOM(SimpleSOM):
+    
+    def _calc_qd(self, X):
+        longitude = [2*np.pi*ii/self.kshape[1] for ii in range(self.kshape[1])]
+        latitude = np.linspace(-np.pi/2, np.pi/2, self.kshape[0]+1)[1:] - np.pi/self.kshape[0]/2
+        pos0 = [np.array((np.cos(lo), np.sin(lo), np.sin(la))) for la in latitude for lo in longitude]
+        pos = [np.array((ee[0]*np.sqrt(1-ee[2]**2), ee[1]*np.sqrt(1-ee[2]**2), ee[2])) for ee in pos0]
+        qd = np.array([np.arccos(np.dot(p0, p1).clip(-1,1)) for p0 in pos for p1 in pos])
+        qd = qd.reshape((np.array(self.kshape).prod(), np.array(self.kshape).prod()))
+        #self.qd = qd * 15
+        #self.qd = qd * 10
+        self.qd = qd * (1 / (2*np.pi/self.kshape[1]))
+
+
 
 from sklearn.cluster import KMeans
 class sksom(object):
     
-    def __init__(self, kshape, init_K=None, rand_stat=0,
+    def __init__(self, kshape, form=None,
+                 init_K=None, rand_stat=0,
                  r=None, gamma=None, alpha=1.0, it=5,
                  early_stopping=(5, 1.0e-7),
                  verbose=0, dtype=np.float64):
@@ -262,10 +180,6 @@ class sksom(object):
         self.init_K = init_K
         self.r = r
         self.dtype = dtype
-#        if r is None:
-#            self.r = min(kshape)
-#        else:
-#            self.r = r
         self.gamma = gamma
         self.alpha = alpha
         self.it = it
@@ -277,7 +191,11 @@ class sksom(object):
         init must be True
         for init qd
         '''
-        self.som = SimpleSOM(
+        if form == 'sphere':
+            ssom_constructor = SphereSOM
+        else:
+            ssom_constructor = SimpleSOM
+        self.som = ssom_constructor(
             kshape,
             init=True, initialization_func=None,
             rand_stat=rand_stat, X=self.init_K,
@@ -293,13 +211,6 @@ class sksom(object):
         kmeans.cluster_centers_ = self.landmarks_
         return kmeans
     
-#    def fit(self, X):
-#        self.landmarks_ = self.som.update_iter(X, self.landmarks_,
-#                            self.r, self.gamma, self.alpha, self.it)
-#        self.som.K = self.landmarks_
-#        self.kmeans = self._kmeans()
-#        self.labels_ = self.kmeans.labels_
-    
     def fit(self, X, y=None):
         X0 = X.astype(self.dtype)
         X2s1 = (X**2).sum(axis=1).astype(self.dtype)
@@ -312,46 +223,39 @@ class sksom(object):
         meanDist0 = np.zeros((1,), dtype=self.dtype)
 
         if self.r:
-            if self.r <= 0:
-                raise ValueError('r must be greater than zero.')
+            if isinstance(self.r, (float, int)):
+                if self.r <= 0:
+                    raise ValueError('r must be greater than zero.')
+            else:
+                if self.r[0] <= 0 or self.r[1] <= 0:
+                    raise ValueError('r must be greater than zero.')
         if self.early_stopping:
             early_stopping = self.early_stopping[0]
             early_stopping_cnt = 0
             tol = self.early_stopping[1]
             flag_stopping = False
         
-#        for ii in tqdm(range(self.it)):
-#            if self.r:
-#                r = self.r
-#            else:
-#                r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
-#            gamma = 1.0 / (2.0 * r**2)
-#            K = self.som._update_once(X0, X2s1,
-#                                     self.landmarks_,
-#                                     delta, h, nn, idx,
-#                                     mean_dist=meanDist0,
-#                                     gamma=gamma, alpha=self.alpha)
-#            meanDist[ii] = meanDist0[0]
-#            self.landmarks_ = self.som.K = K
-#            if self.verbose:
-#                print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
-#            if self.early_stopping:
-#                if meanDist[ii-1]-meanDist[ii] < tol:
-#                    early_stopping_cnt += 1
-#                else:
-#                    early_stopping_cnt = 0
-#                if early_stopping <= early_stopping_cnt:
-#                    #flag_stopping = True
-#                    print('early stopping...')
-#                    meanDist = meanDist[:(ii+1)]
-#                    break
+        if self.r is None:
+            r0 = min(self.kshape)
+            rfin = 1
+        elif isinstance(self.r, (float, int)):
+            r0 = self.r
+            rfin = self.r
+        else:
+            '''expect length of r is 2'''
+            r0 = self.r[0]
+            rfin = self.r[1]
+        
         with tqdm(total=self.it, file=sys.stdout,
                   disable=False if 0<self.verbose else True) as pbar:
             for ii in range(self.it):
-                if self.r:
-                    r = self.r
-                else:
-                    r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
+#                if self.r:
+#                    r = self.r
+#                else:
+#                    #r = min(self.kshape) - (min(self.kshape)-1)/(self.it-1)*ii
+#                    r = min(self.kshape) - (min(self.kshape)-1)/np.sqrt(self.it-1)*np.sqrt(ii)
+                
+                r = r0 - (r0-rfin)/np.sqrt(self.it-1)*np.sqrt(ii)
                 gamma = 1.0 / (2.0 * r**2)
                 K = self.som._update_once(X0, X2s1,
                                          self.landmarks_,
@@ -425,6 +329,9 @@ class SomClassifier(ClassifierMixin):
         else:
             self.knn = knn
         
+        '''
+        sksom provided, no fit
+        '''
         if sksom:
             self.sksom = sksom
             self.no_fit = True
