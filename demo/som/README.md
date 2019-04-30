@@ -6,7 +6,7 @@ pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 ## Document
 [scikit learn api](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5Bsom%5D-scikit-learn-api)
 
-## demo
+## Demo
 ### [iris demo](https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/demo/som/demo_iris_001.ipynb)
 Class SimpleSOM demo
 
