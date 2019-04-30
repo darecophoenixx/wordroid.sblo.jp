@@ -283,6 +283,7 @@ class sksom(object):
         if self.verbose:
             print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
         self.meanDist = meanDist
+        return self
     
     def predict(self, X):
         return self.kmeans.predict(X)
