@@ -296,22 +296,29 @@ class sksom(object):
         return np.vstack(p_list).T
     
 
-from sklearn.base import ClassifierMixin
+from sklearn.base import ClassifierMixin, RegressorMixin
 from sklearn.neighbors import NearestNeighbors
-class SomClassifier(ClassifierMixin):
+class SomBase(object):
     
-    def __init__(self, kshape, rand_stat=0,
-                 r=1.5, gamma=None, alpha=1.0, it=(5,50),
+    def __init__(self, kshape, form=None, rand_stat=None,
+                 r1=None, r2=1.0,
+                 alpha=1.0, it=(5,50),
                  verbose=0, early_stopping=(5, 1.0e-6),
                  knn=None, sksom=None,
                  dtype=np.float64):
         self.kshape = kshape
         self.rand_stat = rand_stat
-        self.r = r
+        self.r1 = r1
+        self.r2 = r2
         self.dtype = dtype
-        self.gamma = gamma
         self.verbose = verbose
         self.early_stopping = early_stopping
+        
+        if form is not None:
+            form_list = ('sphere',)
+            if form not in form_list:
+                raise Exception('"form[{}]" must be {}...'.format(form, str(form_list)))
+        self.form = form
         
         if alpha <= 0:
             raise Exception('"alpha[{}]" must be greater than zero...'.format(alpha))
@@ -342,11 +349,12 @@ class SomClassifier(ClassifierMixin):
     
     def _fit(self, X):
         '''phase 1'''
-        if self.rand_stat:
-            r = self.r
+        if self.rand_stat is not None:
+            r = self.r1
         else:
             r = None
-        self.sksom = sksom(kshape=self.kshape, init_K=self.init_lm,
+        self.sksom = sksom(kshape=self.kshape, form=self.form,
+                           init_K=self.init_lm,
                            rand_stat=self.rand_stat,
                            r=r, gamma=None, alpha=self.alpha,
                            it=self.it[0] if 1<self.it[0] else 2,
@@ -354,7 +362,7 @@ class SomClassifier(ClassifierMixin):
                            verbose=self.verbose, dtype=self.dtype)
         self.sksom.fit(X)
         '''phase 2'''
-        self.sksom.r = self.r
+        self.sksom.r = self.r2
         self.sksom.it = self.it[1]
         self.sksom.early_stopping = self.early_stopping
         self.sksom.fit(X)
@@ -367,12 +375,10 @@ class SomClassifier(ClassifierMixin):
         if len(y.shape) == 1:
             y = y.reshape((-1, 1))
             self.single = True
-        y_enc = np.zeros((y.shape), dtype=self.dtype)
-        for ii in range(y.shape[1]):
-            y_enc[:,ii] = np.array([1 if ee!=0 else -1 for ee in y[:,ii]], dtype=self.dtype)
+        y_enc = self.encode_y(y)
         
         Xy = np.concatenate([y_enc, X], axis=1)
-        if self.rand_stat:
+        if self.rand_stat is not None:
             som4initLM = SimpleSOM(
                 kshape=self.kshape, init=True, initialization_func=None,
                 rand_stat=self.rand_stat,
@@ -389,6 +395,117 @@ class SomClassifier(ClassifierMixin):
         else:
             if self.verbose:
                 print('no fitting...')
+    
+    def encode_y(self, y):
+        raise NotImplementedError('You must implement encode_y()')
+    
+    def predict(self, X, exclude=True):
+        raise NotImplementedError('You must implement predict()')
+
+
+class SomClassifier(SomBase, ClassifierMixin):
+#    def __init__(self, kshape, form=None, rand_stat=None,
+#                 r1=None, r2=1.0,
+#                 alpha=1.0, it=(5,50),
+#                 verbose=0, early_stopping=(5, 1.0e-6),
+#                 knn=None, sksom=None,
+#                 dtype=np.float64):
+#        self.kshape = kshape
+#        self.rand_stat = rand_stat
+#        self.r1 = r1
+#        self.r2 = r2
+#        self.dtype = dtype
+#        self.verbose = verbose
+#        self.early_stopping = early_stopping
+#        
+#        if form is not None:
+#            form_list = ('sphere',)
+#            if form not in form_list:
+#                raise Exception('"form[{}]" must be {}...'.format(form, str(form_list)))
+#        self.form = form
+#        
+#        if alpha <= 0:
+#            raise Exception('"alpha[{}]" must be greater than zero...'.format(alpha))
+#        self.alpha = alpha
+#        
+#        if len(it) < 1:
+#            raise Exception('Length of "it[{}]" must be greater than or equal 2...'.format(it))
+#        if it[0] < 0:
+#            raise Exception('"it[0]({})" must be greater than or equal zero...'.format(it[0]))
+#        if it[1] < 2:
+#            raise Exception('"it[1]({})" must be greater than one...'.format(it[1]))
+#        self.it = it
+#        
+#        if knn is None:
+#            self.knn = NearestNeighbors()
+#        else:
+#            self.knn = knn
+#        
+#        '''
+#        sksom provided, no fit
+#        '''
+#        if sksom:
+#            self.sksom = sksom
+#            self.no_fit = True
+#        else:
+#            self.sksom = None
+#            self.no_fit = False
+#    
+#    def _fit(self, X):
+#        '''phase 1'''
+#        if self.rand_stat is not None:
+#            r = self.r1
+#        else:
+#            r = None
+#        self.sksom = sksom(kshape=self.kshape, form=self.form,
+#                           init_K=self.init_lm,
+#                           rand_stat=self.rand_stat,
+#                           r=r, gamma=None, alpha=self.alpha,
+#                           it=self.it[0] if 1<self.it[0] else 2,
+#                           early_stopping=False,
+#                           verbose=self.verbose, dtype=self.dtype)
+#        self.sksom.fit(X)
+#        '''phase 2'''
+#        self.sksom.r = self.r2
+#        self.sksom.it = self.it[1]
+#        self.sksom.early_stopping = self.early_stopping
+#        self.sksom.fit(X)
+#    
+#    def fit(self, X, y):
+#        '''
+#        It is expected that X was standardized.
+#        encode y
+#        '''
+#        if len(y.shape) == 1:
+#            y = y.reshape((-1, 1))
+#            self.single = True
+#        y_enc = np.zeros((y.shape), dtype=self.dtype)
+#        for ii in range(y.shape[1]):
+#            y_enc[:,ii] = np.array([1 if ee!=0 else -1 for ee in y[:,ii]], dtype=self.dtype)
+#        Xy = np.concatenate([y_enc, X], axis=1)
+#        if self.rand_stat is not None:
+#            som4initLM = SimpleSOM(
+#                kshape=self.kshape, init=True, initialization_func=None,
+#                rand_stat=self.rand_stat,
+#                X=Xy, dtype=np.float64)
+#        else:
+#            som4initLM = SimpleSOM(
+#                kshape=self.kshape, init=True, initialization_func='linear',
+#                rand_stat=self.rand_stat,
+#                X=Xy, dtype=np.float64)
+#        self.init_lm = som4initLM.K.copy()
+#        del som4initLM
+#        if not self.no_fit:
+#            self._fit(Xy)
+#        else:
+#            if self.verbose:
+#                print('no fitting...')
+    
+    def encode_y(self, y):
+        y_enc = np.zeros((y.shape), dtype=self.dtype)
+        for ii in range(y.shape[1]):
+            y_enc[:,ii] = np.array([1 if ee!=0 else -1 for ee in y[:,ii]], dtype=self.dtype)
+        return y_enc
     
     def predict(self, X, exclude=True):
         y_prob = self.predict_proba(X)
@@ -413,8 +530,28 @@ class SomClassifier(ClassifierMixin):
         if hasattr(self, 'single'):
             y_prob = y_prob.flatten()
         return y_prob
-        
+
+
+class SomRegressor(SomBase, RegressorMixin):
     
+    def encode_y(self, y):
+        return y
+    
+    def predict(self, X):
+        y_pred_lm = self.sksom.landmarks_[:,:(self.sksom.landmarks_.shape[1]-X.shape[1])]
+        lmX = self.sksom.landmarks_[:,-X.shape[1]:]
+        self.knn.fit(lmX)
+        idx = self.knn.kneighbors(X, return_distance=False)
+        y_pred_list = []
+        for ii in range(idx.shape[1]):
+            y_pred0 = y_pred_lm[idx[:,ii]]
+            y_pred_list.append(y_pred0)
+        y_pred = np.stack(y_pred_list, axis=2).mean(axis=2)
+        if hasattr(self, 'single'):
+            y_pred = y_pred.flatten()
+        return y_pred
+
+
 
 
 
