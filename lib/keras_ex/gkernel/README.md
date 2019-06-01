@@ -27,6 +27,8 @@ moon data
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo101_01.png" width="320px">
 
 ### [demo01_2](demo/demo01_2.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo01_2.ipynb))
+
 simple example  
 GaussianKernel (fixed gamma) -> Dense  
 moon data (fat)
@@ -34,22 +36,32 @@ moon data (fat)
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo101_2.png" width="320px">
 
 ### [demo02](demo/demo02.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo02.ipynb))
+
 simple example  
 GaussianKernel (kernel_gamma='auto') -> Dense  
 moon data
 
 ### [demo03](demo/demo03.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo03.ipynb))
+
 GaussianKernel2 example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo103_01.png" width="320px">
 
 ### [demo04](demo/demo04.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo04.ipynb))
+
 big kernel_gamma \(small Sigma\) example  
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo104_01.png" width="320px">
 
 ### [demo05](demo/demo05.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo05.ipynb))
+
 GaussianKernel3 example  
 
 ### [demo_digit_01](demo/demo_digit_01.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo_digit_01.ipynb))
+
 scikit-learn digits dataset example  
 ```python
 num_lm = 100
@@ -60,6 +72,8 @@ Dense(10, activation='softmax')
 
 
 ### [demo_digit_02](demo/demo_digit_02.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo_digit_02.ipynb))
+
 scikit-learn digits dataset example  
 using only 2 factors  
 ```python
@@ -71,6 +85,8 @@ Dense(10, activation='softmax')
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_102.png" width="320px">
 
 ### [demo_digit_03](demo/demo_digit_03.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo_digit_03.ipynb))
+
 scikit-learn digits dataset example  
 add conv layers  
 ```python
@@ -85,6 +101,8 @@ Dense(10, activation='softmax')
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_103_2.png" width="320px"> <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_103.png" width="320px">
 
 ### [demo_digit_AE_01](demo/demo_digit_AE_01.ipynb)
+([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo_digit_AE_01.ipynb))
+
 scikit-learn digits dataset Auto-Encoder example  
 Projection on high dimensional space(64 -> 200)
 ```python
