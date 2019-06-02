@@ -18,8 +18,6 @@ Keras
 
 ## Demo
 ### [demo01](demo/demo01.ipynb)
-<p><a href="https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo01.ipynb" target="_blank">nbviewer</a></p>
-
 ([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo01.ipynb))
 
 simple example  
