@@ -79,6 +79,7 @@ class Seq(object):
             },
             np.array(y))
 
+
 from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
 
 from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
@@ -105,8 +106,22 @@ from keras import initializers
 from keras.metrics import categorical_accuracy
 from keras.constraints import maxnorm, non_neg
 from keras.optimizers import RMSprop
-from keras.utils import to_categorical
+from keras.utils import to_categorical, Sequence
 from keras import backend as K
+
+class Seq2(Sequence):
+    
+    def __init__(self, seq):
+        self.seq = seq
+    
+    def __len__(self):
+        return len(self.seq)
+    
+    def __getitem__(self, idx):
+        bs = self.seq.batch_size
+        user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
+        res = self.seq.getpart(user_part)
+        return res
 
 def make_model(num_user=20, num_product=39, num_features=12,
                 gamma=0.0, embeddings_val=0.5):
@@ -150,13 +165,17 @@ class WD2vec_low(object):
                                  gamma=gamma, embeddings_val=embeddings_val)
         return self.models
     
-    def train(self, epochs=5, batch_size=32, verbose=1):
+    def train(self, epochs=5, batch_size=32, verbose=1,
+              use_multiprocessing=False, workers=1):
         model = self.models['model']
         seq = Seq(self.doc_seq, batch_size)
-        res = model.fit_generator(seq,
-                                  steps_per_epoch=len(seq),
+        seq2 = Seq2(seq)
+        res = model.fit_generator(seq2,
+                                  steps_per_epoch=len(seq2),
                                   epochs=epochs,
-                                  verbose=verbose)
+                                  verbose=verbose,
+                                  use_multiprocessing=use_multiprocessing,
+                                  workers=workers)
         return res
     
     def get_wgt_byrow(self, l=None):
