@@ -190,4 +190,32 @@ class WD2vec_low(object):
             wgt = wgt[[self.doc_seq.word_dic.token2id[ee] for ee in l]]
         return wgt
 
+class WD2vec(object):
+    
+    def __init__(self, X_df):
+        self.X_df = X_df
+        
+    def make_model(self, num_user=20, num_product=39, num_features=12,
+                         gamma=0.0, embeddings_val=0.5):
+        self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features,
+                                 gamma=gamma, embeddings_val=embeddings_val)
+        return self.models
+    
+    def train(self, epochs=5, batch_size=32, verbose=1,
+              use_multiprocessing=False, workers=1):
+        model = self.models['model']
+        res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
+                                  epochs=epochs,
+                                  verbose=verbose)
+        return res
+    
+    def get_wgt_byrow(self):
+        wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
+        return wgt
+    
+    def get_wgt_bycol(self):
+        wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
+        return wgt
+
+
 
