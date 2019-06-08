@@ -1,4 +1,4 @@
-Welcome to GaussianKernel layer page!
+Welcome to GaussianKernel layer page! (keras RBF layer)
 ====
 ```
 pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
