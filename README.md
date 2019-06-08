@@ -12,7 +12,7 @@ pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 
 # GaussianKernel layer (keras RBF layer)
 [GaussianKernel layer (keras RBF layer)](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/lib/keras_ex/gkernel)  
-[Dense vs. GaussianKernel(RBF layer) in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)
+[Dense vs. GaussianKernel(RBF) in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
