@@ -7,7 +7,8 @@ pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
 
 [Dense vs. GaussianKernel in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)  
-[Landmarks Animation](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Landmarks-Animation)
+[Landmarks Animation](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Landmarks-Animation)  
+see also [Does RBF kernel (GaussianKernel) with two fixed Landmarks work well in ensemble?](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/Does-RBF-kernel-(GaussianKernel)-with-two-fixed-Landmarks-work-well-in-ensemble%3F)  
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
