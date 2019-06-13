@@ -35,7 +35,7 @@ Non-trainable params: 0
 _________________________________________________________________
 ```
 
-[keras RBF layer quick start](https://www.kaggle.com/wordroid/keras-rbf-layer-quick-start)
+[keras RBF layer quick start](https://www.kaggle.com/wordroid/keras-rbf-layer-quick-start) (Kaggle kernel)
 
 
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
