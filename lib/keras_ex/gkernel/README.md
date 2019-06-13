@@ -1,22 +1,60 @@
 Welcome to GaussianKernel layer page! (keras RBF layer)
 ====
+
+# Getting started
 ```
 pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 ```
 
+```python
+from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
+
+from keras.layers import Input, Dense
+from keras.models import Model
+
+inp = Input(shape=(64,), name='inp')
+oup = GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name='gkernel1')(inp)
+oup = Dense(10, activation='softmax')(oup)
+model = Model(inp, oup)
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+model.summary()
+```
+
+```
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+inp (InputLayer)             (None, 64)                0         
+_________________________________________________________________
+gkernel1 (GaussianKernel)    (None, 100)               6400      
+_________________________________________________________________
+dense_1 (Dense)              (None, 10)                1010      
+=================================================================
+Total params: 7,410
+Trainable params: 7,410
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+[keras RBF layer quick start](https://www.kaggle.com/wordroid/keras-rbf-layer-quick-start) (Kaggle kernel)
+
+
+# Summary
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
 
 [Dense vs. GaussianKernel in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)  
-[Landmarks Animation](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Landmarks-Animation)
+[Landmarks Animation](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Landmarks-Animation)  
+see also [Does RBF kernel (GaussianKernel) with two fixed Landmarks work well in ensemble?](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/Does-RBF-kernel-(GaussianKernel)-with-two-fixed-Landmarks-work-well-in-ensemble%3F)  
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo01_01.png)
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo03_02.png)
 
-## Requirement
+# Requirement
 Keras
 
-## Demo
+# Demo
 ### [demo01](demo/demo01.ipynb)
 ([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo01.ipynb))
 
@@ -112,7 +150,7 @@ Dense(64, activation='sigmoid')
 ```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_AE_01.png" width="320px">
 
-## Usage
+# Usage
 ### GaussianKernel
 ```python
 GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')
@@ -151,11 +189,11 @@ depth of landmark
 equal to inputs.shape\[1]  
 
 
-## Licence
+# Licence
 Copyright (c) 2018 Norio Tamada  
 Released under the MIT license  
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 
 
-## Author
+# Author
 [darecophoenixx](https://github.com/darecophoenixx)
