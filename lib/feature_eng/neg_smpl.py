@@ -592,35 +592,58 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
 
     input_user_vec = Input(shape=(1, num_features), name='input_user_vec')
     input_prod_vec = Input(shape=(max_num_prod, num_features), name='input_prod_vec')
+    input_neg_vec = Input(shape=(max_num_prod, num_neg, num_features), name='input_neg_vec')
 
+    def reshape_embed_prod(embed_prod):
+        embed_prod2 = K.sum(K.square(embed_prod), axis=2)
+        embed_prod2 = K.expand_dims(embed_prod2)
+        return embed_prod2
+    
+    '''calc prob'''
+    def calc_prob(x):
+        embed_prod = x[0]
+        embed_user = x[1]
+        embed_prod2 = reshape_embed_prod(embed_prod)
+        
+        embed_user2 = K.sum(K.square(embed_user), axis=2)
+        embed_user2 = K.expand_dims(embed_user2)
+        embed_user2 = K.repeat_elements(embed_user2, max_num_prod, axis=1)
+        
+        embed_prod_x_embed_user = K.batch_dot(embed_prod, embed_user, axes=2)
+        prob = embed_prod2 + embed_user2 - 2*embed_prod_x_embed_user
+        prob = K.squeeze(prob, axis=2)
+        prob = K.exp(-1./(2.*num_features*0.1) * prob)
+        return prob
+    prob = Lambda(calc_prob, name='calc_prob')([embed_prod, embed_user])
+    model_prob = Model([input_prod, input_user], prob)
+    prob_cnfm = Lambda(calc_prob, name='prob_cnfm')([input_prod_vec, input_user_vec])
+    model_prob_cnfm = Model([input_prod_vec, input_user_vec], prob_cnfm)
+    
     def gkernel(x):
         res = K.sum(K.square(x[0]-x[1]), axis=2)
         res = K.exp(-1./(2.*num_features*0.1) * res)
         return res
-    prob = Lambda(gkernel, name='gkernel')([embed_prod, embed_user])
-    prob0 = Lambda(gkernel, name='gkernel')([input_prod_vec, input_user_vec])
-    model_prob0 = Model([input_prod_vec, input_user_vec], prob0)
-
-    def gkernel2(x):
-        landmarks = x[0]
-        landmarks = K.permute_dimensions(landmarks, (1,0,2))
-        negs = x[1]
-        negs = K.permute_dimensions(negs, (1,0,2,3))
-        def fn(ii):
-            lm = K.gather(landmarks, ii)
-            lm = K.expand_dims(lm, axis=1)
-            x = K.gather(negs, ii)
-            res = K.sum(K.square(x-lm), axis=2)
-            return res
-        d2 = K.map_fn(fn, np.arange(max_num_prod), dtype='float32')
-        res = K.exp(-1./(2.*num_features*0.1) * d2)
-        res = K.permute_dimensions(res, (1,0,2))
-        return res
-    prob2 = Lambda(gkernel2, name='gkernel2')([embed_prod, embed_neg])
+    
+    
+    '''calc prob2'''
+    def calc_prob2(x):
+        embed_prod = x[0]
+        embed_neg = x[1]
+        embed_prod2 = reshape_embed_prod(embed_prod)
+        embed_prod2 = K.repeat_elements(embed_prod2, num_neg, axis=2)
+        
+        embed_neg2 = K.sum(K.square(embed_neg), axis=3)
+        
+        embed_prod_x_embed_neg = K.batch_dot(embed_prod, embed_neg, axes=(2,3))
+        prob2 = embed_prod2 + embed_neg2 - 2*embed_prod_x_embed_neg
+        prob2 = K.exp(-1./(2.*num_features*0.1) * prob2)
+        return prob2
+    prob2 = Lambda(calc_prob2, name='calc_prob2')([embed_prod, embed_neg])
     model_prob2 = Model([input_neg, input_prod], prob2)
+    prob2_cnfm = Lambda(calc_prob2, name='calc_prob2_cnfm')([input_prod_vec, input_neg_vec])
+    model_prob2_cnfm = Model([input_prod_vec, input_neg_vec], prob2_cnfm)
     
     prob = concatenate([prob, Flatten()(prob2)])
-    
     model = Model([input_user, input_prod, input_neg], prob)
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     models = {
@@ -628,8 +651,10 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
         'model_neg': model_neg,
         'model_user': model_user,
         'model_prod': model_prod,
+        'model_prob': model_prob,
         'model_prob2': model_prob2,
-        'model_prob0': model_prob0,
+        'model_prob_cnfm': model_prob_cnfm,
+        'model_prob2_cnfm': model_prob2_cnfm,
     }
     return models
 
@@ -657,12 +682,6 @@ def make_model_cor(num_user=20, num_product=100, num_neg=3, max_num_prod=5,
     cor1 = dot([embed_prod, embed_user], axes=2, normalize=True)
     cor1 = Flatten()(cor1)
     model_cor1 = Model([input_user, input_prod], cor1)
-#     return {
-#         'model_neg': model_neg,
-#         'model_user': model_user,
-#         'model_prod': model_prod,
-#         'model_cor1': model_cor1,
-#     }
 
     def fn_cor(x):
         landmarks = x[0]
@@ -778,8 +797,20 @@ class WordAndDoc2vec(object):
         self.model = models['model']
         return models
     
+    def get_seq(self, batch_size=32, shuffle=False, state=None):
+        '''
+        "shuffle" not implemented yet
+        '''
+        seq = Seq(self.dic4seq,
+                  num_neg=self.num_neg,
+                  max_num_prod=self.max_num_prod,
+                  batch_size=batch_size,
+                  shuffle=shuffle, state=state)
+        return seq
+    
     def train(self, epochs=50, batch_size=32, verbose=1, lr=0.001):
-        self.seq = Seq(self.dic4seq, num_neg=self.num_neg, max_num_prod=self.max_num_prod, batch_size=batch_size)
+        #self.seq = Seq(self.dic4seq, num_neg=self.num_neg, max_num_prod=self.max_num_prod, batch_size=batch_size)
+        self.seq = self.get_seq(batch_size)
         print('len(seq) >>>', len(self.seq))
         def get_lr(epoch):
             print(lr)
@@ -787,7 +818,9 @@ class WordAndDoc2vec(object):
         lr_scheduler = LearningRateScheduler(get_lr)
         callbacks = [lr_scheduler]
         self.hst = self.model.fit_generator(self.seq, steps_per_epoch=len(self.seq),
-                          epochs=epochs, verbose=verbose, callbacks=callbacks)
+                                            epochs=epochs,
+                                            verbose=verbose,
+                                            callbacks=callbacks)
     
     def get_wgt_byrow(self):
         wgt_user = self.model.get_layer('user_embedding').get_weights()[0]
