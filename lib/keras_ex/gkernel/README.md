@@ -10,8 +10,6 @@ from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
 from keras.layers import Input, Dense
 from keras.models import Model
 
-np.random.seed(0)
-
 inp = Input(shape=(64,), name='inp')
 oup = GaussianKernel(num_lm, 64, kernel_gamma=1./(2.*64*0.1), weights=[init_wgt], name='gkernel1')(inp)
 oup = Dense(10, activation='softmax')(oup)
@@ -21,6 +19,21 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 model.summary()
 ```
 
+```
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+inp (InputLayer)             (None, 64)                0         
+_________________________________________________________________
+gkernel1 (GaussianKernel)    (None, 100)               6400      
+_________________________________________________________________
+dense_1 (Dense)              (None, 10)                1010      
+=================================================================
+Total params: 7,410
+Trainable params: 7,410
+Non-trainable params: 0
+_________________________________________________________________
+```
 
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
 
