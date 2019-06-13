@@ -1,5 +1,7 @@
 Welcome to GaussianKernel layer page! (keras RBF layer)
 ====
+
+# Getting started
 ```
 pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 ```
@@ -38,6 +40,7 @@ _________________________________________________________________
 [keras RBF layer quick start](https://www.kaggle.com/wordroid/keras-rbf-layer-quick-start) (Kaggle kernel)
 
 
+# Summary
 The GaussianKernel layer is a keras layer that projects to arbitrary high dimensions using the Gaussian kernel. If you need a strong classifier machine with neural network, it is one way to create a network using this layer. The network using this layer will have a very high expressive power.  
 
 [Dense vs. GaussianKernel in moon data](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/%5BGaussianKernel-layer%5D-Dense-vs.-GaussianKernel-in-moon-data)  
