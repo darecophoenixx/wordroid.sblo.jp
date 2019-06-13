@@ -51,10 +51,10 @@ see also [Does RBF kernel (GaussianKernel) with two fixed Landmarks work well in
 
 ![](http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo03_02.png)
 
-## Requirement
+# Requirement
 Keras
 
-## Demo
+# Demo
 ### [demo01](demo/demo01.ipynb)
 ([nbviewer](https://nbviewer.jupyter.org/github/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/demo/demo01.ipynb))
 
@@ -150,7 +150,7 @@ Dense(64, activation='sigmoid')
 ```
 <img src="http://yunopon.sakura.ne.jp/sblo_files/wordroid/image/demo_digit_AE_01.png" width="320px">
 
-## Usage
+# Usage
 ### GaussianKernel
 ```python
 GaussianKernel(num_landmark=20, num_feature=5, kernel_gamma='auto')
@@ -189,7 +189,7 @@ depth of landmark
 equal to inputs.shape\[1]  
 
 
-## Licence
+# Licence
 Copyright (c) 2018 Norio Tamada  
 Released under the MIT license  
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
