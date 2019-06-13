@@ -195,5 +195,5 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 
 
-## Author
+# Author
 [darecophoenixx](https://github.com/darecophoenixx)
