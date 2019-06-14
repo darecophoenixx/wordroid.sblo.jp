@@ -26,6 +26,7 @@ from keras import regularizers
 from keras import initializers
 from keras.metrics import categorical_accuracy
 from keras.constraints import maxnorm, non_neg
+from keras.utils import Sequence
 from keras import backend as K
 
 __all__ = ['WordAndDoc2vec', ]
@@ -565,6 +566,21 @@ class Seq(object):
             np.array(y))
 
 
+class Seq2(Sequence):
+    
+    def __init__(self, seq):
+        self.seq = seq
+    
+    def __len__(self):
+        return len(self.seq)
+    
+    def __getitem__(self, idx):
+        bs = self.seq.batch_size
+        user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
+        res = self.seq.getpart(user_part)
+        return res
+
+
 def make_model(num_user=20, num_product=10, max_num_prod=5,
                num_neg=3, num_features=8, gamma=0.0,
                embeddings_val=0.5):
@@ -808,19 +824,20 @@ class WordAndDoc2vec(object):
                   shuffle=shuffle, state=state)
         return seq
     
-    def train(self, epochs=50, batch_size=32, verbose=1, lr=0.001):
+    def train(self, epochs=50, batch_size=32, verbose=1,
+              use_multiprocessing=False, workers=1,
+              callbacks=None):
         #self.seq = Seq(self.dic4seq, num_neg=self.num_neg, max_num_prod=self.max_num_prod, batch_size=batch_size)
         self.seq = self.get_seq(batch_size)
         print('len(seq) >>>', len(self.seq))
-        def get_lr(epoch):
-            print(lr)
-            return lr
-        lr_scheduler = LearningRateScheduler(get_lr)
-        callbacks = [lr_scheduler]
-        self.hst = self.model.fit_generator(self.seq, steps_per_epoch=len(self.seq),
+        self.seq2 = Seq2(self.seq)
+        
+        self.hst = self.model.fit_generator(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
-                                            callbacks=callbacks)
+                                            callbacks=callbacks,
+                                            use_multiprocessing=use_multiprocessing,
+                                            workers=workers)
     
     def get_wgt_byrow(self):
         wgt_user = self.model.get_layer('user_embedding').get_weights()[0]
