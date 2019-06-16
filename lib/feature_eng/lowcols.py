@@ -99,7 +99,8 @@ from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     BatchNormalization
 from keras.models import Model, Sequential
 from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History
+from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
+    LearningRateScheduler
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras import regularizers
 from keras import initializers
@@ -204,6 +205,15 @@ class WD2vec(object):
     def train(self, epochs=5, batch_size=32, verbose=1,
               use_multiprocessing=False, workers=1,
               callbacks=None):
+        def lr_schedule(epoch, lr, epochs=epochs, lr0=0.01, base=8):
+            b = 1 / np.log((epochs-1+np.exp(1)))
+            a = 1 / np.log((epoch+np.exp(1))) / (1-b) - b/(1-b)
+            lr = a*(1-1/base)*lr0 + lr0/base
+            print('Learning rate: ', lr)
+            return lr
+        if callbacks is None:
+            lr_scheduler = LearningRateScheduler(lr_schedule)
+            callbacks = [lr_scheduler]
         model = self.models['model']
         res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
                                   epochs=epochs,
