@@ -635,12 +635,6 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     prob_cnfm = Lambda(calc_prob, name='prob_cnfm')([input_prod_vec, input_user_vec])
     model_prob_cnfm = Model([input_prod_vec, input_user_vec], prob_cnfm)
     
-    def gkernel(x):
-        res = K.sum(K.square(x[0]-x[1]), axis=2)
-        res = K.exp(-1./(2.*num_features*0.1) * res)
-        return res
-    
-    
     '''calc prob2'''
     def calc_prob2(x):
         embed_prod = x[0]
