@@ -202,11 +202,13 @@ class WD2vec(object):
         return self.models
     
     def train(self, epochs=5, batch_size=32, verbose=1,
-              use_multiprocessing=False, workers=1):
+              use_multiprocessing=False, workers=1,
+              callbacks=None):
         model = self.models['model']
         res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
                                   epochs=epochs,
-                                  verbose=verbose)
+                                  verbose=verbose,
+                                  callbacks=callbacks)
         return res
     
     def get_wgt_byrow(self):
