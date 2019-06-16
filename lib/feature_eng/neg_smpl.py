@@ -838,6 +838,7 @@ class WordAndDoc2vec(object):
                                             callbacks=callbacks,
                                             use_multiprocessing=use_multiprocessing,
                                             workers=workers)
+        return self.hst
     
     def get_wgt_byrow(self):
         wgt_user = self.model.get_layer('user_embedding').get_weights()[0]
