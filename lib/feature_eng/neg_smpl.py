@@ -821,11 +821,19 @@ class WordAndDoc2vec(object):
     def train(self, epochs=50, batch_size=32, verbose=1,
               use_multiprocessing=False, workers=1,
               callbacks=None):
-        #self.seq = Seq(self.dic4seq, num_neg=self.num_neg, max_num_prod=self.max_num_prod, batch_size=batch_size)
         self.seq = self.get_seq(batch_size)
         print('len(seq) >>>', len(self.seq))
         self.seq2 = Seq2(self.seq)
         
+        def lr_schedule(epoch, lr, epochs=epochs, lr0=0.02, base=8):
+            b = 1 / np.log((epochs-1+np.exp(1)))
+            a = 1 / np.log((epoch+np.exp(1))) / (1-b) - b/(1-b)
+            lr = a*(1-1/base)*lr0 + lr0/base
+            print('Learning rate: ', lr)
+            return lr
+        if callbacks is None:
+            lr_scheduler = LearningRateScheduler(lr_schedule)
+            callbacks = [lr_scheduler]
         self.hst = self.model.fit_generator(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
