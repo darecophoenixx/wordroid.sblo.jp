@@ -6,7 +6,7 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gker
 
 import numpy as np
 from keras import initializers, constraints
-from keras.engine.topology import Layer
+from keras.layers import Layer
 from keras import backend as K
 
 class GaussianKernel(Layer):
