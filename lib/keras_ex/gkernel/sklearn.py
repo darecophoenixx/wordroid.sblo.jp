@@ -202,10 +202,15 @@ class RBFBase(object):
             sk_params_org.update({'lm': self.sk_params.get('lm')})
             self.set_params(lm=lm)
         
-        hst = super().fit(x, y, **kwargs)
+        if self.__class__.__name__ == 'RBFRegressor':
+            kwargs.update({'sample_weight': sample_weight})
+            hst = super().fit(x, y, **kwargs)
+        else:
+            hst = super().fit(x, y, sample_weight, **kwargs)
         
         fit_args = copy.deepcopy(self.filter_sk_params(Sequential.fit))
         fit_args.update(kwargs)
+        fit_args.update({'sample_weight': sample_weight})
         
         def lr_schedule2(epoch):
             lr1 = lr / 2
@@ -266,14 +271,76 @@ class RBFBase(object):
 
 
 class RBFClassifier(RBFBase, KerasClassifier):
+    """RBF kernel Classification.
+    
+    Parameters
+    ----------
+    num_lm : int, optional (default=2)
+        number of landmarks
+    lm : array (num_lm, num_features), optional (default=None)
+        initial landmarks
+        if None, set by function `make_model_gkernelX`.
+        if using make_model_gkernel2 for `make_model_gkernelX`,
+        lm is fixed (no train).
+        if using make_model_gkernel3 for `make_model_gkernelX`,
+        lm is trained.
+    lm_select_from_x : bool, optional (default=False)
+        if True, lm are selected from input x.
+    gamma : float or str, optional (default=None)
+        RBF kernel parameter
+        'scale'
+        if using make_model_gkernel2 or make_model_gkernel3 for make_model_gkernel,
+        gamma is trained
+    make_model_gkernel : function, optional (default=make_model_gkernel2)
+        function to configure RBF kernel
+        make_model_gkernel2 : use fixed landmarks
+        make_model_gkernel3 : train landmarks
+    make_model_out : function, optional (default=make_model_out)
+        dense layer just before output
+    reg_l1 : float, optional (default=0.0)
+        regularization parameter.
+    reg_l2 : float, optional (default=0.0)
+        regularization parameter.
+    tol : float, optional (default=1e-3)
+        Tolerance for stopping criterion.
+    activation : str, optional (default='softmax')
+        activation for output
+    loss : str, optional (default='categorical_crossentropy')
+        loss function
+    lr : float, optional (default=0.02)
+        leraning rate
+    random_state : int, RandomState instance or None, optional (default=None)
+        The seed of the pseudo random number generator
+    
+    verbose : int, default: 0
+        param for keras
+    epochs : int, optional (default=1)
+        param for keras
+    batch_size : int, optional (default=32)
+        param for keras
+    
+    """
     
     def __init__(self, build_fn=make_model, **sk_params):
         super().__init__(build_fn, **sk_params)
     
     def fit(self, x, y, sample_weight=None, **kwargs):
+        loss_org = self.sk_params.get('loss', None)
         ### num_cls
-        self.set_params(num_cls=self.sk_params.get('num_cls', y.shape[1]))
+        y = np.array(y)
+        if len(y.shape) == 2 and y.shape[1] > 1:
+            classes_ = np.arange(y.shape[1])
+            if 'loss' in self.sk_params and self.sk_params.get('loss') is None:
+                # use default 'categorical_crossentropy'
+                del self.sk_params['loss']
+        elif (len(y.shape) == 2 and y.shape[1] == 1) or len(y.shape) == 1:
+            classes_ = np.unique(y)
+            if self.sk_params.get('loss') is None:
+                self.set_params(loss='sparse_categorical_crossentropy')
+        n_classes_ = len(classes_)
+        self.set_params(num_cls=self.sk_params.get('num_cls', n_classes_))
         hst = super()._fit(x, y, sample_weight=None, **kwargs)
+        self.set_params(loss=loss_org)
         return hst
 
 class RBFRegressor(RBFBase, KerasRegressor):
