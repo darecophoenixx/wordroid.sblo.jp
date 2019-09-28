@@ -268,6 +268,15 @@ class RBFBase(object):
             if len(ew.shape)==1:
                 c_gamma = ew[0]
         return np.exp(c_gamma)
+    
+    def current_lm(self):
+        model_gkernel = self.model.get_layer('model_gkernel')
+        layer_gkernel = model_gkernel.get_layer('gkernel')
+        try:
+            lm = layer_gkernel.landmarks
+        except:
+            lm = layer_gkernel.get_weights()[0]
+        return lm
 
 
 class RBFClassifier(RBFBase, KerasClassifier):
