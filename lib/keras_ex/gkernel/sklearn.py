@@ -170,7 +170,7 @@ class RBFBase(object):
             #print('scale gamma >', self.sk_params['gamma'])
         
         ### tol
-        tol = self.sk_params.get('tol', np.finfo(np.float32).eps)
+        tol = self.sk_params.get('tol', np.finfo(np.float32).eps*100)
         
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
