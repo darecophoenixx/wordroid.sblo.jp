@@ -201,11 +201,16 @@ class RBFBase(object):
             sk_params_org.update({'lm': self.sk_params.get('lm')})
             self.set_params(lm=lm)
         
+        hst_all = {}
         if self.__class__.__name__ == 'RBFRegressor':
             kwargs.update({'sample_weight': sample_weight})
             hst = super().fit(x, y, **kwargs)
         else:
             hst = super().fit(x, y, sample_weight, **kwargs)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         
         fit_args = copy.deepcopy(self.filter_sk_params(Sequential.fit))
         fit_args.update(kwargs)
@@ -229,38 +234,62 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         # 3
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         # 4
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         # 3
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         # 4
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         hst = self.model.fit(x, y, **fit_args)
+        # update history
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
         
         #print(self.sk_params)
         #print(sk_params_org)
         self.set_params(**sk_params_org)
         #print(self.sk_params)
-        return hst
+        return hst_all
     
     def current_gamma(self):
         for ew in self.model.layers[1].layers[1].get_weights():
