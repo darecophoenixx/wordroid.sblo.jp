@@ -177,7 +177,7 @@ class RBFBase(object):
             lr_reducer = ReduceLROnPlateau(monitor='loss', 
                                factor=1/2,
                                verbose=0,
-                               cooldown=7,
+                               cooldown=5,
                                patience=5,
                                min_lr=lr/64/2)
             #tol = np.sqrt(np.finfo(np.float32).eps)
@@ -376,7 +376,7 @@ class RBFClassifier(RBFBase, KerasClassifier):
                 self.set_params(loss='sparse_categorical_crossentropy')
         n_classes_ = len(classes_)
         self.set_params(num_cls=self.sk_params.get('num_cls', n_classes_))
-        hst = super()._fit(x, y, sample_weight=None, **kwargs)
+        hst = self._fit(x, y, sample_weight=None, **kwargs)
         self.set_params(loss=loss_org)
         return hst
 
