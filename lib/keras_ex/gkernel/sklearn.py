@@ -53,7 +53,6 @@ def make_model_gkernel2(
     if gamma is None:
         gamma = 1/(2*np.sqrt(nn/6)*2)
     weights = [np.log(np.array([gamma]))]
-    #weights = [np.array([gamma])]
     oup = GaussianKernel2(lm, weights=weights, name='gkernel')(oup)
     
     model = Model(inp, oup, name='model_gkernel')
@@ -367,5 +366,5 @@ class RBFRegressor(RBFBase, KerasRegressor):
         ### loss
         self.set_params(loss=self.sk_params.get('loss', 'mse'))
         
-        hst = super()._fit(x, y, sample_weight=None, **kwargs)
+        hst = self._fit(x, y, sample_weight=None, **kwargs)
         return hst
