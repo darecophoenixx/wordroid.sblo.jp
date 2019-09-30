@@ -229,10 +229,13 @@ class RBFBase(object):
             #print('lr >', lr1)
             return lr1
         
+        batch_size = fit_args.get('batch_size', 32)
+        
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 2
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
@@ -242,6 +245,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 4
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
@@ -251,6 +255,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 8
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
@@ -261,6 +266,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 16
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
@@ -270,6 +276,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 32
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
@@ -279,6 +286,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
+        fit_args['batch_size'] = batch_size * 64
         hst = self.model.fit(x, y, **fit_args)
         # update history
         for k in hst.history:
