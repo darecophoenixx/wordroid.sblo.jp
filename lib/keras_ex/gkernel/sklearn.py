@@ -363,6 +363,7 @@ class RBFClassifier(RBFBase, KerasClassifier):
         param for keras
     batch_size : int, optional (default=32)
         param for keras
+        doubles every stage
     
     """
     
