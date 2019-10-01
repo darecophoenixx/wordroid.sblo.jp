@@ -170,7 +170,8 @@ class RBFBase(object):
             #print('scale gamma >', self.sk_params['gamma'])
         
         ### tol
-        tol = self.sk_params.get('tol', np.finfo(np.float32).eps*100)
+        #tol = self.sk_params.get('tol', np.finfo(np.float32).eps*100)
+        tol = self.sk_params.get('tol', np.sqrt(np.finfo(np.float32).eps))
         
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
@@ -180,9 +181,6 @@ class RBFBase(object):
                                cooldown=0,
                                patience=5,
                                min_lr=lr/64/2)
-            #tol = np.sqrt(np.finfo(np.float32).eps)
-            #tol = np.finfo(np.float32).eps
-            #tol = 0.0
             early_stopping = EarlyStopping(monitor='loss', patience=10, min_delta=tol, restore_best_weights=True)
             callbacks0 = [lr_reducer, early_stopping]
             callbacks = [lr_reducer, early_stopping]
@@ -207,10 +205,7 @@ class RBFBase(object):
             hst = super().fit(x, y, **kwargs)
         else:
             hst = super().fit(x, y, sample_weight, **kwargs)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         
         fit_args = copy.deepcopy(self.filter_sk_params(Sequential.fit))
         fit_args.update(kwargs)
@@ -237,30 +232,21 @@ class RBFBase(object):
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 2
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         # 3
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 4
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         # 4
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 8
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
@@ -268,30 +254,21 @@ class RBFBase(object):
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 16
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         # 3
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 32
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         # 4
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 64
         hst = self.model.fit(x, y, **fit_args)
-        # update history
-        for k in hst.history:
-            hst_all.setdefault(k, [])
-            hst_all[k].extend(hst.history[k])
+        hst_all = self.update_hst_all(hst_all, hst)
         
         #print(self.sk_params)
         #print(sk_params_org)
@@ -299,6 +276,12 @@ class RBFBase(object):
         #print(self.sk_params)
         return hst_all
     
+    def update_hst_all(self, hst_all, hst):
+        for k in hst.history:
+            hst_all.setdefault(k, [])
+            hst_all[k].extend(hst.history[k])
+        return hst_all
+        
     def current_gamma(self):
         for ew in self.model.layers[1].layers[1].get_weights():
             if len(ew.shape)==1:
