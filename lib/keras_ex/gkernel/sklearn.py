@@ -177,13 +177,13 @@ class RBFBase(object):
             lr_reducer = ReduceLROnPlateau(monitor='loss', 
                                factor=1/2,
                                verbose=0,
-                               cooldown=5,
+                               cooldown=0,
                                patience=5,
                                min_lr=lr/64/2)
             #tol = np.sqrt(np.finfo(np.float32).eps)
             #tol = np.finfo(np.float32).eps
             #tol = 0.0
-            early_stopping = EarlyStopping(monitor='loss', patience=5, min_delta=tol, restore_best_weights=True)
+            early_stopping = EarlyStopping(monitor='loss', patience=10, min_delta=tol, restore_best_weights=True)
             callbacks0 = [lr_reducer, early_stopping]
             callbacks = [lr_reducer, early_stopping]
             sk_params_org.update({'callbacks': None})
