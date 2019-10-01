@@ -37,7 +37,7 @@ class GaussianKernel(Layer):
         self.kernel_constraint = constraints.get(kernel_constraint)
 
         # kernel parameter
-        self.kernel_gamma= kernel_gamma
+        self.kernel_gamma = kernel_gamma
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], self.output_dim)
@@ -72,7 +72,17 @@ class GaussianKernel(Layer):
             gamma = 1. / (2. * d_mean**2)
         ret = K.exp(-gamma * ret)
         return ret
-
+    
+    def get_config(self):
+        config = {
+            'num_landmark': self.output_dim,
+            'num_feature': self.num_feature,
+            'kernel_gamma': self.kernel_gamma,
+            'kernel_initializer': initializers.serialize(self.kernel_initializer),
+            'kernel_constraint': constraints.serialize(self.kernel_constraint),
+        }
+        base_config = super(GaussianKernel, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
 
 
 class GaussianKernel2(Layer):
@@ -83,6 +93,8 @@ class GaussianKernel2(Layer):
             fixed landmarks using
         '''
         super(GaussianKernel2, self).__init__(**kwargs)
+        if isinstance(landmarks, (list,)):
+            landmarks = np.array(landmarks)
         self.landmarks = landmarks.astype(np.float32)
         self.num_landmark, self.num_feature = landmarks.shape
         self.output_dim = self.num_landmark
@@ -111,6 +123,13 @@ class GaussianKernel2(Layer):
         ret = x2 + lm2 - 2*xlm
         ret = K.exp(-gamma * ret)
         return ret
+    
+    def get_config(self):
+        config = {
+            'landmarks': self.landmarks,
+        }
+        base_config = super(GaussianKernel2, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
 
 
 class GaussianKernel3(Layer):
@@ -166,5 +185,5 @@ class GaussianKernel3(Layer):
             'num_feature': self.num_feature,
             'kernel_initializer': initializers.serialize(self.kernel_initializer),
         }
-        base_config = super(Dense, self).get_config()
+        base_config = super(GaussianKernel3, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
