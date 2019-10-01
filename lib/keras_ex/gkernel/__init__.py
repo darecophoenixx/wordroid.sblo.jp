@@ -159,4 +159,12 @@ class GaussianKernel3(Layer):
         ret = x2 + lm2 - 2*xlm
         ret = K.exp(-gamma * ret)
         return ret
-
+    
+    def get_config(self):
+        config = {
+            'num_landmark': self.output_dim,
+            'num_feature': self.num_feature,
+            'kernel_initializer': initializers.serialize(self.kernel_initializer),
+        }
+        base_config = super(Dense, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))
