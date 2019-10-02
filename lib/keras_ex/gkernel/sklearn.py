@@ -224,6 +224,7 @@ class RBFBase(object):
             #print('lr >', lr1)
             return lr1
         
+        epochs = fit_args.get('epochs', 1)
         batch_size = fit_args.get('batch_size', 32)
         
         # 2
@@ -231,6 +232,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 2
+        fit_args['epochs'] = epochs * 2
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         # 3
@@ -238,6 +240,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 4
+        fit_args['epochs'] = epochs * 4
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         # 4
@@ -245,6 +248,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 8
+        fit_args['epochs'] = epochs * 8
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         
@@ -253,6 +257,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 16
+        fit_args['epochs'] = epochs * 4
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         # 3
@@ -260,6 +265,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 32
+        fit_args['epochs'] = epochs * 8
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         # 4
@@ -267,6 +273,7 @@ class RBFBase(object):
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
         fit_args['batch_size'] = batch_size * 64
+        fit_args['epochs'] = epochs * 16
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         
