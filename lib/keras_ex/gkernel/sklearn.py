@@ -93,6 +93,7 @@ def make_model_out(
     model = Model(inp, oup, name='model_out')
     return model
 
+DEFAULT_LR = 0.05
 def make_model(
     make_model_gkernel=make_model_gkernel2,
     make_model_out=make_model_out,
@@ -101,7 +102,7 @@ def make_model(
     num_lm=2, lm=None, gamma=None,
     random_state=None,
     num_cls=2, activation='softmax',
-    opt=0.02, lr=0.02,
+    opt=0.02, lr=DEFAULT_LR,
     loss='categorical_crossentropy',
     session_clear=True,
     #gkernel_multipliers=1.0,
@@ -157,7 +158,7 @@ class RBFBase(object):
         
         ### learning_rate
         if self.sk_params.get('lr') is None:
-            lr = 0.02 # default lr
+            lr = DEFAULT_LR # default lr
             sk_params_org.update({'lr': None})
             self.set_params(lr=lr)
         else:
