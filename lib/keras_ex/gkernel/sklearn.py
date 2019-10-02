@@ -171,7 +171,7 @@ class RBFBase(object):
         
         ### tol
         #tol = self.sk_params.get('tol', np.finfo(np.float32).eps*100)
-        tol = self.sk_params.get('tol', np.sqrt(np.finfo(np.float32).eps))
+        tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)/2))
         
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
