@@ -343,12 +343,12 @@ class RBFClassifier(RBFBase, KerasClassifier):
         activation for output
     loss : str, optional (default='categorical_crossentropy')
         loss function
-    lr : float, optional (default=0.02)
-        leraning rate
+    lr : float, optional (default=0.05)
+        learning rate
     random_state : int, RandomState instance or None, optional (default=None)
         The seed of the pseudo random number generator
     
-    verbose : int, default: 0
+    verbose : int, default: 1
         param for keras
     epochs : int, optional (default=1)
         param for keras
