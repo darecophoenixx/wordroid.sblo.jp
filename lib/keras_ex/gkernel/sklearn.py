@@ -94,6 +94,8 @@ def make_model_out(
     return model
 
 DEFAULT_LR = 0.05
+DEFAULT_LOSS = 'categorical_crossentropy'
+DEFAULT_EPOCHS_WARMUP = 10
 def make_model(
     make_model_gkernel=make_model_gkernel2,
     make_model_out=make_model_out,
@@ -103,11 +105,12 @@ def make_model(
     random_state=None,
     num_cls=2, activation='softmax',
     opt=0.02, lr=DEFAULT_LR,
-    loss='categorical_crossentropy',
+    loss=DEFAULT_LOSS,
     session_clear=True,
     #gkernel_multipliers=1.0,
     lm_select_from_x=None,
-    tol=None
+    tol=None,
+    epochs_warmup=DEFAULT_EPOCHS_WARMUP
 ):
     if session_clear:
         K.clear_session()
@@ -116,31 +119,20 @@ def make_model(
         nn=nn, num_lm=num_lm,
         random_state=random_state, lm=lm, gamma=gamma
     )
+    model_gkernel.trainable = False
+    
     model_out = make_model_out(
         num_lm=num_lm, num_cls=num_cls,
         activation=activation,
         reg_l1=reg_l1, reg_l2=reg_l2,
         random_state=random_state
     )
-    #model_gkernel.summary()
-    #model_out.summary()
     
     inp = model_gkernel.inputs[0]
     oup = model_gkernel(inp)
     oup = model_out(oup)
     
     model = Model(inp, oup)
-    #model.summary()
-#     if isinstance(opt, float):
-#         opt = Adam(opt)
-#     learning_rate_multipliers = {
-#         'gkernel': gkernel_multipliers,
-#     }
-#     print(learning_rate_multipliers)
-#     opt = Adam_lr_mult(
-#         lr,
-#         multipliers=learning_rate_multipliers,
-#         debug_verbose=False)
     opt = Adam(lr)
     model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
     return model
@@ -150,6 +142,9 @@ class RBFBase(object):
     
     def _fit(self, x, y, sample_weight=None, **kwargs):
         sk_params_org = copy.deepcopy(self.sk_params)
+        
+        ### epochs_warmup
+        sk_params_org.update({'epochs_warmup': self.sk_params.get('epochs_warmup', DEFAULT_EPOCHS_WARMUP)})
         
         ### nn
         nn = x.shape[1]
@@ -168,10 +163,8 @@ class RBFBase(object):
         if self.sk_params.get('gamma') == 'scale':
             sk_params_org.update({'gamma': 'scale'})
             self.set_params(gamma=1 / (nn * x.var()))
-            #print('scale gamma >', self.sk_params['gamma'])
         
         ### tol
-        #tol = self.sk_params.get('tol', np.finfo(np.float32).eps*100)
         tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)/2))
         
         ### callbacks
@@ -192,7 +185,6 @@ class RBFBase(object):
             callbacks = self.sk_params['callbacks']
         
         ### lm_select_from_x
-        #print('''self.sk_params.get('lm_select_from_x') >''', self.sk_params.get('lm_select_from_x'))
         if self.sk_params.get('lm_select_from_x'):
             random_state = self.sk_params.get('random_state')
             rs = np.random.RandomState(random_state)
@@ -200,7 +192,17 @@ class RBFBase(object):
             sk_params_org.update({'lm': self.sk_params.get('lm')})
             self.set_params(lm=lm)
         
+        
+        
+        epochs = kwargs.get('epochs', self.sk_params.get('epochs', 1))
+        batch_size = kwargs.get('batch_size', self.sk_params.get('batch_size', 32))
+        
+        ##############################
+        # === warm up train
+        ##############################
+        epochs_warmup = self.sk_params.get('epochs_warmup', DEFAULT_EPOCHS_WARMUP)
         hst_all = {}
+        kwargs.update({'epochs': epochs_warmup})
         if self.__class__.__name__ == 'RBFRegressor':
             kwargs.update({'sample_weight': sample_weight})
             hst = super().fit(x, y, **kwargs)
@@ -208,9 +210,21 @@ class RBFBase(object):
             hst = super().fit(x, y, sample_weight, **kwargs)
         hst_all = self.update_hst_all(hst_all, hst)
         
+        ##############################
+        # === start train
+        ##############################
+        model_gkernel = self.model.get_layer('model_gkernel')
+        model_gkernel.trainable = True
+        opt = Adam(lr)
+        loss = self.sk_params.get('loss', DEFAULT_LOSS)
+        self.model.compile(optimizer=opt, loss=loss, metrics=['accuracy'])
+        
+        kwargs.update({'epochs': epochs}) # modosu
         fit_args = copy.deepcopy(self.filter_sk_params(Sequential.fit))
         fit_args.update(kwargs)
         fit_args.update({'sample_weight': sample_weight})
+        hst = self.model.fit(x, y, **fit_args)
+        hst_all = self.update_hst_all(hst_all, hst)
         
         def lr_schedule2(epoch):
             lr1 = lr / 2
@@ -224,9 +238,6 @@ class RBFBase(object):
             lr1 = lr / 8
             #print('lr >', lr1)
             return lr1
-        
-        epochs = fit_args.get('epochs', 1)
-        batch_size = fit_args.get('batch_size', 32)
         
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
@@ -278,10 +289,7 @@ class RBFBase(object):
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         
-        #print(self.sk_params)
-        #print(sk_params_org)
         self.set_params(**sk_params_org)
-        #print(self.sk_params)
         return hst_all
     
     def update_hst_all(self, hst_all, hst):
