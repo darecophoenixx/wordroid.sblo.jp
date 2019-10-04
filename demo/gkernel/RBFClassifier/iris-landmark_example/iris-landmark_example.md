@@ -1,6 +1,6 @@
 *  [no parameters](#no-parameters)
 *  [set landmarks manually](#set-landmarks-manually)
-*  [set landmarks manually (2)](#set-landmarks-manually-(2))
+*  [set landmarks manually (2)](#set-landmarks-manually-2)
 *  [set landmarks automatically on input x](#set-landmarks-automatically-on-input-x)
 *  [by default, landmarks are not trained](#by-default,-landmarks-are-not-trained)
 *  [use 'make_model_gkernel3' to train lm](#use-'make_model_gkernel3'-to-train-lm)
