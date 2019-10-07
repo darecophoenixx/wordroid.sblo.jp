@@ -325,38 +325,40 @@ class RBFClassifier(RBFBase, KerasClassifier):
     ----------
     num_lm : int, optional (default=2)
         number of landmarks
-    lm : array (num_lm, num_features), optional (default=None)
+    lm : array shape (num_lm, num_features), optional (default=None)
         initial landmarks
-        if None, set by function `make_model_gkernelX`.
-        if using make_model_gkernel2 for `make_model_gkernelX`,
-        lm is fixed (no train).
-        if using make_model_gkernel3 for `make_model_gkernelX`,
-        lm is trained.
+        if set make_model_gkernel = make_model_gkernel2, lm is not learned, so it is not learned by default
     lm_select_from_x : bool, optional (default=False)
-        if True, lm are selected from input x.
-    gamma : float or str, optional (default=None)
-        RBF kernel parameter
-        'scale'
-        if using make_model_gkernel2 or make_model_gkernel3 for make_model_gkernel,
-        gamma is trained
+        if True, lm are selected from input x
+        even if lm is given, it is ignored
     make_model_gkernel : function, optional (default=make_model_gkernel2)
         function to configure RBF kernel
-        make_model_gkernel2 : use fixed landmarks
-        make_model_gkernel3 : train landmarks
+        make_model_gkernel2 : use fixed landmarks, gamma is learned
+        make_model_gkernel3 : train landmarks and gamma
+        make_model_gkernel1 : use fixed landmarks and gamma, just activation
     make_model_out : function, optional (default=make_model_out)
         dense layer just before output
+    gamma : float or str, optional (default=None)
+        RBF kernel parameter
+        if using make_model_gkernel2 or make_model_gkernel3 for make_model_gkernel, gamma is trained
+        gamma='scale', use 1 / (nn * x.var())
+        gamma=None, use...
+    session_clear : bool, optional (default=True)
+        execute K.clear_session() or not
     reg_l1 : float, optional (default=0.0)
         regularization parameter.
     reg_l2 : float, optional (default=0.0)
         regularization parameter.
-    tol : float, optional (default=1e-3)
-        Tolerance for stopping criterion.
+    tol : float, optional (default=float(np.sqrt(np.finfo(np.float32).eps)))
+        tolerance for stopping criterion
+        tol halves in the middle of learning
     activation : str, optional (default='softmax')
         activation for output
     loss : str, optional (default='categorical_crossentropy')
         loss function
     lr : float, optional (default=0.05)
         learning rate
+        lr decreases with each stage of learning (learning rate annealing)
     random_state : int, RandomState instance or None, optional (default=None)
         The seed of the pseudo random number generator
     
@@ -364,9 +366,15 @@ class RBFClassifier(RBFBase, KerasClassifier):
         param for keras
     epochs : int, optional (default=1)
         param for keras
+        epochs increases with each stage of learning
+    epochs_warmup : int, optional (default=10)
+        epochs for warm-up start
+        set to 0, no warm-up
+        warm-up means that set model_gkernel.trainable=False, just train dense layer
     batch_size : int, optional (default=32)
         param for keras
-        doubles every stage
+        batch_size at initial stage
+        doubles every stage. In the end of the stages, batch_size will be 64 times.
     
     """
     
