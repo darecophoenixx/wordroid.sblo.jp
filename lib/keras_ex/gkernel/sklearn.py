@@ -165,11 +165,12 @@ class RBFBase(object):
             self.set_params(gamma=1 / (nn * x.var()))
         
         ### tol
-        tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)/2))
+        #tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)/2))
+        tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)))
         
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
-            lr_reducer = ReduceLROnPlateau(monitor='loss', 
+            lr_reducer = ReduceLROnPlateau(monitor='loss',
                                factor=1/2,
                                verbose=0,
                                cooldown=0,
@@ -264,6 +265,9 @@ class RBFBase(object):
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         
+        
+        early_stopping = EarlyStopping(monitor='loss', patience=10, min_delta=tol/2, restore_best_weights=True)
+        callbacks0 = [lr_reducer, early_stopping]
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
