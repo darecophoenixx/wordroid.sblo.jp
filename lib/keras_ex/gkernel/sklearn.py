@@ -96,6 +96,7 @@ def make_model_out(
 DEFAULT_LR = 0.05
 DEFAULT_LOSS = 'categorical_crossentropy'
 DEFAULT_EPOCHS_WARMUP = 10
+DEFAULT_BATCHSIZE_INTHEMIDDLE = 32
 def make_model(
     make_model_gkernel=make_model_gkernel2,
     make_model_out=make_model_out,
@@ -108,6 +109,7 @@ def make_model(
     loss=DEFAULT_LOSS,
     session_clear=True,
     #gkernel_multipliers=1.0,
+    batch_size_middle=DEFAULT_BATCHSIZE_INTHEMIDDLE,
     lm_select_from_x=None,
     tol=None,
     epochs_warmup=DEFAULT_EPOCHS_WARMUP
@@ -142,6 +144,7 @@ class RBFBase(object):
     
     def _fit(self, x, y, sample_weight=None, **kwargs):
         sk_params_org = copy.deepcopy(self.sk_params)
+        early_stopping_patience = 7
         
         ### epochs_warmup
         sk_params_org.update({'epochs_warmup': self.sk_params.get('epochs_warmup', DEFAULT_EPOCHS_WARMUP)})
@@ -165,20 +168,24 @@ class RBFBase(object):
             self.set_params(gamma=1 / (nn * x.var()))
         
         ### tol
-        #tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)/2))
         tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)))
-        
+        print('tol >', tol)
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
             lr_reducer = ReduceLROnPlateau(monitor='loss',
                                factor=1/2,
                                verbose=0,
                                cooldown=0,
+                               min_delta=tol*2,
                                patience=5,
-                               min_lr=lr/64/2)
-            early_stopping = EarlyStopping(monitor='loss', patience=10, min_delta=tol, restore_best_weights=True)
-            callbacks0 = [lr_reducer, early_stopping]
-            callbacks = [lr_reducer, early_stopping]
+                               min_lr=lr/64)
+            early_stopping = EarlyStopping(
+                monitor='loss',
+                patience=early_stopping_patience,
+                min_delta=tol,
+                restore_best_weights=True)
+            callbacks0 = [early_stopping]
+            callbacks = callbacks0 + [lr_reducer]
             sk_params_org.update({'callbacks': None})
             self.set_params(callbacks=callbacks)
         else:
@@ -224,6 +231,8 @@ class RBFBase(object):
         fit_args = copy.deepcopy(self.filter_sk_params(Sequential.fit))
         fit_args.update(kwargs)
         fit_args.update({'sample_weight': sample_weight})
+        fit_args['batch_size'] = batch_size
+        fit_args['epochs'] = epochs
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
         
@@ -239,6 +248,33 @@ class RBFBase(object):
             lr1 = lr / 8
             #print('lr >', lr1)
             return lr1
+#        def lr_schedule2(epoch):
+#            div, _ = divmod(epoch,4)
+#            if divmod(div,2)[1] == 1:
+#                lr1 = lr * (1/2)
+#            elif divmod(div,2)[1] == 0:
+#                lr1 = lr * 1
+#            lr1 = lr1 / 2
+#            #print('lr >', lr1)
+#            return lr1
+#        def lr_schedule4(epoch):
+#            div, _ = divmod(epoch,4)
+#            if divmod(div,2)[1] == 1:
+#                lr1 = lr * (1/2)
+#            elif divmod(div,2)[1] == 0:
+#                lr1 = lr * 1
+#            lr1 = lr1 / 4
+#            #print('lr >', lr1)
+#            return lr1
+#        def lr_schedule8(epoch):
+#            div, _ = divmod(epoch,4)
+#            if divmod(div,2)[1] == 1:
+#                lr1 = lr * (1/2)
+#            elif divmod(div,2)[1] == 0:
+#                lr1 = lr * 1
+#            lr1 = lr1 / 8
+#            #print('lr >', lr1)
+#            return lr1
         
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
@@ -266,8 +302,12 @@ class RBFBase(object):
         hst_all = self.update_hst_all(hst_all, hst)
         
         
-        early_stopping = EarlyStopping(monitor='loss', patience=10, min_delta=tol/2, restore_best_weights=True)
-        callbacks0 = [lr_reducer, early_stopping]
+        early_stopping = EarlyStopping(
+            monitor='loss',
+            patience=early_stopping_patience,
+            min_delta=tol/2,
+            restore_best_weights=True)
+        callbacks0 = [early_stopping]
         # 2
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
