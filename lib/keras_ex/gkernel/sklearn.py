@@ -169,7 +169,7 @@ class RBFBase(object):
         
         ### tol
         tol = self.sk_params.get('tol', float(np.sqrt(np.finfo(np.float32).eps)))
-        print('tol >', tol)
+        
         ### callbacks
         if self.sk_params.get('callbacks', None) is None:
             lr_reducer = ReduceLROnPlateau(monitor='loss',
