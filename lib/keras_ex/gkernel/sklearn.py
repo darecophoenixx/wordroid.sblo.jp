@@ -107,7 +107,7 @@ def make_model(
     num_cls=2, activation='softmax',
     opt=0.02, lr=DEFAULT_LR,
     loss=DEFAULT_LOSS,
-    session_clear=True,
+    session_clear=False,
     #gkernel_multipliers=1.0,
     batch_size_middle=DEFAULT_BATCHSIZE_INTHEMIDDLE,
     lm_select_from_x=None,
@@ -383,7 +383,7 @@ class RBFClassifier(RBFBase, KerasClassifier):
         if using make_model_gkernel2 or make_model_gkernel3 for make_model_gkernel, gamma is trained
         gamma='scale', use 1 / (nn * x.var())
         gamma=None, use...
-    session_clear : bool, optional (default=True)
+    session_clear : bool, optional (default=False)
         execute K.clear_session() or not
     reg_l1 : float, optional (default=0.0)
         regularization parameter.
