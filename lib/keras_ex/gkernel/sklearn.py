@@ -312,7 +312,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule2)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
-        fit_args['batch_size'] = batch_size * 16
+        fit_args['batch_size'] = batch_size * 2
         fit_args['epochs'] = epochs * 4
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
@@ -320,7 +320,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule4)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
-        fit_args['batch_size'] = batch_size * 32
+        fit_args['batch_size'] = batch_size * 4
         fit_args['epochs'] = epochs * 8
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
@@ -328,7 +328,7 @@ class RBFBase(object):
         lr_scheduler = LearningRateScheduler(lr_schedule8)
         callbacks = callbacks0 + [lr_scheduler]
         fit_args['callbacks'] = callbacks
-        fit_args['batch_size'] = batch_size * 64
+        fit_args['batch_size'] = batch_size * 8
         fit_args['epochs'] = epochs * 16
         hst = self.model.fit(x, y, **fit_args)
         hst_all = self.update_hst_all(hst_all, hst)
