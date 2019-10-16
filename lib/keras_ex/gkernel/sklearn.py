@@ -95,7 +95,7 @@ def make_model_out(
 
 DEFAULT_LR = 0.05
 DEFAULT_LOSS = 'categorical_crossentropy'
-DEFAULT_EPOCHS_WARMUP = 10
+DEFAULT_EPOCHS_WARMUP = 3
 DEFAULT_BATCHSIZE_INTHEMIDDLE = 32
 def make_model(
     make_model_gkernel=make_model_gkernel2,
