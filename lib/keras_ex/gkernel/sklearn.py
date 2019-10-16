@@ -436,7 +436,7 @@ class RBFClassifier(RBFBase, KerasClassifier):
                 self.set_params(loss='sparse_categorical_crossentropy')
         n_classes_ = len(classes_)
         self.set_params(num_cls=self.sk_params.get('num_cls', n_classes_))
-        hst = self._fit(x, y, sample_weight=None, **kwargs)
+        hst = self._fit(x, y, sample_weight=sample_weight, **kwargs)
         self.set_params(loss=loss_org)
         return hst
 
@@ -455,5 +455,5 @@ class RBFRegressor(RBFBase, KerasRegressor):
         ### loss
         self.set_params(loss=self.sk_params.get('loss', 'mse'))
         
-        hst = self._fit(x, y, sample_weight=None, **kwargs)
+        hst = self._fit(x, y, sample_weight=sample_weight, **kwargs)
         return hst
