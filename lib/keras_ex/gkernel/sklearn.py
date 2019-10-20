@@ -513,7 +513,7 @@ class SimpleRBFClassifier(BaseEstimator, ClassifierMixin):
                 self.gamma = 1 / (2 * d2_median)
             elif self.init_gamma == 'scale3':
                 d2_median = self.calc_gamma_d2_median()
-                self.gamma = 1 / (2 * d2_median / LM.shape[1])
+                self.gamma = 1 / (2 * d2_median / self.lm.shape[1])
         else:
             self.gamma = self.init_gamma
         
