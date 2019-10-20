@@ -555,4 +555,6 @@ class SimpleRBFClassifier(BaseEstimator, ClassifierMixin):
         d_2 = -2*x.dot(lm.T)
         d_2 += x_2
         d_2 += lm_2
-        return np.exp(-gamma * d_2)
+        np.multiply(-gamma, d_2, out=d_2)
+        np.exp(d_2, out=d_2)
+        return d_2
