@@ -19,6 +19,10 @@ from keras.layers import Input, Dense
 from keras import regularizers
 from keras import backend as K
 
+from sklearn.cluster import MiniBatchKMeans, KMeans
+from sklearn.linear_model import LogisticRegression, SGDClassifier, Perceptron
+from sklearn.base import BaseEstimator, ClassifierMixin
+
 
 def make_model_gkernel1(
     nn=4, num_lm=2,
@@ -457,3 +461,98 @@ class RBFRegressor(RBFBase, KerasRegressor):
         
         hst = self._fit(x, y, sample_weight=sample_weight, **kwargs)
         return hst
+
+class SimpleRBFClassifier(BaseEstimator, ClassifierMixin):
+    
+    def __init__(self,
+                 num_lm=2,
+                 init_lm=None,
+                 init_gamma=None,
+                 logit=None,
+                 random_state=None
+                ):
+        if logit is None:
+            self.logit = LogisticRegression(penalty='none', solver='lbfgs', random_state=random_state)
+        else:
+            self.logit = logit
+        self.num_lm = num_lm
+        self.init_lm = init_lm
+        self.init_gamma = init_gamma
+        self.random_state = random_state
+    
+    def _initialize_lm(self, X, y, sample_weight=None):
+        if self.init_lm is None:
+            self.init_lm = KMeans(n_clusters=self.num_lm, random_state=self.random_state)
+        if hasattr(self.init_lm, '__array__'):
+            self.lm = self.init_lm
+        elif self.init_lm == 'select_from_x':
+            rs = np.random.RandomState(self.random_state)
+            self.lm = X[rs.choice(np.arange(X.shape[0]), self.num_lm, replace=False)]
+        else:
+            '''fit kmeans'''
+            self.init_lm.fit(X, sample_weight=sample_weight)
+            self.lm = self.init_lm.cluster_centers_
+    
+    def calc_gamma_scale1(self):
+        return 1 / (self.lm.var()*self.lm.shape[1])
+    
+    def calc_gamma_d2_median(self):
+        d2 = -2*self.lm.dot(self.lm.T) + 2*np.square(self.lm).sum(axis=1)
+        d2_median = np.median([d2[ii, jj] for ii in range(d2.shape[0]) for jj in range(d2.shape[0]) if ii<jj])
+        return d2_median
+    
+    def _initialize_gamma(self, X, y, sample_weight=None):
+        self.gamma = None
+        if self.init_gamma is None:
+            self.gamma = self.calc_gamma_scale1()
+        elif isinstance(self.init_gamma, str):
+            if self.init_gamma == 'scale1':
+                self.gamma = self.calc_gamma_scale1()
+            elif self.init_gamma == 'scale2':
+                d2_median = self.calc_gamma_d2_median()
+                self.gamma = 1 / (2 * d2_median)
+            elif self.init_gamma == 'scale3':
+                d2_median = self.calc_gamma_d2_median()
+                self.gamma = 1 / (2 * d2_median / LM.shape[1])
+        else:
+            self.gamma = self.init_gamma
+        
+    def _initialize(self, X, y, sample_weight=None):
+        self._initialize_lm(X, y, sample_weight)
+        self._initialize_gamma(X, y, sample_weight)
+    
+    def _get_n_classes(self, y):
+        y = np.array(y)
+        if len(y.shape) == 2 and y.shape[1] > 1:
+            classes_ = np.arange(y.shape[1])
+        elif (len(y.shape) == 2 and y.shape[1] == 1) or len(y.shape) == 1:
+            classes_ = np.unique(y)
+        n_classes_ = len(classes_)
+        return classes_, n_classes_
+    
+    def fit(self, X, y, sample_weight=None, **kwargs):
+        self.classes_, self.n_classes_ = self._get_n_classes(y)
+        self._initialize(X, y, sample_weight)
+        X2 = self.calc_gauss(X)
+        self.logit.fit(X2, y, sample_weight=sample_weight)
+        return self
+    
+    def predict_proba(self, x, **kwargs):
+        x2 = self.calc_gauss(x)
+        return self.logit.predict_proba(x2)
+    
+    def predict(self, x, **kwargs):
+        x2 = self.calc_gauss(x)
+        return self.logit.predict(x2)
+    
+    def calc_gauss(self, x, lm=None, gamma=None):
+        if lm is None:
+            lm = self.lm
+        if gamma is None:
+            gamma = self.gamma
+        x_2 = np.square(x).sum(axis=1).reshape((-1,1))
+        lm_2 = np.square(lm).sum(axis=1).reshape((1,-1))
+        d_2 = -2*x.dot(lm.T)
+        d_2 += x_2
+        d_2 += lm_2
+        return np.exp(-gamma * d_2)
