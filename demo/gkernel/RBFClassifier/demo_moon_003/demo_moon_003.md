@@ -1,4 +1,15 @@
 ## Compare different classifier with moon2 data
+* prepare moon data
+* Getting Started with RBFClassifier
+* select landmarks on input x
+* select landmarks on input x and train landmarks
+* Select initial LM with Gaussian Mixture Model
+* validation_curve + RBFClassifier
+* LogisticRegression
+* LGBMClassifier
+* Bagging + SimpleRBFClassifier + logit
+* Bagging + SimpleRBFClassifier + DecisionTree
+* RandomForest
 
 
 ```python
@@ -2773,11 +2784,6 @@ plt.scatter(xtrain[:,0], xtrain[:,1], c=ytrain, cmap=cm_bright, edgecolors='k')
 
 ![png](output_138_1.png)
 
-
-
-```python
-
-```
 
 
 ```python
