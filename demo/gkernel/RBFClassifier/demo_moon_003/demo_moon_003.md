@@ -2182,8 +2182,8 @@ ens_clf.fit(xtrain, ytrain)
     Building estimator 28 of 30 for this parallel run (total 30)...
     Building estimator 29 of 30 for this parallel run (total 30)...
     Building estimator 30 of 30 for this parallel run (total 30)...
-    CPU times: user 359 ms, sys: 6.01 ms, total: 365 ms
-    Wall time: 363 ms
+    CPU times: user 353 ms, sys: 1.86 ms, total: 355 ms
+    Wall time: 352 ms
 
 
     [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
@@ -2225,7 +2225,7 @@ ens_clf.estimators_[0].gamma
 
 
 
-    0.6409423907622622
+    0.8187068848641093
 
 
 
@@ -2235,36 +2235,36 @@ for iest in ens_clf.estimators_:
     print(f1_score(ytrain, iest.predict(xtrain), average='macro'))
 ```
 
-    0.9959935897435898
+    0.9959922409785344
+    0.9886453451481114
+    0.9946586808009843
+    0.9933219242118534
+    0.9913216657951246
+    0.9913216657951246
     0.9939913234710923
-    0.9913189768501598
-    0.9926528703899545
-    0.9919844819570689
-    0.9899834348271075
-    0.9939907029497637
-    0.9933240285126292
-    0.9879866518353726
-    0.9946575393694828
-    0.9946592228101033
-    0.9919871794871795
-    0.9899855391184871
-    0.9886478928040552
-    0.9893113670049025
-    0.9933246821213626
-    0.9919871794871795
-    0.9953256029193168
-    0.9939880054027792
-    0.9906526914017224
-    0.9886478928040552
-    0.9899855391184871
-    0.9926537078072386
-    0.9906526914017224
-    0.9853082332660776
-    0.9913160078040144
+    0.9873095034008303
+    0.9886491055717758
+    0.986643848423707
+    0.9946569399226325
+    0.9926574999632876
+    0.9873150162167503
+    0.9879832513227325
     0.9933233510012303
-    0.9926553036052665
-    0.9913170286426735
-    0.9933204016308907
+    0.9913180183176458
+    0.9873137062272788
+    0.9933246821213626
+    0.990648562283247
+    0.9886502776676187
+    0.9933233510012303
+    0.987308011405867
+    0.9926574999632876
+    0.991988834215155
+    0.9899865374559129
+    0.9879832513227325
+    0.9873123507810029
+    0.9933211749032906
+    0.9946581196581197
+    0.9926537078072386
 
 
 
@@ -2305,18 +2305,18 @@ print(classification_report(yans, ens_clf.predict(xtest)))
 print(confusion_matrix(yans, ens_clf.predict(xtest)))
 ```
 
-    F1_SCORE : 0.9873174999365875
+    F1_SCORE : 0.9893173616019684
                   precision    recall  f1-score   support
     
-               0       0.99      0.98      0.99       780
-               1       0.98      0.99      0.99       720
+               0       0.99      0.99      0.99       780
+               1       0.99      0.99      0.99       720
     
         accuracy                           0.99      1500
        macro avg       0.99      0.99      0.99      1500
     weighted avg       0.99      0.99      0.99      1500
     
-    [[767  13]
-     [  6 714]]
+    [[771   9]
+     [  7 713]]
 
 
     [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
@@ -2359,7 +2359,7 @@ plt.scatter(xtrain[:,0], xtrain[:,1], c=ytrain, cmap=cm_bright, edgecolors='k')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cafb00b8>
+    <matplotlib.collections.PathCollection at 0x7fa9ca808828>
 
 
 
@@ -2394,7 +2394,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9caf7ca20>
+    <matplotlib.collections.PathCollection at 0x7fa9ca7efd68>
 
 
 
@@ -2429,7 +2429,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cad9a668>
+    <matplotlib.collections.PathCollection at 0x7fa9ca4ac5c0>
 
 
 
@@ -2464,7 +2464,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cac1b710>
+    <matplotlib.collections.PathCollection at 0x7fa9ca1f8f60>
 
 
 
