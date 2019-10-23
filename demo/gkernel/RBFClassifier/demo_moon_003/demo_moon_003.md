@@ -76,7 +76,7 @@ from keras_ex.gkernel.sklearn import (
 )
 ```
 
-## prepare moon data
+## Prepare moon data
 
 
 ```python
@@ -438,7 +438,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 ```
 
-## select landmarks on input x
+## Select landmarks on input x
 
 
 ```python
@@ -588,7 +588,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 ```
 
-## select landmarks on input x and train landmarks
+## Select landmarks on input x and train landmarks
 
 
 ```python
@@ -931,7 +931,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 ```
 
-## validation_curve + RBFClassifier
+## Validation curve + RBFClassifier
 * looking for valid num_lm
 
 
