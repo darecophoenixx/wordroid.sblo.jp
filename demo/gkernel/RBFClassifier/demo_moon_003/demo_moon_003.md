@@ -1,10 +1,10 @@
 ## Compare different classifier with moon2 data
-* prepare moon data
+* Prepare moon data
 * Getting Started with RBFClassifier
-* select landmarks on input x
-* select landmarks on input x and train landmarks
+* Select landmarks on input x
+* Select landmarks on input x and train landmarks
 * Select initial LM with Gaussian Mixture Model
-* validation_curve + RBFClassifier
+* Validation curve + RBFClassifier
 * LogisticRegression
 * LGBMClassifier
 * Bagging + SimpleRBFClassifier + logit
