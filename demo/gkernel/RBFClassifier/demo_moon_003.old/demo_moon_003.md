@@ -2135,7 +2135,7 @@ num_lm = 30
 ens_clf = BaggingClassifier(
     SimpleRBFClassifier(
         num_lm=num_lm,
-        logit = DecisionTreeClassifier(),
+        logit = DecisionTreeClassifier(max_leaf_nodes=int(num_lm/2)),
         init_lm='select_from_x'
     ),
     n_estimators=30,
@@ -2182,8 +2182,8 @@ ens_clf.fit(xtrain, ytrain)
     Building estimator 28 of 30 for this parallel run (total 30)...
     Building estimator 29 of 30 for this parallel run (total 30)...
     Building estimator 30 of 30 for this parallel run (total 30)...
-    CPU times: user 359 ms, sys: 6.01 ms, total: 365 ms
-    Wall time: 363 ms
+    CPU times: user 373 ms, sys: 973 µs, total: 374 ms
+    Wall time: 366 ms
 
 
     [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.4s remaining:    0.0s
@@ -2199,7 +2199,7 @@ ens_clf.fit(xtrain, ytrain)
                                                                                       criterion='gini',
                                                                                       max_depth=None,
                                                                                       max_features=None,
-                                                                                      max_leaf_nodes=None,
+                                                                                      max_leaf_nodes=15,
                                                                                       min_impurity_decrease=0.0,
                                                                                       min_impurity_split=None,
                                                                                       min_samples_leaf=1,
@@ -2225,7 +2225,7 @@ ens_clf.estimators_[0].gamma
 
 
 
-    0.6409423907622622
+    0.8126318934648888
 
 
 
@@ -2235,36 +2235,36 @@ for iest in ens_clf.estimators_:
     print(f1_score(ytrain, iest.predict(xtrain), average='macro'))
 ```
 
-    0.9959935897435898
-    0.9939913234710923
-    0.9913189768501598
-    0.9926528703899545
-    0.9919844819570689
-    0.9899834348271075
-    0.9939907029497637
-    0.9933240285126292
-    0.9879866518353726
-    0.9946575393694828
-    0.9946592228101033
-    0.9919871794871795
-    0.9899855391184871
-    0.9886478928040552
-    0.9893113670049025
-    0.9933246821213626
-    0.9919871794871795
-    0.9953256029193168
-    0.9939880054027792
-    0.9906526914017224
-    0.9886478928040552
-    0.9899855391184871
-    0.9926537078072386
-    0.9906526914017224
-    0.9853082332660776
-    0.9913160078040144
-    0.9933233510012303
+    0.9846474999232375
     0.9926553036052665
-    0.9913170286426735
-    0.9933204016308907
+    0.987308011405867
+    0.9913180183176458
+    0.9886466393384598
+    0.9853098290598291
+    0.9919844819570689
+    0.9846429075382848
+    0.9873123507810029
+    0.9913180183176458
+    0.9679888458911905
+    0.9879752878805154
+    0.9793013101602968
+    0.9886524999432627
+    0.9899845049162728
+    0.9899811868953925
+    0.9886491055717758
+    0.9839807484194338
+    0.9839726181084483
+    0.9859811524382782
+    0.9846395708696807
+    0.9873186737201538
+    0.9846395708696807
+    0.981954887218045
+    0.984630264301539
+    0.9799538135865034
+    0.987308011405867
+    0.9846489208191336
+    0.9859824999299125
+    0.9873137062272788
 
 
 
@@ -2284,18 +2284,18 @@ print(classification_report(ytrain, pred))
 print(confusion_matrix(ytrain, pred))
 ```
 
-    F1_SCORE : 1.0
+    F1_SCORE : 0.9939893972968317
                   precision    recall  f1-score   support
     
-               0       1.00      1.00      1.00       720
-               1       1.00      1.00      1.00       780
+               0       1.00      0.99      0.99       720
+               1       0.99      1.00      0.99       780
     
-        accuracy                           1.00      1500
-       macro avg       1.00      1.00      1.00      1500
-    weighted avg       1.00      1.00      1.00      1500
+        accuracy                           0.99      1500
+       macro avg       0.99      0.99      0.99      1500
+    weighted avg       0.99      0.99      0.99      1500
     
-    [[720   0]
-     [  0 780]]
+    [[714   6]
+     [  3 777]]
 
 
 
@@ -2305,7 +2305,16 @@ print(classification_report(yans, ens_clf.predict(xtest)))
 print(confusion_matrix(yans, ens_clf.predict(xtest)))
 ```
 
-    F1_SCORE : 0.9873174999365875
+    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
+    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
+    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
+    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
+    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
+
+
+    F1_SCORE : 0.9879844278184527
                   precision    recall  f1-score   support
     
                0       0.99      0.98      0.99       780
@@ -2315,17 +2324,10 @@ print(confusion_matrix(yans, ens_clf.predict(xtest)))
        macro avg       0.99      0.99      0.99      1500
     weighted avg       0.99      0.99      0.99      1500
     
-    [[767  13]
+    [[768  12]
      [  6 714]]
 
 
-    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
-    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
-    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
-    [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
-    [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
     [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s remaining:    0.0s
     [Parallel(n_jobs=1)]: Done   1 out of   1 | elapsed:    0.0s finished
 
@@ -2359,7 +2361,7 @@ plt.scatter(xtrain[:,0], xtrain[:,1], c=ytrain, cmap=cm_bright, edgecolors='k')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cafb00b8>
+    <matplotlib.collections.PathCollection at 0x7fa9cdfc4908>
 
 
 
@@ -2394,7 +2396,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9caf7ca20>
+    <matplotlib.collections.PathCollection at 0x7fa9cdfa2208>
 
 
 
@@ -2429,7 +2431,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cad9a668>
+    <matplotlib.collections.PathCollection at 0x7fa9cde159b0>
 
 
 
@@ -2464,7 +2466,7 @@ plt.scatter(lm[:,0], lm[:,1], c='red', s=64, marker='s', edgecolors='w')
 
 
 
-    <matplotlib.collections.PathCollection at 0x7fa9cac1b710>
+    <matplotlib.collections.PathCollection at 0x7fa9cdc97208>
 
 
 
