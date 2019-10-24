@@ -3,8 +3,7 @@
   * Also implements a method to randomly select from input X
 * If gamma is not given, calculate from LM
   * scale1 / scale2 / scale3
-* Baggingで利用する？
-* そこそこ機能する
+
 
 
 ```python
