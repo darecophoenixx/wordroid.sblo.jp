@@ -140,7 +140,9 @@ def make_model(num_user=20, num_product=39, num_features=12,
     
     #init_wgt = initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val)((num_product, num_features))
     init_wgt = (np.random.random_sample((num_product, num_features)) - 0.5) * 2 * embeddings_val
-    weights1 = [init_wgt, np.log(np.array([1./(2.*num_features*0.1)]))]
+    #gamma = 1./(2.*num_features*0.1)
+    gamma = 1./(init_wgt.var() * init_wgt.shape[1])
+    weights1 = [init_wgt, np.log(np.array([gamma]))]
     layer_gk1 = GaussianKernel3(num_product, num_features, name='gkernel1', weights=weights1)
     oup = layer_gk1(embed_user)
     model_gk1 = Model(input_user, oup)
