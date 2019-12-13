@@ -21,6 +21,7 @@ from keras import backend as K
 
 from sklearn.cluster import MiniBatchKMeans, KMeans
 from sklearn.linear_model import LogisticRegression, SGDClassifier, Perceptron
+from sklearn.linear_model import LinearRegression
 from sklearn.base import BaseEstimator, ClassifierMixin
 
 
@@ -558,3 +559,21 @@ class SimpleRBFClassifier(BaseEstimator, ClassifierMixin):
         np.multiply(-gamma, d_2, out=d_2)
         np.exp(d_2, out=d_2)
         return d_2
+    
+    def calc_coef(self):
+        m = LinearRegression()
+        if hasattr(self.logit, 'coef_'):
+            coef_ = self.logit.coef_.mean(axis=0)
+            m.fit(self.lm, coef_.flatten())
+        elif hasattr(self.logit, 'feature_importances_'):
+            m.fit(self.lm, self.logit.feature_importances_.flatten())
+        elif hasattr(self.logit, 'importances_'):
+            m.fit(self.lm, self.logit.importances_.flatten())
+        else:
+            raise AttributeError('self.logit does not have coef_ family...')
+        return m.coef_
+    feature_importances_ = property(calc_coef)
+
+
+
+
