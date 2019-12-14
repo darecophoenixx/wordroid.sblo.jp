@@ -218,6 +218,7 @@ class WD2vec(object):
             callbacks = [lr_scheduler]
         model = self.models['model']
         res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
+                                  batch_size=batch_size,
                                   epochs=epochs,
                                   verbose=verbose,
                                   callbacks=callbacks)
