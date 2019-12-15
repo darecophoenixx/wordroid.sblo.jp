@@ -908,4 +908,14 @@ class WordAndDoc2vec(object):
         return sim
     sim = property(get_sim)
 
-
+def get_sim(wgt_row, doc_dic, wgt_col, word_dic):
+    wgt_col_unit = np.zeros(shape=wgt_col.shape)
+    for ii in range(wgt_col_unit.shape[0]):
+        wgt_col_unit[ii] = gensim.matutils.unitvec(wgt_col[ii].copy())
+    
+    wgt_row_unit = np.zeros(shape=wgt_row.shape)
+    for ii in range(wgt_row_unit.shape[0]):
+        wgt_row_unit[ii] = gensim.matutils.unitvec(wgt_row[ii].copy())
+    
+    sim = WordAndDocSimilarity(wgt_row_unit, doc_dic, wgt_col_unit, word_dic)
+    return sim
