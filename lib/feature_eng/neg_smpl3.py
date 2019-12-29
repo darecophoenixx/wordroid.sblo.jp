@@ -151,7 +151,7 @@ def debug_print(*args, debug=False):
         print(*args)
 
 def make_model(num_user=20, num_product=10, max_num_prod=5,
-               num_neg=3, num_features=8, gamma=0.0,
+               num_features=8, gamma=0.0,
                maxnorm=3.0, embeddings_val=0.5,
                debug=False
               ):
@@ -239,17 +239,17 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     prob_userXneg_prod = model_prob([embed_user, embed_neg_prod])
     model_userXneg_prod = Model([input_user, input_neg_prod], prob_userXneg_prod, name='model_userXneg_prod')
     
-    debug_print('########## model_userXneg_prod_user', debug=debug)
-    prob_userXneg_prod_user = Lambda(calc_dist2)([embed_neg_prod, embed_neg_prod_user])
-    prob_userXneg_prod_user = Lambda(lambda x: K.exp(-gamma*x))(prob_userXneg_prod_user)
-    model_userXneg_prod_user = Model([input_neg_prod, input_neg_prod_user], prob_userXneg_prod_user, name='model_userXneg_prod_user')
+    debug_print('########## model_neg_prodXneg_prod_user', debug=debug)
+    prob_neg_prodXneg_prod_user = Lambda(calc_dist2)([embed_neg_prod, embed_neg_prod_user])
+    prob_neg_prodXneg_prod_user = Lambda(lambda x: K.exp(-gamma*x))(prob_neg_prodXneg_prod_user)
+    model_neg_prodXneg_prod_user = Model([input_neg_prod, input_neg_prod_user], prob_neg_prodXneg_prod_user, name='model_neg_prodXneg_prod_user')
     
     debug_print('########## model', debug=debug)
     prob_all = concatenate(
         [
             Flatten()(prob_userXprod),
             Flatten()(prob_userXneg_prod),
-            Flatten()(prob_userXneg_prod_user),
+            Flatten()(prob_neg_prodXneg_prod_user),
         ]
     )
     model = Model([input_user, input_prod, input_neg_prod, input_neg_prod_user], prob_all)
@@ -263,7 +263,7 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
         'model_prob': model_prob,
         'model_userXprod': model_userXprod,
         'model_userXneg_prod': model_userXneg_prod,
-        'model_userXneg_prod_user': model_userXneg_prod_user,
+        'model_neg_prodXneg_prod_user': model_neg_prodXneg_prod_user,
         'model': model,
     }
     return models
@@ -359,9 +359,7 @@ class WordAndDoc2vec(object):
                   ):
         self.num_user = len(self.doc_seq)
         self.num_product = self.mysim.index.shape[1]
-        #self.max_num_prod = self.dic4seq.max_count
         self.max_num_prod = max_num_prod
-        #self.num_neg = num_neg
         self.num_features = num_features
         
         models = make_model(num_user=self.num_user, num_product=self.num_product, max_num_prod=self.max_num_prod,
@@ -418,19 +416,6 @@ class WordAndDoc2vec(object):
     
     def get_sim(self):
         return get_sim(self.wgt_row, self.doc_dic, self.wgt_col, self.word_dic)
-    
-#        wgt_col = self.wgt_col
-#        wgt_col_unit = np.zeros(shape=wgt_col.shape)
-#        for ii in range(wgt_col_unit.shape[0]):
-#            wgt_col_unit[ii] = gensim.matutils.unitvec(wgt_col[ii].copy())
-#        
-#        wgt_row = self.wgt_row
-#        wgt_row_unit = np.zeros(shape=wgt_row.shape)
-#        for ii in range(wgt_row_unit.shape[0]):
-#            wgt_row_unit[ii] = gensim.matutils.unitvec(wgt_row[ii].copy())
-#        
-#        sim = WordAndDocSimilarity(wgt_row_unit, self.doc_dic, wgt_col_unit, self.word_dic)
-#        return sim
     sim = property(get_sim)
 
 
