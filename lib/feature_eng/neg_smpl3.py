@@ -113,12 +113,6 @@ class Seq(object):
         ret_y = [1]*self.max_num_prod + [0]*self.max_num_prod + [1]*self.max_num_prod
         return [user_id], prods_id, neg, neg_prod_users, ret_y
     
-#     def get_neg(self, prods):
-#         neg = random.sample(self.smpl, self.num_neg*self.max_num_prod)
-#         neg = np.array(neg).reshape(self.max_num_prod, self.num_neg).tolist()
-#         ret_y = [0]*(self.num_neg*self.max_num_prod)
-#         return (ret_y, neg)
-        
     def get_neg2(self, prods):
         smpl = list(set(self.smpl).difference(prods+[0]))
         neg = random.choices(smpl, k=self.max_num_prod)
@@ -270,41 +264,6 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
 
 class WordAndDoc2vec(object):
     
-#    def __init__(self,
-#                 doc_seq, word_dic, doc_dic,
-#                 logging=False,
-#                 load=False
-#                 ):
-#        if load:
-#            return
-#        self.logging = logging
-#        self.init()
-#        
-#        self.doc_seq = doc_seq
-#        self.word_dic = word_dic
-#        self.doc_dic = doc_dic
-#        
-#        print('len(doc_seq) >>>', len(doc_seq))
-#        print('max(doc_dic.keys()) + 1 >>>', max(doc_dic.keys()) + 1)
-#        if len(doc_seq) != (max(doc_dic.keys()) + 1):
-#            raise IlligalDocIndexException('num of doc_seq is [%s]. But doc_dic is [%s].' % (len(doc_seq), max(doc_dic.keys()) + 1))
-#        
-#        num_features = max(self.word_dic.keys()) + 1
-#        print('num_features >>>', num_features)
-#        
-#        print('### creating corpus_csr...')
-#        corpus_csr = gensim.matutils.corpus2csc((self.word_dic.doc2bow(ee) for ee in self.doc_seq), num_terms=num_features).T
-#        print('corpus_csr.shape >>>', corpus_csr.shape)
-#        
-#        self.create_tfidf(corpus_csr)
-#        print('### creating MySparseMatrixSimilarity...')
-#        #self.mysim = MySparseMatrixSimilarity(corpus_csr, num_features=len(self.word_dic), tfidf=self.tfidf)
-#        self.mysim = MySparseMatrixSimilarity(corpus_csr, num_features=num_features, tfidf=self.tfidf)
-#        print(self.mysim)
-#        
-#        print('### creating Dic4seq...')
-#        self.dic4seq = Dic4seq(self.mysim, self.doc_dic, self.word_dic)
-#        print(self.dic4seq)
     def __init__(self,
                  corpus_csr, word_dic, doc_dic,
                  logging=False
@@ -330,46 +289,6 @@ class WordAndDoc2vec(object):
         print('### creating Dic4seq...')
         self.dic4seq = Dic4seq(self.mysim, self.doc_dic, self.word_dic)
         print(self.dic4seq)
-    
-#    def _create_path(self, path):
-#        path_doc_seq = path + '_doc_seq'
-#        path_word_dic = path + '_word_dic'
-#        path_doc_dic = path + '_doc_dic'
-#        path_mysim = path + '_mysim'
-#        return path_doc_seq, path_word_dic, path_doc_dic, path_mysim
-    
-#    def save(self, path):
-#        '''
-#        word_dic / doc_dic
-#        corpus_csr
-#        '''
-#        
-#        path_doc_seq, path_word_dic, path_doc_dic, path_mysim = self._create_path(path)
-#        with open(path_doc_seq, 'wb') as fw:
-#            import pickle
-#            pickle.dump(self.doc_seq, fw)
-#        self.word_dic.save(path_word_dic)
-#        self.doc_dic.save(path_doc_dic)
-#        self.mysim.save(path_mysim)
-#    
-#    @classmethod
-#    def load(cls, path):
-#        path_doc_seq, path_word_dic, path_doc_dic, path_mysim = cls._create_path(cls, path)
-#        with open(path_doc_seq, 'rb') as f:
-#            import pickle
-#            doc_seq = pickle.load(f)
-#        mysim = MySparseMatrixSimilarity.load(path_mysim)
-#        word_dic = gensim.corpora.dictionary.Dictionary.load(path_word_dic)
-#        doc_dic = gensim.corpora.dictionary.Dictionary.load(path_doc_dic)
-#        
-#        wd2v = WordAndDoc2vec(doc_seq, word_dic, doc_dic, load=True)
-#        wd2v.doc_seq = doc_seq
-#        wd2v.word_dic = word_dic
-#        wd2v.doc_dic = doc_dic
-#        wd2v.mysim = mysim
-#        wd2v.tfidf = mysim.tfidf
-#        wd2v.dic4seq = Dic4seq(mysim, doc_dic, word_dic)
-#        return wd2v
     
     def init(self):
         if self.logging:
