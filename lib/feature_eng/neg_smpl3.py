@@ -303,7 +303,7 @@ class WordAndDoc2vec(object):
         self.tfidf = tfidf
     
     def make_model(self, num_features=8, max_num_prod=30,
-                   gamma=0.0, embeddings_val=0.1,
+                   gamma=0.0, embeddings_val=0.1, maxnorm=3.0,
                    debug=False
                   ):
         self.num_user = self.corpus_csr.shape[0]
@@ -313,7 +313,8 @@ class WordAndDoc2vec(object):
         
         models = make_model(num_user=self.num_user, num_product=self.num_product, max_num_prod=self.max_num_prod,
                    num_features=num_features, gamma=gamma,
-                   embeddings_val=embeddings_val, debug=debug)
+                   maxnorm=maxnorm, embeddings_val=embeddings_val,
+                   debug=debug)
         self.models = models
         self.model = models['model']
         return models
