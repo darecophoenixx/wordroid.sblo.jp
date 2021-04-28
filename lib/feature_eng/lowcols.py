@@ -144,9 +144,13 @@ def make_model(num_user=20, num_product=39, num_features=12,
 
     model_user = Model(input_user, embed_user)
     
-    rng = np.random.default_rng(seed)
     if cscore is None:
-        init_wgt = (rng.random((num_product, num_features)) - 0.5) * 2 * embeddings_val
+        if np.__version__ == '1.16.3': # for kaggle
+            rng = np.random.RandomState(seed)
+            init_wgt = (rng.random_sample((num_product, num_features)) - 0.5) * 2 * embeddings_val
+        else:
+            rng = np.random.default_rng(seed)
+            init_wgt = (rng.random((num_product, num_features)) - 0.5) * 2 * embeddings_val
     else:
         init_wgt = cscore
     gamma = 1./(init_wgt.var() * init_wgt.shape[1])
