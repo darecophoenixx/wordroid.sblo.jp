@@ -100,7 +100,7 @@ from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
 from keras.models import Model, Sequential
 from keras import losses
 from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
-    LearningRateScheduler
+    LearningRateScheduler, EarlyStopping
 from keras.wrappers.scikit_learn import KerasClassifier
 from keras import regularizers
 from keras import initializers
@@ -110,27 +110,33 @@ from keras.optimizers import RMSprop
 from keras.utils import to_categorical, Sequence
 from keras import backend as K
 
-class Seq2(Sequence):
-    
-    def __init__(self, seq):
-        self.seq = seq
-    
-    def __len__(self):
-        return len(self.seq)
-    
-    def __getitem__(self, idx):
-        bs = self.seq.batch_size
-        user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
-        res = self.seq.getpart(user_part)
-        return res
+#class Seq2(Sequence):
+#    
+#    def __init__(self, seq):
+#        self.seq = seq
+#    
+#    def __len__(self):
+#        return len(self.seq)
+#    
+#    def __getitem__(self, idx):
+#        bs = self.seq.batch_size
+#        user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
+#        res = self.seq.getpart(user_part)
+#        return res
 
 def make_model(num_user=20, num_product=39, num_features=12,
-                gamma=0.0, embeddings_val=0.5):
-
-    user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-                               embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                               embeddings_regularizer=regularizers.l2(gamma),
-                               name='user_embedding', trainable=True)
+                gamma=0.0, embeddings_val=0.5, seed=None,
+                rscore=None, cscore=None):
+    if rscore is None:
+        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val, seed=seed),
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   name='user_embedding', trainable=True)
+    else:
+        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                                   weights=[rscore],
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   name='user_embedding', trainable=True)
 
     input_user = Input(shape=(1,), name='input_user')
 
@@ -138,9 +144,11 @@ def make_model(num_user=20, num_product=39, num_features=12,
 
     model_user = Model(input_user, embed_user)
     
-    #init_wgt = initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val)((num_product, num_features))
-    init_wgt = (np.random.random_sample((num_product, num_features)) - 0.5) * 2 * embeddings_val
-    #gamma = 1./(2.*num_features*0.1)
+    rng = np.random.default_rng(seed)
+    if cscore is None:
+        init_wgt = (rng.random((num_product, num_features)) - 0.5) * 2 * embeddings_val
+    else:
+        init_wgt = cscore
     gamma = 1./(init_wgt.var() * init_wgt.shape[1])
     weights1 = [init_wgt, np.log(np.array([gamma]))]
     layer_gk1 = GaussianKernel3(num_product, num_features, name='gkernel1', weights=weights1)
@@ -149,7 +157,7 @@ def make_model(num_user=20, num_product=39, num_features=12,
     
     
     model = Model(input_user, oup)
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     models = {
         'model': model,
         'model_user': model_user,
@@ -157,69 +165,146 @@ def make_model(num_user=20, num_product=39, num_features=12,
     }
     return models
 
-class WD2vec_low(object):
-    
-    def __init__(self, doc_seq):
-        self.doc_seq = doc_seq
-        
-    def make_model(self, num_user=20, num_product=39, num_features=12,
-                         gamma=0.0, embeddings_val=0.5):
-        self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features,
-                                 gamma=gamma, embeddings_val=embeddings_val)
-        return self.models
-    
-    def train(self, epochs=5, batch_size=32, verbose=1,
-              use_multiprocessing=False, workers=1):
-        model = self.models['model']
-        seq = Seq(self.doc_seq, batch_size)
-        seq2 = Seq2(seq)
-        res = model.fit_generator(seq2,
-                                  steps_per_epoch=len(seq2),
-                                  epochs=epochs,
-                                  verbose=verbose,
-                                  use_multiprocessing=use_multiprocessing,
-                                  workers=workers)
-        return res
-    
-    def get_wgt_byrow(self, l=None):
-        wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
-        if l:
-            wgt = wgt[[self.doc_seq.doc_dic.token2id[ee] for ee in l]]
-        return wgt
-    
-    def get_wgt_bycol(self, l=None):
-        wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
-        if l:
-            wgt = wgt[[self.doc_seq.word_dic.token2id[ee] for ee in l]]
-        return wgt
+#class WD2vec_low(object):
+#    
+#    def __init__(self, doc_seq):
+#        self.doc_seq = doc_seq
+#        
+#    def make_model(self, num_user=20, num_product=39, num_features=12,
+#                         gamma=0.0, embeddings_val=0.5):
+#        self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features,
+#                                 gamma=gamma, embeddings_val=embeddings_val)
+#        return self.models
+#    
+#    def train(self, epochs=5, batch_size=32, verbose=1,
+#              use_multiprocessing=False, workers=1):
+#        model = self.models['model']
+#        seq = Seq(self.doc_seq, batch_size)
+#        seq2 = Seq2(seq)
+#        res = model.fit_generator(seq2,
+#                                  steps_per_epoch=len(seq2),
+#                                  epochs=epochs,
+#                                  verbose=verbose,
+#                                  use_multiprocessing=use_multiprocessing,
+#                                  workers=workers)
+#        return res
+#    
+#    def get_wgt_byrow(self, l=None):
+#        wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
+#        if l:
+#            wgt = wgt[[self.doc_seq.doc_dic.token2id[ee] for ee in l]]
+#        return wgt
+#    
+#    def get_wgt_bycol(self, l=None):
+#        wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
+#        if l:
+#            wgt = wgt[[self.doc_seq.word_dic.token2id[ee] for ee in l]]
+#        return wgt
 
 class WD2vec(object):
     
     def __init__(self, X_df):
         self.X_df = X_df
         
-    def make_model(self, num_user=20, num_product=39, num_features=12,
-                         gamma=0.0, embeddings_val=0.5):
+    def make_model(self, num_features=12,
+                         gamma=0.0, embeddings_val=0.5,
+                         seed=None, rscore=None, cscore=None):
+        num_user = self.X_df.shape[0]
+        num_product = self.X_df.shape[1]
         self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features,
-                                 gamma=gamma, embeddings_val=embeddings_val)
+                                 gamma=gamma, embeddings_val=embeddings_val, seed=seed,
+                                 rscore=rscore, cscore=cscore)
         return self.models
     
     def train(self, epochs=5, batch_size=32, verbose=1,
-              use_multiprocessing=False, workers=1,
-              callbacks=None):
-        def lr_schedule(epoch, lr, epochs=epochs, lr0=0.01, base=8):
-            b = 1 / np.log((epochs-1+np.exp(1)))
-            a = 1 / np.log((epoch+np.exp(1))) / (1-b) - b/(1-b)
-            lr = a*(1-1/base)*lr0 + lr0/base
-            print('Learning rate: ', lr)
+              use_multiprocessing=False, workers=1, shuffle=True,
+              callbacks=None, lr0=0.001, flag_early_stopping=True,
+              base=8):
+        def lr_schedule(epoch, lrx):
+            def reduce(epoch, lr):
+                if divmod(epoch,4)[1] == 3:
+                    lr *= (1/8)
+                elif divmod(epoch,4)[1] == 2:
+                    lr *= (1/4)
+                elif divmod(epoch,4)[1] == 1:
+                    lr *= (1/2)
+                elif divmod(epoch,4)[1] == 0:
+                    pass
+                return lr
+
+            lra = lr0
+            epoch1 = int(epochs / 8)
+            epoch2 = epoch1
+            epoch3 = epoch1
+            epoch4 = epoch1
+
+            if epoch1+epoch2+epoch3+epoch4 <= epoch:
+                epoch = epoch - (epoch1+epoch2+epoch3+epoch4)
+                lra = lra / 2
+
+            if epoch<epoch1:
+                lr = lra
+                lr = reduce(epoch, lr)
+            elif epoch<epoch1+epoch2:
+                lr = lra/2
+                lr = reduce(epoch, lr)
+            elif epoch<epoch1+epoch2+epoch3:
+                lr = lra/4
+                lr = reduce(epoch, lr)
+            elif epoch<epoch1+epoch2+epoch3+epoch4:
+                lr = lra/8
+                lr = reduce(epoch, lr)
+            else:
+                lr = lra/64
+
+            if verbose == 0:
+                pass
+            else:
+                print('Learning rate: ', lr)
             return lr
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
-            callbacks = [lr_scheduler]
+            eraly_stopping = EarlyStopping(monitor='loss', patience=3)
+            callbacks = [eraly_stopping, lr_scheduler]
         model = self.models['model']
         res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
                                   batch_size=batch_size,
                                   epochs=epochs,
+                                  verbose=verbose,
+                                  shuffle=shuffle,
+                                  callbacks=callbacks)
+        lr2 = res.history['lr'][-1]
+        res2 = self.train2(epochs=epochs,
+                      batch_size=batch_size,
+                      verbose=verbose,
+                      use_multiprocessing=use_multiprocessing,
+                      shuffle=shuffle,
+                      workers=workers,
+                      callbacks=None,
+                      lr0=lr2, base=base, flag_early_stopping=flag_early_stopping)
+        return res, res2
+    
+    def train2(self, epochs=5, batch_size=32, verbose=1,
+              use_multiprocessing=False, workers=1, shuffle=True,
+              callbacks=None, lr0=0.001, base=8, flag_early_stopping=True):
+        def lr_schedule(epoch, lr, epochs=epochs, lr0=lr0, base=base, verbose=verbose):
+            b = 1 / np.log((epochs-1+np.exp(1)))
+            a = 1 / np.log((epoch+np.exp(1))) / (1-b) - b/(1-b)
+            lr = a*(1-1/base)*lr0 + lr0/base
+            if verbose == 0:
+                pass
+            else:
+                print('Learning rate: ', lr)
+            return lr
+        if callbacks is None:
+            lr_scheduler = LearningRateScheduler(lr_schedule)
+            early_stopping = EarlyStopping(monitor='loss', patience=3)
+            callbacks = [early_stopping, lr_scheduler] if flag_early_stopping else [lr_scheduler]
+        model = self.models['model']
+        res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
+                                  batch_size=batch_size,
+                                  epochs=epochs,
+                                  shuffle=shuffle,
                                   verbose=verbose,
                                   callbacks=callbacks)
         return res
@@ -231,6 +316,11 @@ class WD2vec(object):
     def get_wgt_bycol(self):
         wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
         return wgt
+    
+    def get_gamma(self):
+        logged_gamma = self.models['model'].get_layer('gkernel1').get_weights()[1][0]
+        gamma = np.exp(logged_gamma)
+        return gamma
 
 
 

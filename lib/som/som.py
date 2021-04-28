@@ -131,6 +131,7 @@ class SimpleSOM(object):
         K2s1 = (K**2).sum(axis=1)
         delta[:,:] = 0
         distance2ClosestLM_list = []
+        qd_calced = alpha * np.exp(-gamma * self.qd)
         for ii in range(0, nn, batch_size):
             idx_p = idx[ii:((ii+batch_size) if (ii+batch_size)<nn else nn)]
             KdotX = K.dot(X[idx_p].T)
@@ -139,12 +140,11 @@ class SimpleSOM(object):
                 iqd = res.argmin()
                 distance2ClosestLM = res[iqd]
                 distance2ClosestLM_list.append(distance2ClosestLM)
-                h[:,0] = (alpha * np.exp(-gamma * self.qd[iqd]))
+                h[:,0] = qd_calced[iqd]
                 delta0 = h * (X[ii+jj] - K)
                 delta += delta0
         mean_dist[0] = np.stack(distance2ClosestLM_list).mean()
         return delta / nn
-
 class SphereSOM(SimpleSOM):
     
     def _calc_qd(self, X):
@@ -212,6 +212,7 @@ class sksom(object):
         return kmeans
     
     def fit(self, X, y=None):
+        self.kmeans._check_params(X)
         X0 = X.astype(self.dtype)
         X2s1 = (X**2).sum(axis=1).astype(self.dtype)
         
@@ -237,7 +238,8 @@ class sksom(object):
         
         if self.r is None:
             r0 = min(self.kshape)
-            rfin = 1
+#            rfin = 1
+            rfin = min(self.kshape) / 30
         elif isinstance(self.r, (float, int)):
             r0 = self.r
             rfin = self.r
@@ -294,6 +296,21 @@ class sksom(object):
             d = np.square(X - self.landmarks_[ii]).sum(axis=1)
             p_list.append(np.exp(-self.som.gamma * d))
         return np.vstack(p_list).T
+    
+    def transform(self, X, knn=None):
+        if knn is None:
+            knn = NearestNeighbors()
+        knn.fit(self.landmarks_)
+        res_knn = knn.kneighbors(X)
+        ret_list = []
+        for ii in range(X.shape[0]):
+            pos = res_knn[1][ii]
+            d = res_knn[0][ii]
+            pos = np.array([divmod(m, self.kshape[1]) for m in pos])
+            w = np.exp(-self.som.gamma * d)
+            w = w / w.sum()
+            ret_list.append((pos * w.reshape((-1,1))).sum(axis=0))
+        return np.vstack(ret_list)
     
 
 from sklearn.base import ClassifierMixin, RegressorMixin
