@@ -212,7 +212,8 @@ class sksom(object):
         return kmeans
     
     def fit(self, X, y=None):
-        self.kmeans._check_params(X)
+        #self.kmeans._check_params(X)
+        self.kmeans._n_threads = None
         X0 = X.astype(self.dtype)
         X2s1 = (X**2).sum(axis=1).astype(self.dtype)
         
