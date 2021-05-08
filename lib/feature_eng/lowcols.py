@@ -146,6 +146,7 @@ def make_model(num_user=20, num_product=39, num_features=12,
     
     if cscore is None:
         if np.__version__ == '1.16.3': # for kaggle
+            print('numpy.__version__ is 1.16.3. use RandomState...')
             rng = np.random.RandomState(seed)
             init_wgt = (rng.random_sample((num_product, num_features)) - 0.5) * 2 * embeddings_val
         else:
