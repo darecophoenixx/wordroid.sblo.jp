@@ -213,7 +213,7 @@ class sksom_keras(object):
         return hst
     
     def predict(self, X):
-        return self.kmeans.predict(X.astype(float))
+        return self.kmeans.predict(X)
     
     def predict_proba(self, X):
         p_list = []
