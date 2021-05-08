@@ -191,9 +191,9 @@ class sksom_keras(object):
         if isinstance(r, tuple):
             t = np.arange(epochs)
             l_epochs = [len(ee) for ee in np.array_split(t, n_split)][::-1]
-            print(len(l_epochs), l_epochs)
+            #print(len(l_epochs), l_epochs)
             l_r = [r[0] - (r[0]-r[1])/np.sqrt(len(l_epochs)-1)*np.sqrt(ii) for ii in range(len(l_epochs))]
-            print(len(l_r), l_r)
+            #print(len(l_r), l_r)
             sche = zip(l_epochs, l_r)
         else:
             sche = ((epochs, r),)
