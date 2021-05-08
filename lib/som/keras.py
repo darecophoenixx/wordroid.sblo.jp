@@ -158,6 +158,7 @@ class sksom_keras(object):
         kmeans = KMeans(n_clusters=self.kshape[0]*self.kshape[1], n_init=1, max_iter=1)
         kmeans.labels_ = np.arange(self.kshape[0]*self.kshape[1])
         kmeans.cluster_centers_ = self.landmarks_
+        kmeans._n_threads = None
         return kmeans
     
     def _make_keras_model(self, r, LM):
@@ -171,7 +172,6 @@ class sksom_keras(object):
     
     def fit(self, x, nstep_r_reduce=100, batch_size=None, epochs=500, verbose=None, r=None,
             optimizer=None, loss=None):
-        self.kmeans._n_threads = None
         if optimizer is None:
             optimizer = self.optimizer
         if loss is None:
