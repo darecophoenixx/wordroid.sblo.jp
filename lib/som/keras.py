@@ -209,7 +209,7 @@ class sksom_keras(object):
                 hst.setdefault(k, [])
                 hst[k] = hst[k] + v
             self.gamma = 1.0 / (2.0 * i_r**2)
-        self.kmeans.cluster_centers_ = self.landmarks_.astype(float)
+        self.kmeans.cluster_centers_[:,:] = self.landmarks_
         return hst
     
     def predict(self, X):
