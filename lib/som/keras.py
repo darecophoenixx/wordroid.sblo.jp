@@ -198,7 +198,7 @@ class sksom_keras(object):
         
         self.hst = hst = {}
         num_feature = self.init_K.shape[1]
-        LM = self.init_K
+        LM = self.landmarks_
         for i_epochs, i_r in sche:
             print('===== r: ', i_r, ' / epochs: ', i_epochs)
             self._make_keras_model(i_r, LM)
