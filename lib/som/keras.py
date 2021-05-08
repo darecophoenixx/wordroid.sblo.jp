@@ -60,7 +60,7 @@ class SOM(Layer):
                                          shape=self.output_dim,
                                          initializer=self.kernel_initializer,
                                          constraint=self.kernel_constraint)
-        print('self.landmarks.shape: ', self.landmarks.shape)
+        #print('self.landmarks.shape: ', self.landmarks.shape)
 #         self.gamma = self.add_weight(name='gamma',
 #                                      shape=(1,),
 #                                      trainable=False)
