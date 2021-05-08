@@ -76,32 +76,32 @@ class SOM(Layer):
         qd : shape = (1200, 1200)
         x : shape = (None, num_feature)
         '''
-        print('landmarks.shape', landmarks.shape)
+        #print('landmarks.shape', landmarks.shape)
         
         xlm = K.dot(x, K.transpose(landmarks)) # (None, num_feature) . (num_feature, 1200) -> (None, 1200)
-        print('xlm: ', K.int_shape(xlm))
+        #print('xlm: ', K.int_shape(xlm))
         x2 = K.sum(K.square(x), axis=1) # (None,)
-        print('x2: ', K.int_shape(x2))
+        #print('x2: ', K.int_shape(x2))
         x2 = K.reshape(x2, (-1,1)) # (None, 1)
-        print('x2: ', K.int_shape(x2))
+        #print('x2: ', K.int_shape(x2))
         x2 = K.repeat_elements(x2, self.output_dim[0], axis=1) # (None, 1200)
-        print('x2: ', K.int_shape(x2))
+        #print('x2: ', K.int_shape(x2))
         lm2 = K.sum(K.square(landmarks), axis=1) # (1200,)
-        print('lm2: ', K.int_shape(lm2))
+        #print('lm2: ', K.int_shape(lm2))
         
         d = x2 + lm2 - 2*xlm # (None, 1200)
-        print('d: ', K.int_shape(d))
+        #print('d: ', K.int_shape(d))
         min_idx = K.argmin(d) # (None,)
-        print('min_idx: ', K.int_shape(min_idx))
+        #print('min_idx: ', K.int_shape(min_idx))
         h = K.gather(self.qd, min_idx) # (None, 1200)
-        print('h: ', K.int_shape(h))
+        #print('h: ', K.int_shape(h))
         h = K.repeat(h, self.num_feature) # (None, 1200)
         h = K.permute_dimensions(h, (0,2,1))
-        print('h: ', K.int_shape(h))
+        #print('h: ', K.int_shape(h))
         x_expand = K.repeat(x, self.output_dim[0])
-        print('x_expand: ', K.int_shape(x_expand))
+        #print('x_expand: ', K.int_shape(x_expand))
         delta0 = h * (x_expand - landmarks) # (None, 1200, num_feature) - (1200, num_feature) -> (None, 1200, num_feature)
-        print('delta0: ', K.int_shape(delta0))
+        #print('delta0: ', K.int_shape(delta0))
         #ret = K.exp(-gamma * d)
         return delta0
     
@@ -170,7 +170,9 @@ class sksom_keras(object):
         self.model = model
         return model
     
-    def fit(self, x, nstep_r_reduce=100, batch_size=None, epochs=500, verbose=None, r=None,
+    def fit(self, x, nstep_r_reduce=100,
+            batch_size=None, epochs=500, verbose=None, shuffle=True,
+            r=None,
             optimizer=None, loss=None):
         if optimizer is None:
             optimizer = self.optimizer
@@ -203,7 +205,9 @@ class sksom_keras(object):
             print('===== r: ', i_r, ' / epochs: ', i_epochs)
             self._make_keras_model(i_r, LM)
             self.model.compile(loss=loss, optimizer=optimizer)
-            res = self.model.fit(x, np.zeros((x.shape[0],1,num_feature)), batch_size=batch_size, epochs=i_epochs, verbose=verbose)
+            res = self.model.fit(x, np.zeros((x.shape[0],1,num_feature)),
+                                 batch_size=batch_size, epochs=i_epochs, verbose=verbose,
+                                 shuffle=shuffle)
             self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
             for k, v in res.history.items():
                 hst.setdefault(k, [])
