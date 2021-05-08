@@ -209,11 +209,10 @@ class sksom(object):
         kmeans = KMeans(n_clusters=self.som.kshape.prod(), n_init=1, max_iter=1)
         kmeans.labels_ = np.arange(self.som.kshape.prod())
         kmeans.cluster_centers_ = self.landmarks_
+        kmeans._n_threads = None
         return kmeans
     
     def fit(self, X, y=None):
-        #self.kmeans._check_params(X) # _n_threads
-        self.kmeans._n_threads = None
         X0 = X.astype(self.dtype)
         X2s1 = (X**2).sum(axis=1).astype(self.dtype)
         
@@ -286,6 +285,7 @@ class sksom(object):
         if self.verbose:
             print('r:', r, 'gamma:', self.som.gamma, 'mean distance:', meanDist0[0])
         self.meanDist = meanDist
+        self.kmeans.cluster_centers_[:,:] = self.landmarks_
         return self
     
     def predict(self, X):
