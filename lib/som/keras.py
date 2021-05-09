@@ -346,23 +346,43 @@ class sksom_keras(object):
         else:
             sche = ((epochs, r),)
         
-        self.hst = hst = {}
+        self.hst = {}
         num_feature = self.init_K.shape[1]
-        LM = self.landmarks_
+        #LM = self.landmarks_
         for i_epochs, i_r in sche:
-            print('=====> r: ', i_r, ' / epochs: ', i_epochs)
-            self._make_keras_model(i_r, LM)
-            self.model.compile(loss=loss, optimizer=optimizer)
-            res = self.model.fit(x, np.zeros((x.shape[0],1,num_feature)),
-                                 batch_size=batch_size, epochs=i_epochs, verbose=verbose,
-                                 shuffle=shuffle)
-            self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
-            for k, v in res.history.items():
-                hst.setdefault(k, [])
-                hst[k] = hst[k] + v
-            self.gamma = 1.0 / (2.0 * i_r**2)
+#            print('=====> r: ', i_r, ' / epochs: ', i_epochs)
+#            self._make_keras_model(i_r, LM)
+#            self.model.compile(loss=loss, optimizer=optimizer)
+#            res = self.model.fit(x, np.zeros((x.shape[0],1,num_feature)),
+#                                 batch_size=batch_size, epochs=i_epochs, verbose=verbose,
+#                                 shuffle=shuffle)
+#            for k, v in res.history.items():
+#                hst.setdefault(k, [])
+#                hst[k] = hst[k] + v
+#            self.gamma = 1.0 / (2.0 * i_r**2)
+#            self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
+            self._fit(i_epochs, i_r, x,
+                      batch_size=batch_size, verbose=verbose, shuffle=shuffle,
+                      optimizer=optimizer, loss=loss)
         self.kmeans.cluster_centers_[:,:] = self.landmarks_
-        return hst
+        return self.hst
+    
+    def _fit(self, i_epochs, i_r,
+             x,
+             batch_size=None, verbose=None, shuffle=True,
+             optimizer=None, loss=None):
+        self.gamma = 1.0 / (2.0 * i_r**2)
+        num_feature = self.init_K.shape[1]
+        print('=====> r: ', i_r, ' / epochs: ', i_epochs)
+        self._make_keras_model(i_r, self.landmarks_)
+        self.model.compile(loss=loss, optimizer=optimizer)
+        hst = self.model.fit(x, np.zeros((x.shape[0],1,1)),
+                             batch_size=batch_size, epochs=i_epochs, verbose=verbose,
+                             shuffle=shuffle)
+        for k, v in hst.history.items():
+            self.hst.setdefault(k, [])
+            self.hst[k] = self.hst[k] + v
+        self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
     
     def predict(self, X):
         return self.kmeans.predict(X.astype(float))
@@ -397,7 +417,7 @@ class sksom_keras2(sksom_keras):
     
     def _make_keras_model(self, r, LM):
         inp = Input(shape=(self.init_K.shape[1],), name='inp')
-        l_som = SOM(map_shape=self.kshape, lm_init=LM, r=r, name='som')
+        l_som = SOM(map_shape=self.kshape, lm_init=LM, r=r, qd=self.qd, name='som')
         oup = l_som(inp)
         model = Model(inp, oup, name='model')
         
