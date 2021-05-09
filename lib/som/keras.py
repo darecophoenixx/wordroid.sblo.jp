@@ -4,7 +4,9 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 '''
 
+import sys
 import numpy as np
+from tqdm import tqdm
 
 from keras import initializers, constraints
 from keras.layers import Layer
@@ -161,8 +163,6 @@ class CalcDistance(Layer):
         qd : shape = (1200, 1200)
         x : shape = (None, num_feature)
         '''
-        print('landmarks.shape', landmarks.shape)
-        
         xlm = K.dot(x, K.transpose(landmarks)) # (None, num_feature) . (num_feature, 1200) -> (None, 1200)
         #print('xlm: ', K.int_shape(xlm))
         x2 = K.sum(K.square(x), axis=1) # (None,)
@@ -339,9 +339,7 @@ class sksom_keras(object):
         if isinstance(r, tuple):
             t = np.arange(epochs)
             l_epochs = [len(ee) for ee in np.array_split(t, n_split)][::-1]
-            #print(len(l_epochs), l_epochs)
             l_r = [r[0] - (r[0]-r[1])/np.sqrt(len(l_epochs)-1)*np.sqrt(ii) for ii in range(len(l_epochs))]
-            #print(len(l_r), l_r)
             sche = zip(l_epochs, l_r)
         else:
             sche = ((epochs, r),)
@@ -426,33 +424,47 @@ class sksom_keras2(sksom_keras):
         oup_min_d = Lambda(lambda d: K.min(d, axis=1), name='min_d')(oup_d)
         model_min_d = Model(inp, oup_min_d, name='model_min_d')
         
-#        def calc_delta(X):
-#            x, d2 = X
-#            min_idx = K.argmin(d2)
-#            qd_selected = K.gather(qd_calced, min_idx)
-#            h = K.repeat(qd_selected, self.num_feature)
-#            h = K.permute_dimensions(h, (0,2,1))
-#            x_expand = K.repeat(x, self.init_K.shape[0])
-#            delta = h * (x_expand - LM)
-#            return delta
-#        delta = Lambda(calc_delta, name='calc_delta')([inp, oup_d])
-#        oup_argmin = Lambda(lambda d: K.argmin(d), name='argmin')(oup_d)
-#        qd_selected = Lambda(lambda x: K.gather(qd_calced, x), name='qd_selected')(oup_argmin) # (None, 1200)
-#        #print('h: ', K.int_shape(h))
-#        h = Lambda(lambda x: K.repeat(x, self.num_feature), name='qd_selected_2')(qd_selected) # (None, 1200)
-#        h = Lambda(lambda x: K.permute_dimensions(x, (0,2,1)), name='h')(h)
-#        #print('h: ', K.int_shape(h))
-#        x_expand = Lambda(lambda x: K.repeat(x, self.init_K.shape[0]), name='x_expand')(inp)
-#        #print('x_expand: ', K.int_shape(x_expand))
-#        delta = Lambda(lambda x: x[0] * (x[1] - LM), name='calc_delta')([h, x_expand])
-        
-        
         self.model = model
         self.models = {
             'model': model,
             'model_min_d': model_min_d,
         }
         return model
+    
+    def _fit(self, i_epochs, i_r,
+             x,
+             batch_size=None, verbose=None, shuffle=True,
+             optimizer=None, loss=None):
+        self.gamma = 1.0 / (2.0 * i_r**2)
+        num_feature = self.init_K.shape[1]
+        print('=====> r: ', i_r, ' / epochs: ', i_epochs)
+        self._make_keras_model(i_r, self.landmarks_)
+        self.model.compile(loss=loss, optimizer=optimizer)
+        Y = np.zeros((x.shape[0],1,1))
+        with tqdm(total=i_epochs, file=sys.stdout,
+                  disable=False if 0<verbose else True) as pbar:
+            for _ in range(i_epochs):
+                hst = self.model.fit(x, Y,
+                                     batch_size=batch_size, epochs=1, verbose=0,
+                                     shuffle=shuffle)
+                for k, v in hst.history.items():
+                    self.hst.setdefault(k, [])
+                    self.hst[k] = self.hst[k] + v
+                self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
+                d2_mean = self._calc_mean_dist(x)
+                
+                if 1 < verbose:
+                    pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (i_r, self.gamma, d2_mean))
+                pbar.update(1)
+    
+    def _calc_mean_dist(self, x):
+        '''calc MeanDist2ClosestLM'''
+        self.models['model_min_d'].get_layer('calc_d').set_weights([self.landmarks_])
+        d2 = self.models['model_min_d'].predict(x)
+        self.hst.setdefault('MeanDist2ClosestLM', [])
+        self.hst['MeanDist2ClosestLM'].append(d2.mean())
+        return d2.mean()
+        
     
 
 
