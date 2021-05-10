@@ -450,7 +450,7 @@ class sksom_keras2(sksom_keras):
             self.hst[k] = self.hst[k] + v
         self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
         d2_mean = self._calc_mean_dist(x)
-        if verbose != 0:
+        if verbose is not None:
             print('mean distance to closest landmark : ', d2_mean)
             
 
