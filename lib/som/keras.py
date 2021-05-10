@@ -269,7 +269,7 @@ class sksom_keras(object):
                  r=None, epochs=500,
                  early_stopping=(5, 1.0e-7),
                  batch_size=1024,
-                 loss='mae', optimizer=SGD(learning_rate=100.0),
+                 loss='mae', optimizer=Adam(learning_rate=0.001),
                  verbose=0):
         '''
         predict:
@@ -318,7 +318,7 @@ class sksom_keras(object):
         self.model = model
         return model
     
-    def fit(self, x, nstep_r_reduce=100,
+    def fit(self, x, nstep_r_reduce=50,
             batch_size=None, epochs=500, verbose=None, shuffle=True,
             r=None,
             optimizer=None, loss=None):
@@ -403,7 +403,7 @@ class sksom_keras2(sksom_keras):
                  r=None, epochs=500,
                  early_stopping=(5, 1.0e-7),
                  batch_size=1024,
-                 loss='mae', optimizer=SGD(learning_rate=100.0),
+                 loss='mae', optimizer=Adam(learning_rate=0.001),
                  verbose=0):
         super(sksom_keras2, self).__init__(
             kshape=kshape, init_K=init_K, form=form, rand_stat=rand_stat,
