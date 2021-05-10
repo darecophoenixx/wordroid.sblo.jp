@@ -434,7 +434,7 @@ class sksom_keras2(sksom_keras):
     
     def _fit(self, i_epochs, i_r,
              x,
-             batch_size=None, verbose=None, shuffle=True,
+             batch_size=None, verbose=0, shuffle=True,
              optimizer=None, loss=None):
         self.gamma = 1.0 / (2.0 * i_r**2)
         num_feature = self.init_K.shape[1]
@@ -450,6 +450,8 @@ class sksom_keras2(sksom_keras):
             self.hst[k] = self.hst[k] + v
         self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
         d2_mean = self._calc_mean_dist(x)
+        if verbose != 0:
+            print('mean distance to closest landmark : ', d2_mean)
             
 
 #    def _fit(self, i_epochs, i_r,
