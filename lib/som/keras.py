@@ -340,14 +340,15 @@ class sksom_keras(object):
             t = np.arange(epochs)
             l_epochs = [len(ee) for ee in np.array_split(t, n_split)][::-1]
             l_r = [r[0] - (r[0]-r[1])/np.sqrt(len(l_epochs)-1)*np.sqrt(ii) for ii in range(len(l_epochs))]
-            sche = zip(l_epochs, l_r)
+            sche = [ee for ee in zip(l_epochs, l_r)]
         else:
             sche = ((epochs, r),)
         
         self.hst = {}
         num_feature = self.init_K.shape[1]
         #LM = self.landmarks_
-        for i_epochs, i_r in sche:
+        for ii, (i_epochs, i_r) in enumerate(sche):
+            print(ii+1, ' / ', len(sche))
 #            print('=====> r: ', i_r, ' / epochs: ', i_epochs)
 #            self._make_keras_model(i_r, LM)
 #            self.model.compile(loss=loss, optimizer=optimizer)
@@ -441,21 +442,41 @@ class sksom_keras2(sksom_keras):
         self._make_keras_model(i_r, self.landmarks_)
         self.model.compile(loss=loss, optimizer=optimizer)
         Y = np.zeros((x.shape[0],1,1))
-        with tqdm(total=i_epochs, file=sys.stdout,
-                  disable=False if 0<verbose else True) as pbar:
-            for _ in range(i_epochs):
-                hst = self.model.fit(x, Y,
-                                     batch_size=batch_size, epochs=1, verbose=0,
-                                     shuffle=shuffle)
-                for k, v in hst.history.items():
-                    self.hst.setdefault(k, [])
-                    self.hst[k] = self.hst[k] + v
-                self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
-                d2_mean = self._calc_mean_dist(x)
-                
-                if 1 < verbose:
-                    pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (i_r, self.gamma, d2_mean))
-                pbar.update(1)
+        hst = self.model.fit(x, Y,
+                             batch_size=batch_size, epochs=i_epochs, verbose=verbose,
+                             shuffle=shuffle)
+        for k, v in hst.history.items():
+            self.hst.setdefault(k, [])
+            self.hst[k] = self.hst[k] + v
+        self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
+        d2_mean = self._calc_mean_dist(x)
+            
+
+#    def _fit(self, i_epochs, i_r,
+#             x,
+#             batch_size=None, verbose=None, shuffle=True,
+#             optimizer=None, loss=None):
+#        self.gamma = 1.0 / (2.0 * i_r**2)
+#        num_feature = self.init_K.shape[1]
+#        print('=====> r: ', i_r, ' / epochs: ', i_epochs)
+#        self._make_keras_model(i_r, self.landmarks_)
+#        self.model.compile(loss=loss, optimizer=optimizer)
+#        Y = np.zeros((x.shape[0],1,1))
+#        with tqdm(total=i_epochs, file=sys.stdout,
+#                  disable=False if 0<verbose else True) as pbar:
+#            for _ in range(i_epochs):
+#                hst = self.model.fit(x, Y,
+#                                     batch_size=batch_size, epochs=1, verbose=0,
+#                                     shuffle=shuffle)
+#                for k, v in hst.history.items():
+#                    self.hst.setdefault(k, [])
+#                    self.hst[k] = self.hst[k] + v
+#                self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
+#                d2_mean = self._calc_mean_dist(x)
+#                
+#                if 1 < verbose:
+#                    pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (i_r, self.gamma, d2_mean))
+#                pbar.update(1)
     
     def _calc_mean_dist(self, x):
         '''calc MeanDist2ClosestLM'''
