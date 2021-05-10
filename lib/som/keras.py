@@ -483,8 +483,9 @@ class sksom_keras2(sksom_keras):
         self.models['model_min_d'].get_layer('calc_d').set_weights([self.landmarks_])
         d2 = self.models['model_min_d'].predict(x)
         self.hst.setdefault('MeanDist2ClosestLM', [])
-        self.hst['MeanDist2ClosestLM'].append(d2.mean())
-        return d2.mean()
+        d2_mean = d2.mean()
+        self.hst['MeanDist2ClosestLM'].append(d2_mean)
+        return d2_mean
         
     
 
