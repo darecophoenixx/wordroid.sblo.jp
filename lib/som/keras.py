@@ -395,6 +395,7 @@ class sksom_keras(object):
         self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
     
     def predict(self, X):
+        assert X.shape[1] == self.init_K.shape[1]
         return self.kmeans.predict(X.astype(float))
     
     def predict_proba(self, X):

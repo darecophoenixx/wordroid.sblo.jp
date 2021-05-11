@@ -289,6 +289,7 @@ class sksom(object):
         return self
     
     def predict(self, X):
+        assert X.shape[1] == self.init_K.shape[1]
         return self.kmeans.predict(X)
     
     def predict_proba(self, X):
