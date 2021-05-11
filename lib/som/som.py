@@ -313,6 +313,14 @@ class sksom(object):
             ret_list.append((pos * w.reshape((-1,1))).sum(axis=0))
         return np.vstack(ret_list)
     
+    def label2xy(self, labels):
+        l = []
+        for ilabel in labels:
+            b, a = divmod(ilabel, self.kshape[1])
+            l.append((a, b))
+        pos = np.r_[l]
+        return pos
+
 
 from sklearn.base import ClassifierMixin, RegressorMixin
 from sklearn.neighbors import NearestNeighbors

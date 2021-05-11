@@ -294,13 +294,24 @@ class sksom_keras(object):
         self.landmarks_ = self.init_K.copy()
         self.kmeans = self._kmeans()
         self.labels_ = self.kmeans.labels_
-        
-        self._calc_qd()
+        if form == 'sphere':
+            self._calc_qd_sphere()
+        else:
+            self._calc_qd()
     
     def _calc_qd(self):
         qd = [np.array((ii,jj)) for ii in range(self.kshape[0]) for jj in range(self.kshape[1])]
         qd = np.array([np.square(p1 - p2).sum() for p1 in qd for p2 in qd]).reshape(np.array(self.kshape).prod(), np.array(self.kshape).prod())
         self.qd = qd
+    
+    def _calc_qd_sphere(self):
+        longitude = [2*np.pi*ii/self.kshape[1] for ii in range(self.kshape[1])]
+        latitude = np.linspace(-np.pi/2, np.pi/2, self.kshape[0]+1)[1:] - np.pi/self.kshape[0]/2
+        pos0 = [np.array((np.cos(lo), np.sin(lo), np.sin(la))) for la in latitude for lo in longitude]
+        pos = [np.array((ee[0]*np.sqrt(1-ee[2]**2), ee[1]*np.sqrt(1-ee[2]**2), ee[2])) for ee in pos0]
+        qd = np.array([np.arccos(np.dot(p0, p1).clip(-1,1)) for p0 in pos for p1 in pos])
+        qd = qd.reshape((np.array(self.kshape).prod(), np.array(self.kshape).prod()))
+        self.qd = qd * (1 / (2*np.pi/self.kshape[1]))
     
     def _kmeans(self):
         kmeans = KMeans(n_clusters=self.kshape[0]*self.kshape[1], n_init=1, max_iter=1)
@@ -392,6 +403,14 @@ class sksom_keras(object):
             d = np.square(X - self.landmarks_[ii]).sum(axis=1)
             p_list.append(np.exp(-self.gamma * d))
         return np.vstack(p_list).T
+    
+    def label2xy(self, labels):
+        l = []
+        for ilabel in labels:
+            b, a = divmod(ilabel, self.kshape[1])
+            l.append((a, b))
+        pos = np.r_[l]
+        return pos
 
 
 
