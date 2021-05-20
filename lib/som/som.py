@@ -50,7 +50,7 @@ class SimpleSOM(object):
         smpl = X[ind]
         return smpl
     
-    def linear_init(self, X):
+    def linear_init(self, X, n_std=2):
         sc = StandardScaler()
         sc.fit(X)
         x_sc = sc.transform(X)
@@ -65,8 +65,8 @@ class SimpleSOM(object):
             x_tick = pca.components_[1] * np.sqrt(pca.explained_variance_)[1]
             
         l = []
-        for xi in np.linspace(-2, 2, self.kshape[0]):
-            tmp = np.linspace(-2, 2, self.kshape[1]).reshape(self.kshape[1],1) * y_tick
+        for xi in np.linspace(-n_std, n_std, self.kshape[0]):
+            tmp = np.linspace(-n_std, n_std, self.kshape[1]).reshape(self.kshape[1],1) * y_tick
             tmp += xi * x_tick
             l.append(tmp)
         init_map = np.vstack(l)
