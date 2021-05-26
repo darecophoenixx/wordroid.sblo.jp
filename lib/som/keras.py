@@ -6,6 +6,7 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gker
 
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from keras import initializers, constraints
@@ -296,12 +297,33 @@ class sksom_keras(object):
         self.labels_ = self.kmeans.labels_
         if form == 'sphere':
             self._calc_qd_sphere()
+        elif form == 'hex':
+            self._calc_qd_hex()
         else:
             self._calc_qd()
     
     def _calc_qd(self):
         qd = [np.array((ii,jj)) for ii in range(self.kshape[0]) for jj in range(self.kshape[1])]
+        self.map_xy = np.vstack(qd)
         qd = np.array([np.square(p1 - p2).sum() for p1 in qd for p2 in qd]).reshape(np.array(self.kshape).prod(), np.array(self.kshape).prod())
+        self.qd = qd
+    
+    def _calc_qd_hex(self):
+        a = np.sqrt(3) / 2.0
+        b = 3.0
+        a, b = a / a / 2, b / a / 2
+        xy0 = [np.array(((0,jj*2*a), (b/2,a+jj*2*a))) for jj in range(self.kshape[1])]
+        xy0 = np.vstack(xy0)
+        l = []
+        for ii in range(self.kshape[0]):
+            sho, amari = divmod(ii, 2)
+            if amari == 0:
+                l.append(xy0[::2,:] + np.array((sho*b,0)))
+            else:
+                l.append(xy0[1::2,:] + np.array((sho*b,0)))
+        map_xy = np.vstack(l)
+        self.map_xy = map_xy
+        qd = np.array([np.square(p1 - p2).sum() for p1 in map_xy for p2 in map_xy]).reshape(np.array(self.kshape).prod(), np.array(self.kshape).prod())
         self.qd = qd
     
     def _calc_qd_sphere(self):
@@ -360,17 +382,6 @@ class sksom_keras(object):
         #LM = self.landmarks_
         for ii, (i_epochs, i_r) in enumerate(sche):
             print(ii+1, ' / ', len(sche))
-#            print('=====> r: ', i_r, ' / epochs: ', i_epochs)
-#            self._make_keras_model(i_r, LM)
-#            self.model.compile(loss=loss, optimizer=optimizer)
-#            res = self.model.fit(x, np.zeros((x.shape[0],1,num_feature)),
-#                                 batch_size=batch_size, epochs=i_epochs, verbose=verbose,
-#                                 shuffle=shuffle)
-#            for k, v in res.history.items():
-#                hst.setdefault(k, [])
-#                hst[k] = hst[k] + v
-#            self.gamma = 1.0 / (2.0 * i_r**2)
-#            self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
             self._fit(i_epochs, i_r, x,
                       batch_size=batch_size, verbose=verbose, shuffle=shuffle,
                       optimizer=optimizer, loss=loss)
@@ -406,13 +417,27 @@ class sksom_keras(object):
         return np.vstack(p_list).T
     
     def label2xy(self, labels):
-        l = []
-        for ilabel in labels:
-            b, a = divmod(ilabel, self.kshape[1])
-            l.append((a, b))
-        pos = np.r_[l]
-        return pos
-
+        return np.c_[self.map_xy[labels,1], self.map_xy[labels,0]]
+#    def label2xy(self, labels):
+#        l = []
+#        for ilabel in labels:
+#            b, a = divmod(ilabel, self.kshape[1])
+#            l.append((a, b))
+#        pos = np.r_[l]
+#        return pos
+    
+    def plot_hex(self, figsize=(11,6), s=450, target=[0,1,2], ax=None):
+        if ax is None:
+            fig, ax = plt.subplots(figsize=figsize)
+        codes = self.landmarks_[:,target].copy()
+        for ii in range(len(target)):
+            v_max = codes[:,ii].max()
+            v_min = codes[:,ii].min()
+            codes[:,ii] = (codes[:,ii] - v_min) / (v_max - v_min)
+        for ii, ee in enumerate(self.map_xy):
+            ax.scatter(ee[1], ee[0], marker='h', s=s, color=codes[ii])
+        ax.axis("off")
+        return ax
 
 
 class sksom_keras2(sksom_keras):
@@ -473,33 +498,6 @@ class sksom_keras2(sksom_keras):
         if verbose is not None:
             print('mean distance to closest landmark : ', d2_mean)
             
-
-#    def _fit(self, i_epochs, i_r,
-#             x,
-#             batch_size=None, verbose=None, shuffle=True,
-#             optimizer=None, loss=None):
-#        self.gamma = 1.0 / (2.0 * i_r**2)
-#        num_feature = self.init_K.shape[1]
-#        print('=====> r: ', i_r, ' / epochs: ', i_epochs)
-#        self._make_keras_model(i_r, self.landmarks_)
-#        self.model.compile(loss=loss, optimizer=optimizer)
-#        Y = np.zeros((x.shape[0],1,1))
-#        with tqdm(total=i_epochs, file=sys.stdout,
-#                  disable=False if 0<verbose else True) as pbar:
-#            for _ in range(i_epochs):
-#                hst = self.model.fit(x, Y,
-#                                     batch_size=batch_size, epochs=1, verbose=0,
-#                                     shuffle=shuffle)
-#                for k, v in hst.history.items():
-#                    self.hst.setdefault(k, [])
-#                    self.hst[k] = self.hst[k] + v
-#                self.landmarks_ = LM = self.model.get_layer('som').get_weights()[0]
-#                d2_mean = self._calc_mean_dist(x)
-#                
-#                if 1 < verbose:
-#                    pbar.set_description('r: %f / gamma: %f / mean distance: %f' % (i_r, self.gamma, d2_mean))
-#                pbar.update(1)
-    
     def _calc_mean_dist(self, x):
         '''calc MeanDist2ClosestLM'''
         self.models['model_min_d'].get_layer('calc_d').set_weights([self.landmarks_])
