@@ -426,9 +426,14 @@ class sksom_keras(object):
 #        pos = np.r_[l]
 #        return pos
     
-    def plot_hex(self, figsize=(11,6), s=450, target=[0,1,2], ax=None):
+    def plot_hex(self, figsize=10, s=450, target=[0,1,2], ax=None, fig=None):
+        if not isinstance(figsize, tuple):
+            figsize = (figsize, figsize)
         if ax is None:
-            fig, ax = plt.subplots(figsize=figsize)
+            fig, ax = plt.subplots(figsize=figsize, dpi=100)
+        fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+        ax.axis("off")
+        ax.set_aspect('equal')
         codes = self.landmarks_[:,target].copy()
         for ii in range(len(target)):
             v_max = codes[:,ii].max()
@@ -436,7 +441,6 @@ class sksom_keras(object):
             codes[:,ii] = (codes[:,ii] - v_min) / (v_max - v_min)
         for ii, ee in enumerate(self.map_xy):
             ax.scatter(ee[1], ee[0], marker='h', s=s, color=codes[ii])
-        ax.axis("off")
         return ax
 
 
