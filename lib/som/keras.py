@@ -427,6 +427,10 @@ class sksom_keras(object):
 #        return pos
     
     def plot_hex(self, figsize=10, s=450, target=[0,1,2], ax=None, fig=None):
+        '''
+        s : ( figsize x 100(dpi) / kshape[1] ) ** 2
+        ex ((10*100)/40+2)**2
+        '''
         if not isinstance(figsize, tuple):
             figsize = (figsize, figsize)
         if ax is None:
