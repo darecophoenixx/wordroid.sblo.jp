@@ -32,6 +32,7 @@ from keras import backend as K
 __all__ = ['WordAndDoc2vec', ]
            
 
+SIGMA2 = 0.5**2
 
 
 class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity):
@@ -363,27 +364,26 @@ class WordAndDocSimilarity(object):
         self.row_dic = row_dic
         self.col_dic = col_dic
         self.num_features = wgt_row.shape[1]
-        
-        self.sim_row = gensim.similarities.MatrixSimilarity(self.wgt_row, num_features=self.num_features)
-        self.sim_col = gensim.similarities.MatrixSimilarity(self.wgt_col, num_features=self.num_features)
+        self.gamma = 1 / (self.num_features * SIGMA2)
     
-    def _get_sim(self, sim, d, query, num_best=100):
-        sim.num_best = None
-        res = sim[query]
-        res2 = gensim.matutils.scipy2sparse(scipy.sparse.csr_matrix(res))
-        res2.sort(key=lambda x: x[1], reverse=True)
-        if num_best is None:
-            res3 = res2
-        else:
-            res3 = res2[:num_best]
-        res4 = [(d[idx], v) for idx, v in res3]
-        return res4
+    def _get_sim(self, mx, d, query):
+        res = calc_gsim(query, mx, self.gamma)
+        res2 = [(d[ii], ee) for ii, ee in enumerate(res)]
+        return res2
     
-    def get_sim_bycol(self, query, num_best=100):
-        return self._get_sim(self.sim_col, self.col_dic, query, num_best=num_best)
+    def get_sim_bycol(self, query):
+        return self._get_sim(self.wgt_col, self.col_dic, query)
     
-    def get_sim_byrow(self, query, num_best=100):
-        return self._get_sim(self.sim_row, self.row_dic, query, num_best=num_best)
+    def get_sim_byrow(self, query):
+        return self._get_sim(self.wgt_row, self.row_dic, query)
+    
+    def get_fet_bycol(self, token):
+        idx = self.col_dic.token2id[token]
+        return self.wgt_col[idx]
+    
+    def get_fet_byrow(self, token):
+        idx = self.row_dic.token2id[token]
+        return self.wgt_row[idx]
 
 
 class Sentences(object):
@@ -427,8 +427,10 @@ class Dic4seq(Mapping):
         max_val = max(vals)
         ret = []
         for idx, v in c:
-            cnt = int(v / max_val * self.max_count)
-            cnt = cnt if cnt !=0 else 1
+            cnt0 = int(v / max_val * self.max_count)
+            #cnt = cnt0 if cnt0 !=0 else 1
+            cnt = cnt0
+            #print(cnt0, cnt, self.col_dic[idx])
             ret.extend([self.col_dic[idx]]*cnt)
         return ret
     
@@ -583,7 +585,7 @@ class Seq2(Sequence):
 
 def make_model(num_user=20, num_product=10, max_num_prod=5,
                num_neg=3, num_features=8, gamma=0.0,
-               embeddings_val=0.5):
+               embeddings_val=0.5, sigma2=SIGMA2):
 
     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
@@ -599,8 +601,11 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     input_neg = Input(shape=(max_num_prod, num_neg), name='input_neg')
 
     embed_user = user_embedding(input_user)
+    #print('embed_user >', K.int_shape(embed_user))
     embed_prod = prod_embedding(input_prod)
+    #print('embed_prod >', K.int_shape(embed_prod))
     embed_neg = prod_embedding(input_neg)
+    #print('embed_neg >', K.int_shape(embed_neg))
 
     model_user = Model(input_user, embed_user)
     model_prod = Model(input_prod, embed_prod)
@@ -612,7 +617,9 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
 
     def reshape_embed_prod(embed_prod):
         embed_prod2 = K.sum(K.square(embed_prod), axis=2)
+        #print('embed_prod2 >', K.int_shape(embed_prod2))
         embed_prod2 = K.expand_dims(embed_prod2)
+        #print('embed_prod2 >', K.int_shape(embed_prod2))
         return embed_prod2
     
     '''calc prob'''
@@ -620,15 +627,18 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
         embed_prod = x[0]
         embed_user = x[1]
         embed_prod2 = reshape_embed_prod(embed_prod)
+        #print('embed_prod2 (in calc_prob) >', K.int_shape(embed_prod2))
         
         embed_user2 = K.sum(K.square(embed_user), axis=2)
         embed_user2 = K.expand_dims(embed_user2)
         embed_user2 = K.repeat_elements(embed_user2, max_num_prod, axis=1)
+        #print('embed_user2 (in calc_prob) >', K.int_shape(embed_user2))
         
         embed_prod_x_embed_user = K.batch_dot(embed_prod, embed_user, axes=2)
-        prob = embed_prod2 + embed_user2 - 2*embed_prod_x_embed_user
-        prob = K.squeeze(prob, axis=2)
-        prob = K.exp(-1./(2.*num_features*0.1) * prob)
+        #print('embed_prod_x_embed_user (in calc_prob) >', K.int_shape(embed_prod_x_embed_user))
+        d2 = embed_prod2 + embed_user2 - 2*embed_prod_x_embed_user
+        d2 = K.squeeze(d2, axis=2)
+        prob = K.exp(-1./(num_features*sigma2) * d2)
         return prob
     prob = Lambda(calc_prob, name='calc_prob')([embed_prod, embed_user])
     model_prob = Model([input_prod, input_user], prob)
@@ -641,21 +651,33 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
         embed_neg = x[1]
         embed_prod2 = reshape_embed_prod(embed_prod)
         embed_prod2 = K.repeat_elements(embed_prod2, num_neg, axis=2)
+        #print('embed_prod2 (in calc_prob2) >', K.int_shape(embed_prod2))
         
         embed_neg2 = K.sum(K.square(embed_neg), axis=3)
+        #print('embed_neg2 (in calc_prob2) >', K.int_shape(embed_neg2))
         
-        embed_prod_x_embed_neg = K.batch_dot(embed_prod, embed_neg, axes=(2,3))
-        prob2 = embed_prod2 + embed_neg2 - 2*embed_prod_x_embed_neg
-        prob2 = K.exp(-1./(2.*num_features*0.1) * prob2)
+        #print('embed_prod (in calc_prob2) >', K.int_shape(embed_prod))
+        #print('embed_neg (in calc_prob2) >', K.int_shape(embed_neg))
+        embed_prod_x_embed_neg = K.batch_dot(
+            K.reshape(embed_prod, (-1, num_features)), 
+            K.reshape(embed_neg, (-1, num_neg, num_features)), 
+            axes=(1,2))
+        #print('embed_prod_x_embed_neg (in calc_prob2) >', K.int_shape(embed_prod_x_embed_neg))
+        embed_prod_x_embed_neg = K.reshape(embed_prod_x_embed_neg, (-1, max_num_prod, num_neg))
+        #print('embed_prod_x_embed_neg (in calc_prob2) >', K.int_shape(embed_prod_x_embed_neg))
+        d2 = embed_prod2 + embed_neg2 - 2*embed_prod_x_embed_neg
+        prob2 = K.exp(-1./(num_features*sigma2) * d2)
         return prob2
     prob2 = Lambda(calc_prob2, name='calc_prob2')([embed_prod, embed_neg])
     model_prob2 = Model([input_neg, input_prod], prob2)
     prob2_cnfm = Lambda(calc_prob2, name='calc_prob2_cnfm')([input_prod_vec, input_neg_vec])
     model_prob2_cnfm = Model([input_prod_vec, input_neg_vec], prob2_cnfm)
     
+    #print('prob >', K.int_shape(prob))
+    #print('Flatten()(prob2) >', K.int_shape(Flatten()(prob2)))
     prob = concatenate([prob, Flatten()(prob2)])
     model = Model([input_user, input_prod, input_neg], prob)
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
     models = {
         'model': model,
         'model_neg': model_neg,
@@ -668,79 +690,6 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     }
     return models
 
-def make_model_cor(num_user=20, num_product=100, num_neg=3, max_num_prod=5,
-                   num_features=8, gamma=0.0):
-    user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-                               embeddings_regularizer=regularizers.l2(gamma),
-                               name='user_embedding')
-    prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
-                               embeddings_regularizer=regularizers.l2(gamma),
-                               name='prod_embedding')
-    
-    input_user = Input(shape=(1,), name='input_user')
-    input_prod = Input(shape=(max_num_prod,), name='input_prod')
-    input_neg = Input(shape=(max_num_prod, num_neg), name='input_neg')
-    
-    embed_user = user_embedding(input_user)
-    embed_prod = prod_embedding(input_prod)
-    embed_neg = prod_embedding(input_neg)
-    
-    model_user = Model(input_user, Activation('linear')(embed_user))
-    model_prod = Model(input_prod, Activation('linear')(embed_prod))
-    model_neg = Model(input_neg, Activation('linear')(embed_neg))
-    
-    cor1 = dot([embed_prod, embed_user], axes=2, normalize=True)
-    cor1 = Flatten()(cor1)
-    model_cor1 = Model([input_user, input_prod], cor1)
-
-    def fn_cor(x):
-        landmarks = x[0]
-        landmarks = K.permute_dimensions(landmarks, (1,0,2))
-        #print('int_shape(landmarks) >>>', K.int_shape(landmarks))
-        negs = x[1]
-        negs = K.permute_dimensions(negs, (1,0,3,2))
-        #print('int_shape(negs) >>>', K.int_shape(negs))
-        def fn(ii):
-            lm = K.gather(landmarks, ii)
-            lm = K.l2_normalize(lm, 1)
-            #print('int_shape(lm) >>>', K.int_shape(lm))
-            x = K.gather(negs, ii)
-            x = K.l2_normalize(x, 1)
-            #print('int_shape(x) >>>', K.int_shape(x))
-            res = K.batch_dot(lm, x, axes=1)
-            return res
-        res = K.map_fn(fn, np.arange(max_num_prod), dtype='float32')
-        res = K.permute_dimensions(res, (1,0,2))
-        #print('int_shape(res) >>>', K.int_shape(res))
-        return res
-    #cor2 = dot([embed_prod, embed_neg], axes=(2,3), normalize=True)
-    cor2 = Lambda(fn_cor, name='fn_cor')([embed_prod, embed_neg])
-    cor2 = Flatten()(cor2)
-    model_cor2 = Model([input_neg, input_prod], cor2)
-#     return {
-#         'model_neg': model_neg,
-#         'model_user': model_user,
-#         'model_prod': model_prod,
-#         'model_cor1': model_cor1,
-#         'model_cor2': model_cor2
-#     }
-    
-    cor = concatenate([cor1, cor2])
-    model_cor = Model([input_user, input_prod, input_neg], cor)
-    #prob = Activation(lambda x: (x+1) / 2)(cor)
-    prob = Activation('sigmoid')(cor)
-    
-    model = Model([input_user, input_prod, input_neg], prob)
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-    return {
-        'model': model,
-        'model_neg': model_neg,
-        'model_user': model_user,
-        'model_prod': model_prod,
-        'model_cor1': model_cor1,
-        'model_cor2': model_cor2,
-        'model_cor': model_cor,
-    }
 
 class IlligalDocIndexException(Exception):
     pass
@@ -894,28 +843,15 @@ class WordAndDoc2vec(object):
     wgt_col = property(get_wgt_bycol)
     
     def get_sim(self):
-        wgt_col = self.wgt_col
-        wgt_col_unit = np.zeros(shape=wgt_col.shape)
-        for ii in range(wgt_col_unit.shape[0]):
-            wgt_col_unit[ii] = gensim.matutils.unitvec(wgt_col[ii].copy())
-        
-        wgt_row = self.wgt_row
-        wgt_row_unit = np.zeros(shape=wgt_row.shape)
-        for ii in range(wgt_row_unit.shape[0]):
-            wgt_row_unit[ii] = gensim.matutils.unitvec(wgt_row[ii].copy())
-        
-        sim = WordAndDocSimilarity(wgt_row_unit, self.doc_dic, wgt_col_unit, self.word_dic)
+        sim = WordAndDocSimilarity(self.wgt_row, self.doc_dic, self.wgt_col, self.word_dic)
         return sim
     sim = property(get_sim)
 
-def get_sim(wgt_row, doc_dic, wgt_col, word_dic):
-    wgt_col_unit = np.zeros(shape=wgt_col.shape)
-    for ii in range(wgt_col_unit.shape[0]):
-        wgt_col_unit[ii] = gensim.matutils.unitvec(wgt_col[ii].copy())
-    
-    wgt_row_unit = np.zeros(shape=wgt_row.shape)
-    for ii in range(wgt_row_unit.shape[0]):
-        wgt_row_unit[ii] = gensim.matutils.unitvec(wgt_row[ii].copy())
-    
-    sim = WordAndDocSimilarity(wgt_row_unit, doc_dic, wgt_col_unit, word_dic)
-    return sim
+
+def calc_gsim(vec, m, gamma=1.0):
+    vec2 = (vec**2).sum()
+    m2 = (m**2).sum(axis=1)
+    vec_m = m.dot(vec)
+    d2 = vec2 + m2 - 2*vec_m
+    ret = np.exp(-gamma * d2)
+    return ret
