@@ -817,7 +817,7 @@ class WordAndDoc2vec(object):
 #        self.tfidf = tfidf
     
     def make_model(self, max_num_prod=5, num_neg=3, num_features=8,
-                   gamma=0.0, embeddings_val=0.5):
+                   gamma=0.0, embeddings_val=0.1):
         #self.num_user = len(self.doc_seq)
         self.num_user = self.corpus_csr.shape[0]
         self.num_product = self.mysim.index.shape[1]
