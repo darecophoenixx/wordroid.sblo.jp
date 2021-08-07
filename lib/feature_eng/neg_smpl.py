@@ -859,7 +859,7 @@ class WordAndDoc2vec(object):
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
             callbacks = [lr_scheduler]
-        self.hst = self.model.fit_generator(self.seq2, steps_per_epoch=len(self.seq),
+        self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
                                             callbacks=callbacks,
