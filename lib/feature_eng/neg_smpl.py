@@ -584,16 +584,18 @@ class Seq2(Sequence):
 
 
 def make_model(num_user=20, num_product=10, max_num_prod=5,
-               num_neg=3, num_features=8, gamma=0.0,
-               embeddings_val=0.5, sigma2=SIGMA2):
+               num_neg=3, num_features=8, gamma=0.0, maxnorm=None,
+               embeddings_val=0.1, sigma2=SIGMA2):
 
     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                embeddings_regularizer=regularizers.l2(gamma),
+                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
                                name='user_embedding', trainable=True)
     prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                embeddings_regularizer=regularizers.l2(gamma),
+                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
                                name='prod_embedding', trainable=True)
 
     input_user = Input(shape=(1,), name='input_user')
@@ -817,7 +819,7 @@ class WordAndDoc2vec(object):
 #        self.tfidf = tfidf
     
     def make_model(self, max_num_prod=5, num_neg=3, num_features=8,
-                   gamma=0.0, embeddings_val=0.1):
+                   gamma=0.0, embeddings_val=0.1, maxnorm=None):
         #self.num_user = len(self.doc_seq)
         self.num_user = self.corpus_csr.shape[0]
         self.num_product = self.mysim.index.shape[1]
@@ -827,7 +829,7 @@ class WordAndDoc2vec(object):
         
         models = make_model(num_user=self.num_user, num_product=self.num_product, max_num_prod=max_num_prod,
                    num_neg=num_neg, num_features=num_features, gamma=gamma,
-                   embeddings_val=embeddings_val)
+                   embeddings_val=embeddings_val, maxnorm=maxnorm)
         self.models = models
         self.model = models['model']
         return models
