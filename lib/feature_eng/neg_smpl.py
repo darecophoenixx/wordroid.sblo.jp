@@ -25,7 +25,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from keras import regularizers
 from keras import initializers
 from keras.metrics import categorical_accuracy
-from keras.constraints import maxnorm, non_neg
+from keras.constraints import maxnorm, non_neg, MaxNorm
 from keras.utils import Sequence
 from keras import backend as K
 
