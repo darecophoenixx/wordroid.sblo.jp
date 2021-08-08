@@ -728,77 +728,6 @@ class WordAndDoc2vec(object):
         print('### creating Dic4seq...')
         self.dic4seq = Dic4seq(self.mysim, self.doc_dic, self.word_dic)
         print(self.dic4seq)
-#    def __init__(self,
-#                 doc_seq, word_dic, doc_dic,
-#                 logging=False,
-#                 load=False
-#                 ):
-#        if load:
-#            return
-#        self.logging = logging
-#        self.init()
-#        
-#        self.doc_seq = doc_seq
-#        self.word_dic = word_dic
-#        self.doc_dic = doc_dic
-#        
-#        print('len(doc_seq) >>>', len(doc_seq))
-#        print('max(doc_dic.keys()) + 1 >>>', max(doc_dic.keys()) + 1)
-#        if len(doc_seq) != (max(doc_dic.keys()) + 1):
-#            raise IlligalDocIndexException('num of doc_seq is [%s]. But doc_dic is [%s].' % (len(doc_seq), max(doc_dic.keys()) + 1))
-#        
-#        num_features = max(self.word_dic.keys()) + 1
-#        print('num_features >>>', num_features)
-#        
-#        print('### creating corpus_csr...')
-#        #corpus_csr = gensim.matutils.corpus2csc((self.word_dic.doc2bow(ee) for ee in self.doc_seq), num_terms=len(self.word_dic)).T
-#        corpus_csr = gensim.matutils.corpus2csc((self.word_dic.doc2bow(ee) for ee in self.doc_seq), num_terms=num_features).T
-#        print('corpus_csr.shape >>>', corpus_csr.shape)
-#        
-#        self.create_tfidf()
-#        print('### creating MySparseMatrixSimilarity...')
-#        #self.mysim = MySparseMatrixSimilarity(corpus_csr, num_features=len(self.word_dic), tfidf=self.tfidf)
-#        self.mysim = MySparseMatrixSimilarity(corpus_csr, num_features=num_features, tfidf=self.tfidf)
-#        print(self.mysim)
-#        
-#        print('### creating Dic4seq...')
-#        self.dic4seq = Dic4seq(self.mysim, self.doc_dic, self.word_dic)
-#        print(self.dic4seq)
-    
-    def _create_path(self, path):
-        path_doc_seq = path + '_doc_seq'
-        path_word_dic = path + '_word_dic'
-        path_doc_dic = path + '_doc_dic'
-        path_mysim = path + '_mysim'
-        return path_doc_seq, path_word_dic, path_doc_dic, path_mysim
-    
-#    def save(self, path):
-#        path_doc_seq, path_word_dic, path_doc_dic, path_mysim = self._create_path(path)
-#        with open(path_doc_seq, 'wb') as fw:
-#            import pickle
-#            pickle.dump(self.doc_seq, fw)
-#        self.word_dic.save(path_word_dic)
-#        self.doc_dic.save(path_doc_dic)
-#        self.mysim.save(path_mysim)
-#    
-#    @classmethod
-#    def load(cls, path):
-#        path_doc_seq, path_word_dic, path_doc_dic, path_mysim = cls._create_path(cls, path)
-#        with open(path_doc_seq, 'rb') as f:
-#            import pickle
-#            doc_seq = pickle.load(f)
-#        mysim = MySparseMatrixSimilarity.load(path_mysim)
-#        word_dic = gensim.corpora.dictionary.Dictionary.load(path_word_dic)
-#        doc_dic = gensim.corpora.dictionary.Dictionary.load(path_doc_dic)
-#        
-#        wd2v = WordAndDoc2vec(doc_seq, word_dic, doc_dic, load=True)
-#        wd2v.doc_seq = doc_seq
-#        wd2v.word_dic = word_dic
-#        wd2v.doc_dic = doc_dic
-#        wd2v.mysim = mysim
-#        wd2v.tfidf = mysim.tfidf
-#        wd2v.dic4seq = Dic4seq(mysim, doc_dic, word_dic)
-#        return wd2v
     
     def init(self):
         if self.logging:
@@ -811,12 +740,6 @@ class WordAndDoc2vec(object):
             id2word=self.word_dic
         )
         self.tfidf = tfidf
-#    def create_tfidf(self):
-#        print('### creating tfidf...')
-#        sentences = Sentences(self.doc_seq, self.word_dic)
-#        
-#        tfidf = gensim.models.TfidfModel((self.word_dic.doc2bow(ee) for ee in self.doc_seq), id2word=self.word_dic)
-#        self.tfidf = tfidf
     
     def make_model(self, max_num_prod=5, num_neg=3, num_features=8,
                    gamma=0.0, embeddings_val=0.1, maxnorm=None):
