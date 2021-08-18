@@ -501,8 +501,8 @@ class Seq(object):
         self.state = state
         self.num_neg = num_neg
         
-        self.row_indeces = set(range(row_csr.shape[0]))
-        self.col_indeces = set(range(col_csr.shape[0]))
+        self.row_indeces = range(row_csr.shape[0])
+        self.col_indeces = range(col_csr.shape[0])
         
         ret_y = [0]*self.num_neg + [1]*1 + [0]*self.num_neg
         self.ret_y = np.array([[ret_y] * self.stack_size])
