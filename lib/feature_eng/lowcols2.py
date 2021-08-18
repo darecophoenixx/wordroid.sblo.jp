@@ -192,11 +192,18 @@ def make_model(num_user=20, num_product=39, num_features=12, num_neg=1,
     oup =Activation('linear', name='y')(oup)
     model_gk1 = Model(input_user, oup)
     
-    model = Model([input_user, input_neg_user], [oup, prob3])
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+    model = Model(input_user, oup)
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'])
+    model2 = Model([input_user, input_neg_user], [oup, prob3])
+    model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
                   loss_weights={'y': 1.0, 'y_neg_user': loss_wgt_neg})
+    model3 = Model([input_user, input_neg_user], [oup, prob3])
+    model3.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+                  loss_weights={'y': 1.0, 'y_neg_user': loss_wgt_neg/10})
     models = {
         'model': model,
+        'model2': model2,
+        'model3': model3,
         'model_user': model_user,
         'model_gk1': model_gk1,
         'model_prob3': model_prob3,
@@ -310,15 +317,24 @@ class WD2vec(object):
             lr_scheduler = LearningRateScheduler(lr_schedule)
             eraly_stopping = EarlyStopping(monitor='loss', patience=3)
             callbacks = [eraly_stopping, lr_scheduler]
+            #callbacks = [lr_scheduler]
         model = self.models['model']
+        model2 = self.models['model2']
+        model3 = self.models['model3']
         seq = self.get_seq(batch_size=batch_size)
-        res = model.fit(seq, steps_per_epoch=len(seq),
+        res = model3.fit(seq, steps_per_epoch=len(seq),
                         epochs=epochs,
                         verbose=verbose,
                         shuffle=shuffle,
                         callbacks=callbacks)
+#        res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
+#                                  batch_size=batch_size,
+#                                  epochs=epochs,
+#                                  verbose=verbose,
+#                                  shuffle=shuffle,
+#                                  callbacks=callbacks)
         lr2 = res.history['lr'][-1]
-        res2 = self.train2(epochs=epochs,
+        res2 = self.train2(epochs=int(epochs/2),
                       batch_size=batch_size,
                       verbose=verbose,
                       use_multiprocessing=use_multiprocessing,
@@ -344,9 +360,10 @@ class WD2vec(object):
             lr_scheduler = LearningRateScheduler(lr_schedule)
             early_stopping = EarlyStopping(monitor='loss', patience=3)
             callbacks = [early_stopping, lr_scheduler] if flag_early_stopping else [lr_scheduler]
-        model = self.models['model']
+            #callbacks = [lr_scheduler]
+        model2 = self.models['model2']
         seq = self.get_seq(batch_size=batch_size)
-        res = model.fit(seq, steps_per_epoch=len(seq),
+        res = model2.fit(seq, steps_per_epoch=len(seq),
                         epochs=epochs,
                         shuffle=shuffle,
                         verbose=verbose,
