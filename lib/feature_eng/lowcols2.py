@@ -249,8 +249,8 @@ class WD2vec(object):
     def __init__(self, X_df):
         self.X_df = X_df
         
-    def make_model(self, num_features=12, num_neg=1,
-                         gamma=0.0, embeddings_val=0.5, loss_wgt_neg=0.1,
+    def make_model(self, num_features=12, num_neg=2,
+                         gamma=0.0, embeddings_val=0.1, loss_wgt_neg=0.05,
                          seed=None, rscore=None, cscore=None):
         num_user = self.X_df.shape[0]
         num_product = self.X_df.shape[1]
@@ -267,9 +267,9 @@ class WD2vec(object):
                   num_neg=self.num_neg)
         return seq
     
-    def train(self, epochs=5, batch_size=32, verbose=1,
+    def train(self, epochs=5, batch_size=32, verbose=2,
               use_multiprocessing=False, workers=1, shuffle=True,
-              callbacks=None, lr0=0.001, flag_early_stopping=True,
+              callbacks=None, lr0=0.005, flag_early_stopping=True,
               base=8):
         def lr_schedule(epoch, lrx):
             def reduce(epoch, lr):
