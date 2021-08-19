@@ -213,11 +213,12 @@ def make_model(num_user=20, num_product=39, num_features=12, num_neg=1,
 
 class Seq(Sequence):
     
-    def __init__(self, user_id_list, X_df_values, batch_size, num_neg=1):
+    def __init__(self, user_id_list, X_df_values, batch_size, num_neg=1, only_y=False):
         self.user_id_list = list(user_id_list)
         self.X_df_values = X_df_values
         self.num_neg = num_neg
         self.batch_size = batch_size
+        self.only_y = only_y
         
         self.len = ceil(len(self.user_id_list) / self.batch_size)
     
@@ -237,10 +238,7 @@ class Seq(Sequence):
                 'input_user': np.array(input_user),
                 'input_neg_user': np.array(input_neg_user).reshape((ll, 1, self.num_neg)),
                 },
-                {
-                'y': y,
-                'y_neg_user': y_neg_user,
-                }
+                {'y': y} if self.only_y else {'y': y, 'y_neg_user': y_neg_user}
                )
 
 
@@ -260,16 +258,16 @@ class WD2vec(object):
                                  rscore=rscore, cscore=cscore)
         return self.models
     
-    def get_seq(self, batch_size=32):
+    def get_seq(self, batch_size=32, only_y=False):
         seq = Seq(user_id_list=np.arange(self.X_df.shape[0]),
                   X_df_values=self.X_df.values,
                   batch_size=batch_size,
-                  num_neg=self.num_neg)
+                  num_neg=self.num_neg, only_y=only_y)
         return seq
     
     def train(self, epochs=5, batch_size=32, verbose=2,
               use_multiprocessing=False, workers=1, shuffle=True,
-              callbacks=None, lr0=0.005, flag_early_stopping=True,
+              callbacks=None, callbacks_add=None, lr0=0.005, flag_early_stopping=True,
               base=8):
         def lr_schedule(epoch, lrx):
             def reduce(epoch, lr):
@@ -318,11 +316,13 @@ class WD2vec(object):
             eraly_stopping = EarlyStopping(monitor='loss', patience=3)
             callbacks = [eraly_stopping, lr_scheduler]
             #callbacks = [lr_scheduler]
+        if callbacks_add is not None:
+            callbacks = callbacks + callbacks_add
         model = self.models['model']
         model2 = self.models['model2']
         model3 = self.models['model3']
-        seq = self.get_seq(batch_size=batch_size)
-        res = model3.fit(seq, steps_per_epoch=len(seq),
+        seq = self.get_seq(batch_size=batch_size, only_y=True)
+        res = model.fit(seq, steps_per_epoch=len(seq),
                         epochs=epochs,
                         verbose=verbose,
                         shuffle=shuffle,
