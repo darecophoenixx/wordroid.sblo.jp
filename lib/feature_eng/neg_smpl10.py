@@ -64,9 +64,9 @@ from keras.utils import Sequence
 from keras import backend as K
 
 __all__ = ['WordAndDoc2vec', ]
-           
 
-SIGMA2 = 0.5**2
+
+SIGMA2 = 0.2**2
 
 
 class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity):
@@ -508,8 +508,8 @@ class Seq(object):
         self.state = state
         self.num_neg = num_neg
         
-        self.row_indeces = range(row_csr.shape[0])
-        self.col_indeces = set(range(col_csr.shape[0]))
+        self.row_indeces = list(range(row_csr.shape[0]))
+        self.col_indeces = list(range(col_csr.shape[0]))
         self.user_list = list(self.dic4seq.keys())
         
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
