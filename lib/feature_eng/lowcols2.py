@@ -230,7 +230,10 @@ class Seq(Sequence):
         idx_rng_from, idx_rng_to = (idx*bs), ((idx*bs+bs) if (idx*bs+bs)<len(self.user_id_list) else len(self.user_id_list))
         input_user = self.user_id_list[idx_rng_from:idx_rng_to]
         ll = len(input_user)
-        input_neg_user = random.sample(self.user_id_list, self.num_neg*ll)
+        try:
+            input_neg_user = random.sample(self.user_id_list, self.num_neg*ll)
+        except ValueError:
+            input_neg_user = random.choices(self.user_id_list, k=self.num_neg*ll)
         y = self.X_df_values[idx_rng_from:idx_rng_to,:]
         y_neg_user = np.zeros((ll, self.num_neg))
         return (
@@ -326,6 +329,7 @@ class WD2vec(object):
                         epochs=epochs,
                         verbose=verbose,
                         shuffle=shuffle,
+                        use_multiprocessing=use_multiprocessing, workers=workers,
                         callbacks=callbacks)
 #        res = model.fit(np.arange(self.X_df.shape[0]), self.X_df.values,
 #                                  batch_size=batch_size,
