@@ -229,15 +229,17 @@ class M01F(object):
         
         '''plot'''
         plt.figure(figsize=figsize)
-        plt.plot(n_range, pca_scores.mean(axis=0), '-o', label='PCA')
         pca_m = pca_scores.mean(axis=0)
         pca_std = np.std(pca_scores, axis=0)
-        plt.fill_between(n_range, pca_m-pca_std, pca_m+pca_std, alpha=0.2, color="darkorange")
+        plt.plot(n_range, pca_m, '-o', label='PCA')
+        if n_init != 1:
+            plt.fill_between(n_range, pca_m-pca_std, pca_m+pca_std, alpha=0.2, color="darkorange")
         
-        plt.plot(n_range, fa_scores.mean(axis=0), '-o', label='FA')
         fa_m = fa_scores.mean(axis=0)
         fa_std = np.std(fa_scores, axis=0)
-        plt.fill_between(n_range, fa_m-fa_std, fa_m+fa_std, alpha=0.2, color="darkorange")
+        plt.plot(n_range, fa_m, '-o', label='FA')
+        if n_init != 1:
+            plt.fill_between(n_range, fa_m-fa_std, fa_m+fa_std, alpha=0.2, color="darkorange")
         plt.grid()
         plt.legend()
     
