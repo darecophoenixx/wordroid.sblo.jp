@@ -204,15 +204,18 @@ class M01F(object):
     def plot_mclust_row(self, figsize=(15, 15), lw=2):
         self.plot_mclust(self.mclust_row_res, figsize, lw)
     
-    def plot_pca_fa_cv(self, selected_cor=None, n_range=np.arange(2, 16), n_init=10,
+    def plot_pca_fa_cv(self, df=None, n_range=np.arange(2, 16), n_init=10,
                        figsize=(10,10)):
-        if selected_cor is None:
-            selected_cor = self.df_cor.values
+        if df is None:
+            c = self.df_cor.values
         pca = PCA(svd_solver='full')
         fa = FactorAnalysis()
         pca_scores, fa_scores = [], []
         for _ in range(n_init):
-            r_calced = self._create_mat_selected_cor(selected_cor, self.X_df)
+            if df is None:
+                r_calced = self._create_mat_selected_cor(c, self.X_df)
+            else:
+                r_calced = df.values
             for n in n_range:
                 pca.n_components = n
                 fa.n_components = n
