@@ -16,7 +16,7 @@ import pandas as pd
 
 from sklearn import mixture
 from sklearn.decomposition import PCA, FactorAnalysis
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, KFold
 from sklearn.preprocessing import StandardScaler
 
 from keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
@@ -205,6 +205,7 @@ class M01F(object):
         self.plot_mclust(self.mclust_row_res, figsize, lw)
     
     def plot_pca_fa_cv(self, df=None, n_range=np.arange(2, 16), n_init=10,
+                       cv=KFold(n_splits=5, shuffle=True),
                        figsize=(10,10)):
         if df is None:
             c = self.df_cor.values
@@ -219,8 +220,8 @@ class M01F(object):
             for n in n_range:
                 pca.n_components = n
                 fa.n_components = n
-                pca_scores.append(np.mean(cross_val_score(pca, r_calced)))
-                fa_scores.append(np.mean(cross_val_score(fa, r_calced)))
+                pca_scores.append(np.mean(cross_val_score(pca, r_calced, cv=cv)))
+                fa_scores.append(np.mean(cross_val_score(fa, r_calced, cv=cv)))
         
         pca_scores = np.array(pca_scores).reshape((n_init, -1))
         fa_scores = np.array(fa_scores).reshape((n_init, -1))
