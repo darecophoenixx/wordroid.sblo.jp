@@ -232,7 +232,7 @@ class M01F(object):
         r_calced = create_mat_from_cor(selected_cor, df.shape[0])
         return r_calced
     
-    def find_ncomponent(self, df=None, type='pca', n_iter=10,
+    def find_ncomponents(self, df=None, type='pca', n_iter=10,
                         figsize=(10,10)):
         if df is None:
             w, res = find_ncomponents_pca(self.df_cor.values, n_obs=self.X_df.shape[0], n_iter=n_iter, figsize=figsize)
