@@ -8,83 +8,9 @@ import numpy as np
 from math import ceil
 import random
 
-
-#class Seq(object):
-#    
-#    def __init__(self, doc_seq, batch_size=32, shaffle=False, state=None):
-#        self.doc_seq = doc_seq
-#        self.shaffle = shaffle
-#        self.state = state
-#        self.batch_size = batch_size
-#        
-#        self.product_list = list(self.doc_seq.word_dic.token2id.keys())
-#        self.user_list = np.array(list(self.doc_seq.doc_dic.token2id.keys()), dtype=str)
-#
-#        '''estimate self length'''
-#        self.initialize_it()
-#        self.len = 1
-#        for _ in self.it:
-#            self.len += 1
-#        
-#        self.initialize_it()
-#        
-#        # others
-#        self.num_class = max(self.doc_seq.word_dic.keys()) + 1
-#    
-#    def initialize_it(self):
-#        if self.shaffle:
-#            '''not implemented yet'''
-#            #random.seed(self.state)
-#            #random.shuffle(self.user_list)
-#        
-#        self.it = iter(range(0, len(self.user_list), self.batch_size))
-#        self.idx_next = self.it.__next__()
-#    
-#    def __len__(self):
-#        return self.len
-#    
-#    def __iter__(self):
-#        return self
-#    
-#    def __next__(self):
-#        idx = self.idx_next
-#        self.users_part = self.user_list[idx:((idx+self.batch_size) if idx+self.batch_size<len(self.user_list) else len(self.user_list))]
-#        res = self.getpart(self.users_part)
-#        try:
-#            self.idx_next = self.it.__next__()
-#        except StopIteration:
-#            self.initialize_it()
-#        return res
-#    
-#    def __getitem__(self, iuser):
-#        ret_user, ret_y = self.get_data(iuser)
-#        return ({'input_user': ret_user}, ret_y)
-#    
-#    def get_data(self, iuser):
-#        user_id = self.doc_seq.doc_dic.token2id[iuser]
-#        prods = self.doc_seq[user_id]
-#        prods_id = [self.doc_seq.word_dic.token2id[e1] for e1 in prods]
-#        cats = to_categorical(prods_id, num_classes=self.num_class)
-#        cat = cats.sum(axis=0)
-#        
-#        return (user_id, cat)
-#    
-#    def getpart(self, users_part):
-#        x_input_user = []
-#        y = []
-#        for iuser in users_part:
-#            x_train, y_train = self[iuser]
-#            x_input_user.append(x_train['input_user'])
-#            y.append(y_train.tolist())
-#        return ({
-#            'input_user': np.array(x_input_user),
-#            },
-#            np.array(y))
-
-
 from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
 
-from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
+from tensorflow.keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, Conv3D, \
     Conv2DTranspose, \
     AveragePooling1D, \
@@ -99,18 +25,18 @@ from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     Bidirectional, TimeDistributed, \
     SpatialDropout1D, \
     BatchNormalization
-from keras.models import Model, Sequential
-from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras import losses
+from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
     LearningRateScheduler, EarlyStopping
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras import regularizers
-from keras import initializers
-from keras.metrics import categorical_accuracy
-from keras.constraints import maxnorm, non_neg
-from keras.optimizers import RMSprop
-from keras.utils import to_categorical, Sequence
-from keras import backend as K
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras import regularizers
+from tensorflow.keras import initializers
+from tensorflow.keras.metrics import categorical_accuracy
+from tensorflow.keras.constraints import MaxNorm, NonNeg
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.utils import to_categorical, Sequence
+from tensorflow.keras import backend as K
 
 
 SIGMA2 = 0.5**2
