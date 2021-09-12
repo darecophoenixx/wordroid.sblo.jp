@@ -19,22 +19,6 @@ from sklearn.decomposition import PCA, FactorAnalysis
 from sklearn.model_selection import cross_val_score, KFold
 from sklearn.preprocessing import StandardScaler
 
-from keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
-    Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Conv2DTranspose, \
-    GlobalAveragePooling1D, MaxPooling1D, MaxPooling2D, \
-    concatenate, Flatten, Average, Activation, \
-    RepeatVector, Permute, Reshape, Dot, \
-    multiply, dot, add
-from keras.models import Model, Sequential
-from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras import regularizers
-from keras import initializers
-from keras.metrics import categorical_accuracy
-from keras.constraints import maxnorm, non_neg
-from keras import backend as K
-
 import matplotlib.pyplot as plt
 import seaborn as sns
            
@@ -245,14 +229,16 @@ class M01F(object):
         plt.legend()
     
     def _create_mat_selected_cor(self, selected_cor, df):
-        r = np.random.normal(size=(df.shape))
-        cor_r = np.corrcoef(r, rowvar=False)
-        ss = StandardScaler()
-        r_scaled = ss.fit_transform(r)
-        r_scaled = r_scaled.dot(np.linalg.inv(np.linalg.cholesky(cor_r).T))
-        np.corrcoef(r_scaled, rowvar=False)
-        r_calced = r_scaled.dot(np.linalg.cholesky(selected_cor).T)
+        r_calced = create_mat_from_cor(selected_cor, df.shape[0])
         return r_calced
+    
+    def find_ncomponent(self, df=None, type='pca', n_iter=10,
+                        figsize=(10,10)):
+        if df is None:
+            w, res = find_ncomponents_pca(self.df_cor.values, n_obs=self.X_df.shape[0], n_iter=n_iter, figsize=figsize)
+        else:
+            w, res = find_ncomponents_pca(df.values, n_iter=n_iter, figsize=figsize)
+        return w, res
     
     def get_wgt_byrow(self):
         wgt_row = self.wd2v.get_wgt_byrow()
@@ -272,9 +258,16 @@ class M01F(object):
 
 
 
-
-
-
+def create_mat_from_cor(selected_cor, n_samples=100, state=None):
+    rs = np.random.RandomState(state)
+    r = rs.normal(size=(n_samples, selected_cor.shape[1]))
+    cor_r = np.corrcoef(r, rowvar=False)
+    ss = StandardScaler()
+    r_scaled = ss.fit_transform(r)
+    r_scaled = r_scaled.dot(np.linalg.inv(np.linalg.cholesky(cor_r).T))
+    np.corrcoef(r_scaled, rowvar=False)
+    r_calced = r_scaled.dot(np.linalg.cholesky(selected_cor).T)
+    return r_calced
 
 
 def mclust(df_target, n_init=3, g_range=G_RANGE,
@@ -297,10 +290,65 @@ def mclust(df_target, n_init=3, g_range=G_RANGE,
     return res
 
 
+def find_ncomponents_pca(x, n_obs=None, n_iter=10,
+                         figsize=(10,10)):
+    n_features = x.shape[1]
+    isCorrelation = False
+    if x.shape[0] == x.shape[1] and int(np.diag(x).sum()) == x.shape[0]:
+        isCorrelation = True
+        c = x
+        if n_obs is None:
+            raise Exception('if x is correlation matrix, n_obs must be specified.')
+        x = create_mat_from_cor(c, n_samples=n_obs, state=None)
+    else:
+        c = np.corrcoef(x, rowvar=False)
+        n_obs = x.shape[0]
+    
+    '''calc PCA eigen values'''
+    w = get_eigval(x, n_features)
+    
+    def func(mat):
+        '''resampling'''
+        resampling_w = np.array([0.0] * n_features)
+        if not isCorrelation:
+            new_mat = np.apply_along_axis(np.random.choice, 0, mat, size=mat.shape[0])
+            w = get_eigval(new_mat, n_features)
+            resampling_w = np.sort(w)[::-1]
+        '''sim'''
+        new_mat = np.random.normal(size=(n_obs, n_features))
+        sim_w = get_eigval(new_mat, n_features)
+        return resampling_w, sim_w
+    res = []
+    for ii in range(n_iter):
+        res0 = func(x)
+        res.append(res0)
+    res = np.array(res)
+    
+    '''plot'''
+    plt.figure(figsize=figsize)
+    plt.plot(np.arange(x.shape[1])+1, w, '-o', label='PCA', color='blue')
+    m = res.mean(axis=0)[0]
+    if m.sum() != 0:
+        std = res.std(axis=0)[0]
+        plt.plot(np.arange(x.shape[1])+1, m, '-o', label='resampling', color='darkblue')
+        plt.fill_between(np.arange(x.shape[1])+1, m-std, m+std, alpha=0.2, color="darkorange")
+    m = res.mean(axis=0)[1]
+    std = res.std(axis=0)[1]
+    plt.plot(np.arange(x.shape[1])+1, m, '-o', label='sim', color='darkorange')
+    plt.fill_between(np.arange(x.shape[1])+1, m-std, m+std, alpha=0.2, color="darkblue")
+    plt.legend(loc='best')
+    plt.grid()
+    return w, res
 
 
-
-
+def get_eigval(mat, n_features):
+    pca = PCA(n_components=n_features)
+    pca.fit(mat)
+    cv = pca.get_covariance()
+    cv = cv / np.sqrt(np.diag(cv)) / np.sqrt(np.diag(cv)).T
+    w, _ = np.linalg.eig(cv)
+    w = np.sort(w)[::-1]
+    return w
 
 
 
