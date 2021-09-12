@@ -46,22 +46,23 @@ import logging
 import numpy as np
 import scipy
 import gensim
-from keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
+
+from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Conv2DTranspose, \
     GlobalAveragePooling1D, MaxPooling1D, MaxPooling2D, \
     concatenate, Flatten, Average, Activation, \
     RepeatVector, Permute, Reshape, Dot, \
     multiply, dot, add
-from keras.models import Model, Sequential
-from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History, LearningRateScheduler
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras import regularizers
-from keras import initializers
-from keras.metrics import categorical_accuracy
-from keras.constraints import maxnorm, non_neg, MaxNorm
-from keras.utils import Sequence
-from keras import backend as K
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras import losses
+from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History, LearningRateScheduler
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras import regularizers
+from tensorflow.keras import initializers
+from tensorflow.keras.metrics import categorical_accuracy
+from tensorflow.keras.constraints import NonNeg, MaxNorm
+from tensorflow.keras.utils import Sequence
+from tensorflow.keras import backend as K
 
 __all__ = ['WordAndDoc2vec', ]
 
