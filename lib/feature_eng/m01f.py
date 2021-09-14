@@ -129,7 +129,9 @@ class M01F(object):
     
     def eig(self):
         '''quasi PCA'''
-        sdev2, self.loadings = np.linalg.eig(self.df_cor.values)
+        sdev2, loadings = np.linalg.eig(self.df_cor.values)
+        idx = np.argsort(sdev2)[::-1]
+        sdev2, self.loadings = sdev2[idx], loadings[:,idx]
         self.sdev = np.sqrt(sdev2)
         return self.sdev, self.loadings
     
