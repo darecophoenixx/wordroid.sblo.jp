@@ -4,6 +4,7 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md
 '''
 
+import sys
 import itertools
 import random
 from collections import Mapping
@@ -13,11 +14,14 @@ import numpy as np
 import scipy
 import gensim
 import pandas as pd
+from tqdm import tqdm
 
 from sklearn import mixture
 from sklearn.decomposition import PCA, FactorAnalysis
 from sklearn.model_selection import cross_val_score, KFold
 from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import f1_score, classification_report, confusion_matrix, log_loss, pairwise
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -280,14 +284,16 @@ def mclust(df_target, n_init=3, g_range=G_RANGE,
         print(cov_type)
         res.setdefault(cov_type)
         res1 = []
-        for n_components in g_range:
-            res0 = []
-            for ii in range(n_init):
-                gm.set_params(n_components=n_components)
-                gm.fit(df_target)
-                # -1 x BIC
-                res0.append(-gm.bic(df_target))
-            res1.append(res0)
+        with tqdm(total=len(g_range), file=sys.stdout) as pbar:
+            for n_components in g_range:
+                res0 = []
+                for ii in range(n_init):
+                    gm.set_params(n_components=n_components)
+                    gm.fit(df_target)
+                    # -1 x BIC
+                    res0.append(-gm.bic(df_target))
+                res1.append(res0)
+                pbar.update(1)
         res[cov_type] = np.array(res1)
     return res
 
@@ -351,7 +357,6 @@ def get_eigval(mat, n_features):
     w, _ = np.linalg.eig(cv)
     w = np.sort(w)[::-1]
     return w
-
 
 
 
