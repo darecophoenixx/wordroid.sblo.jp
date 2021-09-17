@@ -202,16 +202,18 @@ class M01F(object):
         pca = PCA(svd_solver='full')
         fa = FactorAnalysis()
         pca_scores, fa_scores = [], []
-        for _ in range(n_init):
-            if df is None:
-                r_calced = self._create_mat_selected_cor(c, self.X_df)
-            else:
-                r_calced = df.values
-            for n in n_range:
-                pca.n_components = n
-                fa.n_components = n
-                pca_scores.append(np.mean(cross_val_score(pca, r_calced, cv=cv)))
-                fa_scores.append(np.mean(cross_val_score(fa, r_calced, cv=cv)))
+        with tqdm(total=n_init, file=sys.stdout) as pbar:
+            for _ in range(n_init):
+                if df is None:
+                    r_calced = self._create_mat_selected_cor(c, self.X_df)
+                else:
+                    r_calced = df.values
+                for n in n_range:
+                    pca.n_components = n
+                    fa.n_components = n
+                    pca_scores.append(np.mean(cross_val_score(pca, r_calced, cv=cv)))
+                    fa_scores.append(np.mean(cross_val_score(fa, r_calced, cv=cv)))
+                pbar.update(1)
         
         pca_scores = np.array(pca_scores).reshape((n_init, -1))
         fa_scores = np.array(fa_scores).reshape((n_init, -1))
