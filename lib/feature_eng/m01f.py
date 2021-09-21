@@ -299,12 +299,14 @@ def calc_mat_nonoise(mat, n_sig=3):
 
 def calc_cor_nonoise(c, n_sig=3):
     try:
-        w, v = np.linalg.eig(c)
+        w, v = np.linalg.eigh(c)
     except Exception as e:
         print(e)
         c1 = cor_smooth(c)
-        w, v = np.linalg.eig(c1)
+        w, v = np.linalg.eigh(c1)
         print('"Matrix was not positive definite, smoothing was done"')
+    idx = np.argsort(w)[::-1]
+    w, v = w[idx], v[:,idx]
     m = v[:,:n_sig].dot(np.diag(w[:n_sig])).dot(v[:,:n_sig].T)
     d = np.sqrt(np.diag(m)).reshape((v.shape[0],1))
     m = m / d / d.T
