@@ -229,7 +229,11 @@ class M01F_li(object):
     
     def __init__(self, X_df):
         self.X_df = X_df
-        self.find_ncomponents(type='pca', n_iter=10, figsize=(10,10))
+        w, res = self.find_ncomponents(type='pca', n_iter=10, figsize=(10,10))
+        
+        self.n_sig = ((res[:,1,:].mean(axis=0) + res[:,1,:].std(axis=0)) < w).sum()
+        print('suggests number of significant component ->', self.n_sig)
+        self.set_n_sig(self.n_sig)
     
     def find_ncomponents(self, type='pca', n_iter=10, figsize=(10,10)):
         w, res = find_ncomponents_pca(self.X_df.values, n_iter=n_iter, figsize=figsize)
