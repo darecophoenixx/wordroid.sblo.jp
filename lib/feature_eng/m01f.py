@@ -303,7 +303,7 @@ def calc_mat_nonoise(mat, n_sig=3):
     x_sc = ss.transform(mat)
     u, s, vh = np.linalg.svd(x_sc)
     x_sc2 = u[:,:n_sig].dot(np.diag(s[:n_sig] * s.sum() / s[:n_sig].sum())).dot(vh[:n_sig])
-    return ss.inverse_transform(x_sc2)
+    return x_sc2
 
 
 def calc_cor_nonoise(c, n_sig=3):
