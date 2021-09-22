@@ -22,6 +22,7 @@ from sklearn.model_selection import cross_val_score, KFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import f1_score, classification_report, confusion_matrix, log_loss, pairwise
+from sklearn.metrics.pairwise import cosine_similarity
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -253,7 +254,7 @@ class M01F_li(object):
         return m
     
     def calc_loadings_nonoise(self):
-        v = calc_loadings_nonoise(self.cor_nonoise)
+        v = calc_loadings_nonoise(self.cor_nonoise, n_sig=self.n_sig)
         self.loadings_nonoise = v
         return v
     
@@ -262,14 +263,18 @@ class M01F_li(object):
         self.X_df_nonoise = pd.DataFrame(x_sc2, index=self.X_df.index, columns=self.X_df.columns)
         return self.X_df_nonoise
     
+#    def calc_row_fet(self):
+#        ll = []
+#        for ii in range(self.n_sig):
+#            tmp = np.corrcoef(self.X_df_nonoise.values, self.loadings_nonoise.T[ii,:])[:self.X_df.shape[0], self.X_df.shape[0]:]
+#            ll.append(tmp)
+#        x_sc3 = np.concatenate(ll, axis=1)
+#        self.row_fet = x_sc3
+#        return x_sc3
     def calc_row_fet(self):
-        ll = []
-        for ii in range(self.n_sig):
-            tmp = np.corrcoef(self.X_df_nonoise.values, self.loadings_nonoise.T[ii,:])[:self.X_df.shape[0], self.X_df.shape[0]:]
-            ll.append(tmp)
-        x_sc3 = np.concatenate(ll, axis=1)
-        self.row_fet = x_sc3
-        return x_sc3
+        m = cosine_similarity(self.X_df_nonoise.values, self.loadings_nonoise.T)
+        self.row_fet = m
+        return m
     
     def mclust_col(self, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
                gm=mixture.GaussianMixture(init_params='kmeans')):
@@ -317,11 +322,12 @@ def calc_cor_nonoise(c, n_sig=3):
     return m
 
 
-def calc_loadings_nonoise(c):
+def calc_loadings_nonoise(c, n_sig=None):
     w, v = np.linalg.eigh(c)
     idx = np.argsort(w)[::-1]
     w, v = w[idx], v[:,idx]
-    return v
+    m = v[:,:n_sig].dot(np.diag(np.sqrt(w[:n_sig])))
+    return m
 
 
 def eig(cor_mat):
