@@ -423,7 +423,10 @@ def create_mat_from_cor(selected_cor, n_samples=100, state=None):
     r_scaled = ss.fit_transform(r)
     r_scaled = r_scaled.dot(np.linalg.inv(np.linalg.cholesky(cor_r).T))
     np.corrcoef(r_scaled, rowvar=False)
-    r_calced = r_scaled.dot(np.linalg.cholesky(selected_cor).T)
+    try:
+        r_calced = r_scaled.dot(np.linalg.cholesky(selected_cor).T)
+    except:
+        r_calced = r_scaled.dot(np.linalg.cholesky(cor_smooth(selected_cor)).T)
     return r_calced
 
 
