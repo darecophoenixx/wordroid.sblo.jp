@@ -30,6 +30,9 @@ import seaborn as sns
 from feature_eng.lowcols2 import (
     WD2vec
 )
+from feature_eng import lowcols3
+
+
 
 
 
@@ -72,9 +75,9 @@ class M01F(object):
         self.eig()
         return self
     
-    def plot_hst(self):
+    def plot_hst(self, figsize=(20,5)):
         hst_history = self.hst.history
-        fig, ax = plt.subplots(1, 3, figsize=(20,5))
+        fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
         ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["loss"], label="Train loss")
         ax[1].set_title('acc')
@@ -86,9 +89,9 @@ class M01F(object):
         ax[2].legend()
         return ax
     
-    def plot_hst2(self):
+    def plot_hst2(self, figsize=(20,5)):
         hst_history = self.hst2.history
-        fig, ax = plt.subplots(1, 3, figsize=(20,5))
+        fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
         ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["loss"], label="Train loss")
         ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["y_loss"], label="Train y loss")
@@ -224,6 +227,88 @@ class M01F(object):
         return gamma
     gamma = property(get_gamma)
 
+
+
+class M01Fv2(M01F):
+    
+    def __init__(self, X_df, n_sig=None, n_iter=10, figsize=(10,10)):
+        if n_sig is None:
+            cor_mat = cosine_similarity(X_df.values.T)
+            w, res = find_ncomponents_pca(cor_mat, n_obs=X_df.shape[0], n_iter=n_iter, figsize=figsize)
+            self.n_sig = ((res[:,1,:].mean(axis=0) + res[:,1,:].std(axis=0)) < w).sum()
+            print('suggests number of significant component ->', self.n_sig)
+        else:
+            self.n_sig = n_sig
+        self.X_df = X_df
+        self.cor_mat = cosine_similarity(X_df.values.T)
+        self.wd2v = lowcols3.WD2vec(X_df, self.cor_mat)
+    
+    def make_model(self, num_features=None, seed=10001,
+                   num_neg=1,
+                   gamma=0.0, embeddings_val=0.1, loss_wgt_neg=0.001,
+                   rscore=None, cscore=None):
+        if num_features is None:
+            num_features = self.n_sig
+        self.num_features = num_features
+        self.models = self.wd2v.make_model(num_features=num_features, seed=seed,
+                                           num_neg=num_neg,
+                                           gamma=gamma, embeddings_val=embeddings_val, loss_wgt_neg=loss_wgt_neg,
+                                           rscore=rscore, cscore=cscore)
+        return self.models
+    
+    def plot_hst(self, figsize=(20,5)):
+        hst_history = self.hst.history
+        fig, ax = plt.subplots(1, 3, figsize=figsize)
+        ax[0].set_title('loss')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["loss"], label="Train loss", lw=2, color='navy')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["y_loss"], label="Train y loss", color='darkorange')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["neg_y_loss"], label="Train y neg loss", color='darkgreen')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["cor_y_loss"], label="Train y cor loss", color='darkred')
+        ax[1].set_title('acc')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["y_binary_accuracy"], label="y accuracy", color='darkorange')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["neg_y_binary_accuracy"], label="y neg accuracy", color='darkgreen')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["cor_y_binary_accuracy"], label="y cor accuracy", color='darkred')
+        ax[2].set_title('learning rate')
+        ax[2].plot(list(range(len(hst_history["loss"]))), hst_history["lr"], label="learning rate")
+        ax[0].legend()
+        ax[1].legend()
+        ax[2].legend()
+        return ax
+    
+    def plot_hst2(self, figsize=(20,5)):
+        hst_history = self.hst2.history
+        fig, ax = plt.subplots(1, 3, figsize=figsize)
+        ax[0].set_title('loss')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["loss"], label="Train loss", lw=2, color='navy')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["y_loss"], label="Train y loss", color='darkorange')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["neg_y_loss"], label="Train y neg loss", color='darkgreen')
+        ax[0].plot(list(range(len(hst_history["loss"]))), hst_history["cor_y_loss"], label="Train y cor loss", color='darkred')
+        ax[1].set_title('acc')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["y_binary_accuracy"], label="y accuracy", color='darkorange')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["neg_y_binary_accuracy"], label="y neg_user accuracy", color='darkgreen')
+        ax[1].plot(list(range(len(hst_history["loss"]))), hst_history["cor_y_binary_accuracy"], label="y cor accuracy", color='darkred')
+        ax[2].set_title('learning rate')
+        ax[2].plot(list(range(len(hst_history["loss"]))), hst_history["lr"], label="learning rate")
+        ax[0].legend()
+        ax[1].legend()
+        ax[2].legend()
+        return ax
+    
+    def mclust_col(self, n_pca=None, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
+               gm=mixture.GaussianMixture(init_params='kmeans')):
+        if n_pca is None:
+            self.n_pca = self.n_sig
+            print('set n_pca to ', self.n_sig)
+        else:
+            self.n_pca = n_pca
+        mclust_col_res = super().mclust_col(n_pca=self.n_pca, 
+                                            n_init=n_init, g_range=g_range,
+                                            cov_type_list=cov_type_list, gm=gm)
+        return mclust_col_res
+
+
+
+    
 
 
 class M01F_li(object):
