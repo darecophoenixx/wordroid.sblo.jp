@@ -409,7 +409,7 @@ calc_loadings_nonoise = calc_col_score
 
 
 def eig(cor_mat):
-    sdev2, loadings = np.linalg.eig(cor_mat)
+    sdev2, loadings = np.linalg.eigh(cor_mat)
     idx = np.argsort(sdev2)[::-1]
     sdev2, loadings = sdev2[idx], loadings[:,idx]
     return sdev2, loadings
