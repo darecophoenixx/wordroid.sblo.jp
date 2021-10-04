@@ -4,18 +4,26 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/keras_ex/gkernel/LICENSE.md
 '''
 
+'''
+kerasを用いて、GPUで高速に処理できるように
+'''
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from keras import initializers, constraints
-from keras.layers import Layer
-from keras.layers import Lambda
-from keras.layers import Input
-from keras import backend as K
-from keras.models import Model, Sequential
-from keras.optimizers import RMSprop, Adam, SGD
+from sklearn.cluster import KMeans
+
+from tensorflow.keras import initializers, constraints
+from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import Lambda
+from tensorflow.keras.layers import Input
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras.optimizers import RMSprop, Adam, SGD
+
+
 
 class SOM(Layer):
     
@@ -189,78 +197,8 @@ class CalcDistance(Layer):
 
 
 
-class CalcDelta(Layer):
-    
-    def __init__(self, num_feature, qd,
-                 r=1.0,
-                 kernel_initializer=None,
-                 kernel_constraint=None,
-                 **kwargs):
-        '''
-        map_shape:
-            shape of som_map
-            typicaly (40, 50) or (3, 4) etc.
-        r:
-            gamma = 1 / (2 * r**2)
-        '''
-        super(CalcDelta, self).__init__(**kwargs)
-        self.qd = qd
-        self.map_shape = map_shape
-        self.output_dim = (qd.shape[0], num_feature)
-        self.num_feature = num_feature
-        self.kernel_initializer = initializers.get(kernel_initializer)
-        self.kernel_constraint = constraints.get(kernel_constraint)
-
-        # kernel parameter
-        self.r = r
-        self.gamma = 1 / (2 * r**2)
-        
-        self.qd_calced = np.exp(-gamma * self.qd)
-
-    def compute_output_shape(self, input_shape):
-        return (input_shape[0],) +  self.output_dim
-    
-    def build(self, input_shape):
-        assert len(input_shape) == 2
-        input_dim = input_shape[1]
-        
-        super(CalcDelta, self).build(input_shape)  # Be sure to call this somewhere!
-    
-    def call(self, x, training=None):
-        return self.calc_delta(x)
-    
-    def calc_delta(self, X):
-        '''
-        d2 : distance^2 shape = (None, 1200)
-        qd : shape = (1200, 1200)
-        x : shape = (None, num_feature)
-        '''
-        x, d2 = X
-        min_idx = K.argmin(d2) # (None,)
-        #print('min_idx: ', K.int_shape(min_idx))
-        h = K.gather(self.qd_calced, min_idx) # (None, 1200)
-        #print('h: ', K.int_shape(h))
-        h = K.repeat(h, self.num_feature) # (None, 1200)
-        h = K.permute_dimensions(h, (0,2,1))
-        #print('h: ', K.int_shape(h))
-        x_expand = K.repeat(x, self.output_dim[0]) # (None, 1200, num_feature)
-        #print('x_expand: ', K.int_shape(x_expand))
-        delta0 = h * (x_expand - landmarks) # (None, 1200, num_feature) - (1200, num_feature) -> (None, 1200, num_feature)
-        #print('delta0: ', K.int_shape(delta0))
-        #ret = K.exp(-gamma * d)
-        return delta0
-    
-    def get_config(self):
-        config = {
-            'kernel_initializer': initializers.serialize(self.kernel_initializer),
-            'kernel_constraint': constraints.serialize(self.kernel_constraint),
-        }
-        base_config = super(CalcDelta, self).get_config()
-        return dict(list(base_config.items()) + list(config.items()))
 
 
-
-from sklearn.cluster import KMeans
 
 class sksom_keras(object):
     
@@ -418,13 +356,6 @@ class sksom_keras(object):
     
     def label2xy(self, labels):
         return np.c_[self.map_xy[labels,1], self.map_xy[labels,0]]
-#    def label2xy(self, labels):
-#        l = []
-#        for ilabel in labels:
-#            b, a = divmod(ilabel, self.kshape[1])
-#            l.append((a, b))
-#        pos = np.r_[l]
-#        return pos
     
     def plot_hex(self, figsize=10, s=450, target=[0,1,2], ax=None, fig=None):
         '''
