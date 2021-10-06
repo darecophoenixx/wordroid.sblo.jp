@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from sklearn.cluster import KMeans
+from sklearn.cluster._kmeans import _labels_inertia
+from sklearn.utils.extmath import row_norms
+from sklearn.base import BaseEstimator, ClusterMixin, TransformerMixin
 
 from tensorflow.keras import initializers, constraints
 from tensorflow.keras.layers import Layer
@@ -22,8 +25,9 @@ from tensorflow.keras.layers import Input
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.optimizers import RMSprop, Adam, SGD
+import tensorflow as tf
 
-
+from som import som as _som
 
 class SOM(Layer):
     
@@ -79,6 +83,7 @@ class SOM(Layer):
     def call(self, x, training=None):
         return self.calc_delta(x, self.landmarks, self.gamma)
     
+    @tf.autograph.experimental.do_not_convert
     def calc_delta(self, x, landmarks, gamma):
         '''
         landmarks : shape = (1200, num_feature)
@@ -166,6 +171,7 @@ class CalcDistance(Layer):
     def call(self, x, training=None):
         return self.calc_d2(x, self.landmarks)
     
+    @tf.autograph.experimental.do_not_convert
     def calc_d2(self, x, landmarks):
         '''
         landmarks : shape = (1200, num_feature)
@@ -210,10 +216,6 @@ class sksom_keras(object):
                  batch_size=1024,
                  loss='mae', optimizer=Adam(learning_rate=0.001),
                  verbose=0):
-        '''
-        predict:
-            use KMeans
-        '''
         if early_stopping:
             if len(early_stopping) != 2:
                 raise Exception('lenght of early_stopping must be 2...{}'.format(early_stopping))
@@ -231,8 +233,7 @@ class sksom_keras(object):
         self.batch_size = batch_size
         
         self.landmarks_ = self.init_K.copy()
-        self.kmeans = self._kmeans()
-        self.labels_ = self.kmeans.labels_
+        self.labels_ = np.arange(self.kshape[0]*self.kshape[1])
         if form == 'sphere':
             self._calc_qd_sphere()
         elif form == 'hex':
@@ -269,16 +270,10 @@ class sksom_keras(object):
         latitude = np.linspace(-np.pi/2, np.pi/2, self.kshape[0]+1)[1:] - np.pi/self.kshape[0]/2
         pos0 = [np.array((np.cos(lo), np.sin(lo), np.sin(la))) for la in latitude for lo in longitude]
         pos = [np.array((ee[0]*np.sqrt(1-ee[2]**2), ee[1]*np.sqrt(1-ee[2]**2), ee[2])) for ee in pos0]
+        self.map_xy = np.r_[pos]
         qd = np.array([np.arccos(np.dot(p0, p1).clip(-1,1)) for p0 in pos for p1 in pos])
         qd = qd.reshape((np.array(self.kshape).prod(), np.array(self.kshape).prod()))
         self.qd = qd * (1 / (2*np.pi/self.kshape[1]))
-    
-    def _kmeans(self):
-        kmeans = KMeans(n_clusters=self.kshape[0]*self.kshape[1], n_init=1, max_iter=1)
-        kmeans.labels_ = np.arange(self.kshape[0]*self.kshape[1])
-        kmeans.cluster_centers_ = self.landmarks_
-        kmeans._n_threads = None
-        return kmeans
     
     def _make_keras_model(self, r, LM):
         inp = Input(shape=(self.init_K.shape[1],), name='inp')
@@ -323,7 +318,6 @@ class sksom_keras(object):
             self._fit(i_epochs, i_r, x,
                       batch_size=batch_size, verbose=verbose, shuffle=shuffle,
                       optimizer=optimizer, loss=loss)
-        self.kmeans.cluster_centers_[:,:] = self.landmarks_
         return self.hst
     
     def _fit(self, i_epochs, i_r,
@@ -345,14 +339,17 @@ class sksom_keras(object):
     
     def predict(self, X):
         assert X.shape[1] == self.init_K.shape[1]
-        return self.kmeans.predict(X.astype(float))
+        X_squared_norm = row_norms(X, squared=True)
+        sample_weight = np.ones((X.shape[0],))
+        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm, self.landmarks_.astype(float))
+        return labels
     
-    def predict_proba(self, X):
-        p_list = []
-        for ii in self.labels_:
-            d = np.square(X - self.landmarks_[ii]).sum(axis=1)
-            p_list.append(np.exp(-self.gamma * d))
-        return np.vstack(p_list).T
+    def score(self, X, y=None):
+        assert X.shape[1] == self.init_K.shape[1]
+        X_squared_norm = row_norms(X, squared=True)
+        sample_weight = np.ones((X.shape[0],))
+        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm, self.landmarks_.astype(float))
+        return -inertia
     
     def label2xy(self, labels):
         return np.c_[self.map_xy[labels,1], self.map_xy[labels,0]]
@@ -445,11 +442,361 @@ class sksom_keras2(sksom_keras):
         d2_mean = d2.mean()
         self.hst['MeanDist2ClosestLM'].append(d2_mean)
         return d2_mean
-        
     
 
 
+class som(sksom_keras2):
+    """class som (self-organizing map) implementation
+    
+    kshape and init_K must be given
+    
+    Parameters
+    ----------
+    
+    kshape : sequence of length 2
+        shape of som map
+    
+    init_K : ndarray of shape (n_landmarks, n_features)
+        n_landmarks = kshape[0] * kshape[1]
+    
+    form : {None, 'hex', 'sphere'}, default=None
+        The topology type when measuring distance in the map:
+        
+        None
+            rect
+        'hex'
+            hex
+        'sphere'
+            sphere
+    
+    r : sequence of length 2 of float, or float, defalut=None
+        radius in a first training phases
+        
+        sequence of length 2 of float
+            decreases from r[0] to r[1] during training
+        float
+            use same radius during training
+        None
+            use (max(kshape)/6.0, 1.0)
+    
+    epochs : int, default=500
+        number of epochs to train the model
+    
+    batch_size : int, default=1024
+        number of samples per gradient update
+    
+    verbose : int, default=0
+        verbosity mode
+    
+    early_stopping : , default=(5, 1.0e-7)
+    
+    loss : , default='mae'
+        Loss function. Maybe be a string (name of loss function), or a tf.keras.losses.Loss instance
+    
+    optimizer : , default=Adam(learning_rate=0.001)
+        String (name of optimizer) or tf.keras optimizer instance
+    
+    """
+    
+    def __init__(self, kshape, init_K,
+                 form=None,
+                 r=None, epochs=500,
+                 early_stopping=(5, 1.0e-7),
+                 batch_size=1024,
+                 loss='mae', optimizer=Adam(learning_rate=0.001),
+                 verbose=0):
+        if r is None:
+            r = (max(kshape)/6.0, 1.0)
+        super().__init__(
+            kshape=kshape, init_K=init_K, form=form,
+            r=r,
+            epochs=epochs, early_stopping=early_stopping, batch_size=batch_size,
+            verbose=verbose,
+            loss=loss, optimizer=optimizer
+            )
+    
+    def fit(self, X, y=None,
+            nstep_r_reduce=50,
+            batch_size=None, epochs=500, verbose=None, shuffle=True,
+            r=None, r2=None,
+            optimizer=None, loss=None):
+        """compute som map
+        
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            training instances
+        
+        y : Ignored
+            Not used, present here for API consistency by convention.
+        
+        nstep_r_reduce : int, default=50
+            number of epochs reducing radius
+        
+        r : sequence of length 2 of float, or float, defalut=None
+            radius in a first training phases
+            
+            sequence of length 2 of float
+                decreases from r[0] to r[1] during training
+            float
+                use same radius during training
+            None
+                use self.r
+        
+        r2 : sequence of length 2 of float, or float, defalut=None
+            radius in a second training phases
+            
+            sequence of length 2 of float
+                decreases from r2[0] to r2[1] during training
+            float
+                use same radius during training
+            None
+                use 1.0
+        
+        Returns
+        -------
+        self
+            Fitted estimator.
+        """
+        hst = super().fit(X,
+                          nstep_r_reduce=nstep_r_reduce,
+                          batch_size=batch_size, epochs=epochs, verbose=verbose, shuffle=shuffle,
+                          r=r,
+                          optimizer=optimizer, loss=loss)
+        self.hst1 = hst.copy()
+        
+        if r2 is None:
+            r2 = 1.0
+        self.hst2 = super().fit(X,
+                           nstep_r_reduce=nstep_r_reduce,
+                           batch_size=batch_size, epochs=epochs, verbose=verbose, shuffle=shuffle,
+                           r=r2,
+                           optimizer=optimizer, loss=loss)
+        return self
 
 
 
+class sksom(TransformerMixin, ClusterMixin, BaseEstimator):
+    """som (self-organizing map) scikit-learn api
+    
+    Parameters
+    ----------
+    
+    kshape : sequence of length 2, default=(20, 30)
+        shape of som map
+    
+    init_K : ndarray of shape (n_landmarks, n_features), default=None
+        n_landmarks = kshape[0] * kshape[1]
+    
+    initialization : {'linear', None}, defalut='linear'
+        Method for initialization:
+        
+        'linear'
+            PCA
+        None
+            random initialization, landmarks are selected from input X
+    
+    form : {None, 'hex', 'sphere'}, default=None
+        The topology type when measuring distance in the map:
+        
+        None
+            rect
+        'hex'
+            hex
+        'sphere'
+            sphere
+    
+    rand_stat : int, RandomState instance or None, default=None
+        RandomState for random initialization
+    
+    r1 : sequence of length 2 of float, or float, defalut=None
+        radius in a first training phases
+        
+        sequence of length 2 of float
+            decreases from r1[0] to r1[1] during training
+        float
+            use same radius during training
+        None
+            use (max(kshape)/6.0, 1.0)
+    
+    r2 : sequence of length 2 of float, or float, defalut=None
+        radius in a second training phases
+        
+        sequence of length 2 of float
+            decreases from r2[0] to r2[1] during training
+        float
+            use same radius during training
+        None
+            use 1.0
+    
+    epochs : int, default=500
+        number of epochs to train the model
+    
+    batch_size : int, default=1024
+        number of samples per gradient update
+    
+    verbose : int, default=0
+        verbosity mode
+    
+    early_stopping : , default=(5, 1.0e-7)
+    
+    loss : , default='mae'
+        Loss function. Maybe be a string (name of loss function), or a tf.keras.losses.Loss instance
+    
+    optimizer : , default=Adam(learning_rate=0.001)
+        String (name of optimizer) or tf.keras optimizer instance
+    
+    
+    Attributes
+    ----------
+    
+    cluster_centers_ : ndarray of shape (kshape[0] * kshape[1], n_features)
+        coordinates of som-map
+    
+    landmarks_ : ndarray of shape (kshape[0] * kshape[1], n_features)
+        coordinates of som-map
+    
+    labels_ : ndarray of shape (n_samples,)
+        Labels of each point
+    """
+    
+    def __init__(self, kshape=(20, 30), init_K=None,
+                 initialization='linear',
+                 form=None,
+                 rand_stat=None,
+                 r1=None, r2=None,
+                 epochs=500,
+                 early_stopping=(5, 1.0e-7),
+                 batch_size=1024,
+                 loss='mae', optimizer=Adam(learning_rate=0.001),
+                 verbose=0):
+        self.early_stopping = early_stopping
+        self.form = form
+        self.kshape = kshape
+        self.init_K = init_K
+        self.r1 = r1
+        self.r2 = r2
+        self.epochs = epochs
+        self.verbose = verbose
+        self.optimizer = optimizer
+        self.loss = loss
+        self.batch_size = batch_size
+        self.rand_stat = rand_stat
+        self.initialization = initialization
+    
+    def fit(self, X, y=None):
+        """compute som map
+        
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            training instances
+        
+        y : Ignored
+            Not used, present here for API consistency by convention.
+        
+        Returns
+        -------
+        self
+            Fitted estimator.
+        """
+        if self.initialization == 'linear':
+            sinit = _som.SimpleSOM(self.kshape, initialization_func=self.initialization)
+            sinit._initialize(X)
+            self.init_K = sinit.K
+        elif self.initialization is None:
+            sinit = _som.SimpleSOM(self.kshape, initialization_func=self.initialization)
+            sinit._initialize(X)
+            self.init_K = sinit.K
+        else:
+            raise Exception('not available initialization :', self.initialization)
+            
+        self.som = som(kshape=self.kshape, init_K=self.init_K,
+                 form=self.form,
+                 r=self.r1, epochs=self.epochs,
+                 early_stopping=self.early_stopping,
+                 batch_size=self.batch_size,
+                 loss=self.loss, optimizer=self.optimizer,
+                 verbose=self.verbose)
+        self.som.fit(X, y=y,
+            nstep_r_reduce=50,
+            batch_size=self.batch_size, epochs=self.epochs, verbose=self.verbose, shuffle=True,
+            r=self.r1, r2=self.r2,
+            optimizer=self.optimizer, loss=self.loss)
+        self.hst1, self.hst2 = self.som.hst1, self.som.hst2
+        return self
+    
+    def predict(self, X):
+        """Predict the closest landmark each sample in X belongs to.
+        
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            new data to predict
+        
+        Returns
+        -------
+        labels : ndarray of shape (n_samples,)
+            index of the landmark each sample belongs to
+        """
+        return self.som.predict(X)
+    
+    def score(self, X, y=None):
+        """opposite of the value of X on the objective
+        
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+            new data
+        
+        y : ignored
+            not used, present here for API consistency by convention
+        
+        Returns
+        -------
+        score : float
+            opposite of the value of X on the objective
+        """
+        return self.som.score(X, y)
+    
+    def get_cluster_centers_(self):
+        return self.som.landmarks_
+    cluster_centers_ = property(get_cluster_centers_)
+    landmarks_ = property(get_cluster_centers_)
+    
+    def label2xy(self, labels):
+        """convert labels to som 2D-map
+        
+        Parameters
+        ----------
+        labels : ndarray of shape (n_samples,)
+            index of the landmark each sample belongs to
+        
+        Returns
+        -------
+        xy-pos : ndarray of shape (n_samples, 2)
+            coordinates of each labels
+        """
+        return self.som.label2xy(labels)
+    
+    def plot_hex(self, figsize=10, s=450, target=[0,1,2], ax=None, fig=None):
+        """plot hex map
+        
+        Parameters
+        ----------
+        s : float, default=450
+            ( figsize x 100(dpi) / kshape[1] ) ** 2
+            ex ((10*100)/40+2)**2
+        
+        Returns
+        -------
+        ax : matplotlib.axes.Axes
+            the matplotlib axes containing the plot
+        """
+        ax = self.som.plot_hex(figsize=figsize, s=s, target=target, ax=ax, fig=fig)
+        return ax
+
+
+
+conv2img = _som.conv2img
 

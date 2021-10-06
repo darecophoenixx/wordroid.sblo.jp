@@ -584,6 +584,30 @@ class SomRegressor(SomBase, RegressorMixin):
 
 
 def conv2img(x, kshape, target=range(3)):
+    """convert ndarray to som-map image
+    
+    Parameters
+    ----------
+    x : array-like of shape (kshape[0] x kshape[1], n_features)
+        coordinates of each labels
+    
+    kshape: sequence of length 2, default=(20, 30)
+        shape of som map
+    
+    target : sequence of length 2, default=[0,1,2]
+        convert x[:target] to image
+
+    Returns
+    -------
+    codes: ndarray of shape (kshape[0], kshape[1], 3)
+        image data
+    
+    Examples
+    --------
+    >>> img = conv2img(sobj.landmarks_, k_shape, target=(0,1,2))
+    >>> plt.figure(figsize=(10, 10))
+    >>> plt.imshow(img)
+    """
     num_feats = x.shape[1]
     x = x.copy().reshape((kshape[0], kshape[1], num_feats))
     codes = x[:,:,target]
