@@ -594,7 +594,7 @@ def conv2img(x, kshape, target=range(3)):
     kshape: sequence of length 2, default=(20, 30)
         shape of som map
     
-    target : sequence of length 2, default=[0,1,2]
+    target : sequence of length 3, default=[0,1,2]
         convert x[:target] to image
 
     Returns
