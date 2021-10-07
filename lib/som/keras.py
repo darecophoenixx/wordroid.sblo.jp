@@ -765,6 +765,10 @@ class sksom(TransformerMixin, ClusterMixin, BaseEstimator):
     cluster_centers_ = property(get_cluster_centers_)
     landmarks_ = property(get_cluster_centers_)
     
+    def get_labels_(self):
+        return self.som.labels_
+    labels_ = property(get_labels_)
+    
     def label2xy(self, labels):
         """convert labels to som 2D-map
         
