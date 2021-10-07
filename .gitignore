@@ -4,3 +4,6 @@
 
 *.pyc
 /mecabproc/mysql_con.py
+
+docs/_sources
+docs/.doctrees
