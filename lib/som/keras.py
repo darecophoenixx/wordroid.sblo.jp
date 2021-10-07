@@ -340,15 +340,15 @@ class sksom_keras(object):
     def predict(self, X):
         assert X.shape[1] == self.init_K.shape[1]
         X_squared_norm = row_norms(X, squared=True)
-        sample_weight = np.ones((X.shape[0],))
-        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm, self.landmarks_.astype(float))
+        sample_weight = np.ones((X.shape[0],), dtype=float)
+        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm.astype(float), self.landmarks_.astype(float))
         return labels
     
     def score(self, X, y=None):
         assert X.shape[1] == self.init_K.shape[1]
         X_squared_norm = row_norms(X, squared=True)
-        sample_weight = np.ones((X.shape[0],))
-        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm, self.landmarks_.astype(float))
+        sample_weight = np.ones((X.shape[0],), dtype=float)
+        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm.astype(float), self.landmarks_.astype(float))
         return -inertia
     
     def label2xy(self, labels):
@@ -524,34 +524,35 @@ class som(sksom_keras2):
         
         Parameters
         ----------
-        X : array-like of shape (n_samples, n_features)
-            training instances
-        
-        y : Ignored
-            Not used, present here for API consistency by convention.
-        
-        nstep_r_reduce : int, default=50
-            number of epochs reducing radius
-        
-        r : sequence of length 2 of float, or float, defalut=None
-            radius in a first training phases
+        .
+            X (array-like of shape (n_samples, n_features))
+                training instances
             
-            sequence of length 2 of float
-                decreases from r[0] to r[1] during training
-            float
-                use same radius during training
-            None
-                use self.r
-        
-        r2 : sequence of length 2 of float, or float, defalut=None
-            radius in a second training phases
+            y (ignored)
+                Not used, present here for API consistency by convention.
             
-            sequence of length 2 of float
-                decreases from r2[0] to r2[1] during training
-            float
-                use same radius during training
-            None
-                use 1.0
+            nstep_r_reduce (int, default=50)
+                number of epochs reducing radius
+            
+            r (sequence of length 2 of float, or float, defalut=None)
+                radius in a first training phases
+                
+                sequence of length 2 of float
+                    decreases from r[0] to r[1] during training
+                float
+                    use same radius during training
+                None
+                    use self.r
+            
+            r2 (sequence of length 2 of float, or float, defalut=None)
+                radius in a second training phases
+            
+                sequence of length 2 of float
+                    decreases from r2[0] to r2[1] during training
+                float
+                    use same radius during training
+                None
+                    use 1.0
         
         Returns
         -------
