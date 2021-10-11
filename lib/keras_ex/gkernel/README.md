@@ -1,4 +1,4 @@
-Welcome to GaussianKernel layer page! (keras RBF layer)
+Welcome to GaussianKernel layer page (keras RBF layer)
 ====
 
 # Getting started
