@@ -42,6 +42,26 @@ cov_type_list = ['full', 'tied', 'diag', 'spherical']
 
 
 class M01F(object):
+    """Calculate feature vector using lowcols2.
+    
+    Parameters
+    ----------
+    .
+        X_df (pandas.DataFrame of shape (n_samples, n_features))
+            training instances
+    
+    Attributes
+    ----------
+    
+    wgt_row : ndarray of shape (n_samples, n_features)
+        feature vector of row side
+    
+    wgt_col : ndarray of shape (n_features, n_features)
+        feature vector of col side
+    
+    gamma : float
+        RBF parameter gamma
+    """
     
     def __init__(self, X_df):
         self.X_df = X_df
@@ -51,6 +71,41 @@ class M01F(object):
                    num_neg=2,
                    gamma=0.0, embeddings_val=0.1, loss_wgt_neg=0.05,
                    rscore=None, cscore=None):
+        """create WordAndDoc2vec model
+        
+        Parameters
+        ----------
+        .
+            num_features (int)
+                number of features, if None, num_features = self.n_sig
+            
+            seed (int, or None)
+                RandomState for embeddings_initializer
+            
+            embeddings_val (float)
+                embeddings_initializer=initializers.RandomUniform(
+                minval=-embeddings_val, maxval=embeddings_val, seed=seed)
+            
+            num_neg (int, default=1)
+                number of negative samping (row direction)
+            
+            gamma (float)
+                tf.keras Embedding layer regularizers.l2(gamma)
+            
+            loss_wgt_neg (float)
+                loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg, 'cor_y': 1.0}
+            
+            rscore
+                user_embedding weights
+            
+            cscore
+                prod_embedding weights
+        
+        Returns
+        -------
+        model dict
+            models created
+        """
         if num_features is None:
             num_features = self.X_df.shape[1]
         self.num_features = num_features
@@ -64,6 +119,24 @@ class M01F(object):
               use_multiprocessing=False, workers=1, shuffle=True,
               callbacks=None, callbacks_add=None, lr0=0.02, flag_early_stopping=True,
               base=8):
+        """compute feature vector
+        
+        Parameters
+        ----------
+            epochs : int, default=500
+                number of epochs to train the model
+            
+            batch_size : int, default=1024
+                number of samples per gradient update
+            
+            verbose : int, default=0
+                verbosity mode
+        
+        Returns
+        -------
+        self
+            Fitted estimator
+        """
         self.hst, self.hst2 = self.wd2v.train(epochs=epochs, batch_size=batch_size, verbose=verbose, lr0=lr0,
                                     shuffle=shuffle, flag_early_stopping=flag_early_stopping, base=base,
                                     callbacks=callbacks, callbacks_add=callbacks_add,
@@ -76,6 +149,8 @@ class M01F(object):
         return self
     
     def plot_hst(self, figsize=(20,5)):
+        """plot loss history of 1st phase
+        """
         hst_history = self.hst.history
         fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
@@ -90,6 +165,8 @@ class M01F(object):
         return ax
     
     def plot_hst2(self, figsize=(20,5)):
+        """plot loss history of 2nd phase
+        """
         hst_history = self.hst2.history
         fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
@@ -118,7 +195,8 @@ class M01F(object):
         return df_out
     
     def calc_cor(self):
-        '''行と列の特徴量を列の特徴量で評価する'''
+        '''Evaluate row and column features with column features
+        '''
         res_list = []
         for icol in self.df_wgt_col.index.values:
             res = self._calc(self.df_wgt_col.loc[icol,:].values, self.df_wgt_col, gamma=self.gamma, sort=False)
@@ -136,19 +214,24 @@ class M01F(object):
         self.fet_row_cnvt = fet_row_cnvt
     
     def eig(self):
-        '''quasi PCA'''
-        sdev2, loadings = np.linalg.eig(self.df_cor.values)
+        '''quasi PCA
+        '''
+        sdev2, loadings = np.linalg.eigh(self.df_cor.values)
         idx = np.argsort(sdev2)[::-1]
         sdev2, self.loadings = sdev2[idx], loadings[:,idx]
         self.sdev = np.sqrt(sdev2)
         return self.sdev, self.loadings
     
     def plot_eig(self, figsize=(10, 10), marker='-o'):
+        """plot sdev
+        """
         plt.figure(figsize=figsize)
         plt.plot(np.arange(len(self.sdev))+1, self.sdev, marker)
         plt.grid()
     
     def set_npca(self, n_pca=3):
+        """set n_pca
+        """
         self.n_pca = n_pca
         self.loadings_selected = self.loadings[:,:n_pca]
         self.fet_col_aggr = self.df_cor.values.dot(self.loadings_selected)
@@ -156,12 +239,16 @@ class M01F(object):
 
     def mclust(self, df, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
                gm=mixture.GaussianMixture(init_params='kmeans')):
+        """Simulate with Gaussian Mixture
+        """
         self.g_range = g_range
         mclust_res = mclust(df, n_init=n_init, g_range=g_range, cov_type_list=cov_type_list, gm=gm)
         return mclust_res
     
     def mclust_col(self, n_pca=3, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
                gm=mixture.GaussianMixture(init_params='kmeans')):
+        """Simulate with Gaussian Mixture using column features
+        """
         self.set_npca(n_pca)
         self.mclust_col_res = self.mclust(pd.DataFrame(self.fet_col_aggr), n_init=n_init, g_range=g_range,
                                           cov_type_list=cov_type_list, gm=gm)
@@ -169,9 +256,12 @@ class M01F(object):
     
     def mclust_row(self, n_pca=None, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
                gm=mixture.GaussianMixture(init_params='kmeans')):
-        '''self.n_pca must be set'''
-        assert self.n_pca
+        """Simulate with Gaussian Mixture using row features
+        
+        self.n_pca must be set
+        """
         if n_pca is None:
+            assert self.n_pca
             n_pca = self.n_pca
         self.set_npca(n_pca)
         self.mclust_row_res = self.mclust(pd.DataFrame(self.fet_row_aggr), n_init=n_init, g_range=g_range,
@@ -179,12 +269,18 @@ class M01F(object):
         return self.mclust_row_res
     
     def plot_mclust(self, res, figsize=(15, 15), lw=2):
+        """plot results of mclust
+        """
         return plot_mclust(res, g_range=self.g_range, figsize=figsize, lw=lw)
     
     def plot_mclust_col(self, figsize=(15, 15), lw=2):
+        """plot results of mclust
+        """
         self.plot_mclust(self.mclust_col_res, figsize, lw)
     
     def plot_mclust_row(self, figsize=(15, 15), lw=2):
+        """plot results of mclust
+        """
         self.plot_mclust(self.mclust_row_res, figsize, lw)
     
     def plot_pca_fa_cv(self, df=None, n_range=np.arange(2, 16), n_init=10,
@@ -206,6 +302,8 @@ class M01F(object):
     
     def find_ncomponents(self, df=None, type='pca', n_iter=10,
                         figsize=(10,10)):
+        """investigate the number of significant components 
+        """
         if df is None:
             w, res = find_ncomponents_pca(self.df_cor.values, n_obs=self.X_df.shape[0], n_iter=n_iter, figsize=figsize)
         else:
@@ -230,6 +328,39 @@ class M01F(object):
 
 
 class M01Fv2(M01F):
+    """Calculate feature vector using lowcols3.
+    
+    The correlation coefficient (distance similarity) of 
+    the feature vector on the column side matches the 
+    correlation coefficient of original data.
+    
+    Parameters
+    ----------
+    .
+        X_df (pandas.DataFrame of shape (n_samples, n_features))
+            training instances
+        
+        n_sig (int)
+            number of significant components
+        
+        n_iter (int)
+            using find_ncomponents_pca
+        
+        figsize (sequence of length 2)
+            using find_ncomponents_pca
+    
+    Attributes
+    ----------
+    
+    wgt_row : ndarray of shape (n_samples, n_features)
+        feature vector of row side
+    
+    wgt_col : ndarray of shape (n_features, n_features)
+        feature vector of col side
+    
+    gamma : float
+        RBF parameter gamma
+    """
     
     def __init__(self, X_df, n_sig=None, n_iter=10, figsize=(10,10)):
         if n_sig is None:
@@ -247,6 +378,41 @@ class M01Fv2(M01F):
                    num_neg=1,
                    gamma=0.0, embeddings_val=0.1, loss_wgt_neg=0.001,
                    rscore=None, cscore=None):
+        """create WordAndDoc2vec model
+        
+        Parameters
+        ----------
+        .
+            num_features (int)
+                number of features, if None, num_features = self.n_sig
+            
+            seed (int, or None)
+                RandomState for embeddings_initializer
+            
+            embeddings_val (float)
+                embeddings_initializer=initializers.RandomUniform(
+                minval=-embeddings_val, maxval=embeddings_val, seed=seed)
+            
+            num_neg (int, default=1)
+                number of negative samping (row direction)
+            
+            gamma (float)
+                tf.keras Embedding layer regularizers.l2(gamma)
+            
+            loss_wgt_neg (float)
+                loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg, 'cor_y': 1.0}
+            
+            rscore
+                user_embedding weights
+            
+            cscore
+                prod_embedding weights
+        
+        Returns
+        -------
+        model dict
+            models created
+        """
         if num_features is None:
             num_features = self.n_sig
         self.num_features = num_features
@@ -257,6 +423,8 @@ class M01Fv2(M01F):
         return self.models
     
     def plot_hst(self, figsize=(20,5)):
+        """plot loss history of 1st phase
+        """
         hst_history = self.hst.history
         fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
@@ -276,6 +444,8 @@ class M01Fv2(M01F):
         return ax
     
     def plot_hst2(self, figsize=(20,5)):
+        """plot loss history of 2nd phase
+        """
         hst_history = self.hst2.history
         fig, ax = plt.subplots(1, 3, figsize=figsize)
         ax[0].set_title('loss')
@@ -296,6 +466,8 @@ class M01Fv2(M01F):
     
     def mclust_col(self, n_pca=None, n_init=N_INIT, g_range=G_RANGE, cov_type_list=cov_type_list,
                gm=mixture.GaussianMixture(init_params='kmeans')):
+        """Simulate with Gaussian Mixture
+        """
         if n_pca is None:
             self.n_pca = self.n_sig
             print('set n_pca to ', self.n_sig)
@@ -312,6 +484,14 @@ class M01Fv2(M01F):
 
 
 class M01F_li(object):
+    """Calculate feature vector using noise reduction
+    
+    Parameters
+    ----------
+    .
+        X_df (pandas.DataFrame of shape (n_samples, n_features))
+            training instances
+    """
     
     def __init__(self, X_df):
         self.X_df = X_df
@@ -322,6 +502,8 @@ class M01F_li(object):
         self.set_n_sig(self.n_sig)
     
     def find_ncomponents(self, type='pca', n_iter=10, figsize=(10,10)):
+        """investigate the number of significant components 
+        """
         w, res = find_ncomponents_pca(self.X_df.values, n_iter=n_iter, figsize=figsize)
         return w, res
     
@@ -374,6 +556,22 @@ class M01F_li(object):
 
 
 def calc_mat_nonoise(mat, n_sig=3):
+    """calc matrix using noise reduction
+    
+    Parameters
+    ----------
+    .
+        mat (ndarray of shape (n_samples, n_features))
+            matrix
+        
+        n_sig (int)
+            number of significant components
+        
+    Returns
+    -------
+    ndarray of shape(n_samples, n_features)
+        matrix created
+    """
     ss = StandardScaler()
     ss.fit(mat)
     x_sc = ss.transform(mat)
@@ -383,6 +581,22 @@ def calc_mat_nonoise(mat, n_sig=3):
 
 
 def calc_cor_nonoise(c, n_sig=3):
+    """calc correlation matrix using noise reduction
+    
+    Parameters
+    ----------
+    .
+        c (ndarray of shape (n_features, n_features))
+            correlation matrix
+        
+        n_sig (int)
+            number of significant components
+        
+    Returns
+    -------
+    ndarray of shape(n_features, n_features)
+        matrix created
+    """
     try:
         w, v = np.linalg.eigh(c)
     except Exception as e:
@@ -399,6 +613,22 @@ def calc_cor_nonoise(c, n_sig=3):
 
 
 def calc_col_score(c, n_sig=None):
+    """calc scores of columns side
+    
+    Parameters
+    ----------
+    .
+        c (ndarray of shape (n_features, n_features))
+            correlation matrix
+        
+        n_sig (int)
+            number of significant components
+        
+    Returns
+    -------
+    ndarray of shape(n_features, n_sig)
+        scores created
+    """
     w, v = np.linalg.eigh(c)
     idx = np.argsort(w)[::-1]
     w, v = w[idx], v[:,idx]
@@ -409,6 +639,8 @@ calc_loadings_nonoise = calc_col_score
 
 
 def eig(cor_mat):
+    """quasi PCA
+    """
     sdev2, loadings = np.linalg.eigh(cor_mat)
     idx = np.argsort(sdev2)[::-1]
     sdev2, loadings = sdev2[idx], loadings[:,idx]
@@ -416,6 +648,23 @@ def eig(cor_mat):
 
 
 def create_mat_from_cor(selected_cor, n_samples=100, state=None):
+    """create simulated observation matrix using correlation matrix
+    of shape (n_samples, selected_cor.shape[0])
+    
+    Parameters
+    ----------
+    .
+        selected_cor (ndarray of shape (n_features, n_features))
+            correlation matrix
+        
+        n_samples (int)
+            number of samples
+        
+    Returns
+    -------
+    ndarray of shape(n_samples, n_features)
+        created matrix with input correlation
+    """
     rs = np.random.RandomState(state)
     r = rs.normal(size=(n_samples, selected_cor.shape[1]))
     cor_r = np.corrcoef(r, rowvar=False)
@@ -433,6 +682,28 @@ def create_mat_from_cor(selected_cor, n_samples=100, state=None):
 def mclust(df_target, n_init=3, g_range=G_RANGE,
            cov_type_list=cov_type_list,
            gm=mixture.GaussianMixture(init_params='kmeans')):
+    """Simulate with Gaussian Mixture
+    
+    Parameters
+    ----------
+    .
+        df_target (pandas.DataFrame or ndarray of shape (n_samples, n_features))
+            data
+        
+        n_init (int)
+            Number of initializations
+        
+        g_range (int)
+            Number of groups to investigate
+        
+        gm (GaussianMixture instance)
+            mixture.GaussianMixture(init_params='kmeans')
+    
+    Returns
+    -------
+    res
+        Results for each cov_type
+    """
     res = {}
     for cov_type in cov_type_list:
         print(cov_type)
@@ -453,6 +724,8 @@ def mclust(df_target, n_init=3, g_range=G_RANGE,
 
 
 def plot_mclust(res, g_range=G_RANGE, figsize=(15, 15), lw=2):
+    """plot mclust results
+    """
     fig, axes = plt.subplots(nrows=2, ncols=2, figsize=figsize)
     
     for ii, k in enumerate(cov_type_list):
@@ -511,6 +784,28 @@ def plot_pca_fa_cv(x_mat, n_obs=None,
 
 
 def check_cor(x, n_obs=None):
+    """check if input x is a correlation matrix
+    
+    Parameters
+    ----------
+    .
+        x (ndarray of shape (n_samples or n_features, n_features))
+            data to check
+        
+        n_obs (int or None)
+            number of samples
+    
+    Returns
+    -------
+    isCorrelation (boolean)
+        input x is a correlation matrix or not
+    
+    c (ndarray)
+        correlation matrix
+    
+    n_obs
+        number of samples
+    """
     isCorrelation = False
     if x.shape[0] == x.shape[1] and int(np.diag(x).sum()) == x.shape[0]:
         isCorrelation = True
@@ -525,6 +820,21 @@ def check_cor(x, n_obs=None):
 
 def find_ncomponents_pca(x, n_obs=None, n_iter=10,
                          figsize=(10,10)):
+    """investigate the number of significant components 
+    using PCA
+    
+    fa.parallel https://www.rdocumentation.org/packages/psych/versions/2.1.9/topics/fa.parallel
+    see References
+    
+    Parameters
+    ----------
+    .
+        x (ndarray of shape (n_samples or n_features, n_features))
+            data
+        
+        n_obs (int or None)
+            n_obs must be set if x is a correlation matrix
+    """
     n_features = x.shape[1]
     isCorrelation, c, n_obs = check_cor(x, n_obs)
     if isCorrelation:
@@ -568,6 +878,9 @@ def find_ncomponents_pca(x, n_obs=None, n_iter=10,
 
 
 def get_eigval(mat, n_features):
+    """calc eigenvalues using scikit-learn PCA
+    mainly used in find_ncomponents_pca
+    """
     pca = PCA(n_components=n_features)
     pca.fit(mat)
     cv = pca.get_covariance()
@@ -578,6 +891,24 @@ def get_eigval(mat, n_features):
 
 
 def cor_smooth(cor_mat, tol=10e-12):
+    """smooth a non-positive definite correlation matrix 
+    to make it positive definite
+    
+    Parameters
+    ----------
+    .
+        cor_mat (ndarray of shape (n_features, n_features))
+            correlation matirx to process
+        
+        tol (float)
+            the minimum acceptable eigenvalue
+        
+    Returns
+    -------
+    ndarray of shape (n_features, n_features)
+        the smoothed correlation matrix if smoothing was 
+        in fact necessary
+    """
     w, v = np.linalg.eigh(cor_mat)
     if w.min() < np.finfo(float).eps:
         w[w < tol] = tol * 100
