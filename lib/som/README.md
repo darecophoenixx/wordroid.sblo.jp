@@ -2,4 +2,4 @@
 pip install git+https://github.com/darecophoenixx/wordroid.sblo.jp
 ```
 
-[som demo](https://github.com/darecophoenixx/wordroid.sblo.jp/tree/master/demo/som)
+[Som (self organizing maps)](https://github.com/darecophoenixx/wordroid.sblo.jp/wiki/Som-(self-organizing-maps))
