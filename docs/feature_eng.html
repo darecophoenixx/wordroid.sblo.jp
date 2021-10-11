@@ -37,7 +37,9 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="som package" href="som.html" />
+    <link rel="prev" title="keras_ex.gkernel package" href="keras_ex.gkernel.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,20 +83,19 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">feature_eng package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-feature_eng.lowcols2">feature_eng.lowcols2 module</a></li>
-<li><a class="reference internal" href="#module-feature_eng.lowcols3">feature_eng.lowcols3 module</a></li>
-<li><a class="reference internal" href="#module-feature_eng.lowcols3_cos">feature_eng.lowcols3_cos module</a></li>
-<li><a class="reference internal" href="#module-feature_eng.m01f">feature_eng.m01f module</a></li>
-<li><a class="reference internal" href="#module-feature_eng.neg_smpl10">feature_eng.neg_smpl10 module</a></li>
-<li><a class="reference internal" href="#module-feature_eng">Module contents</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="keras_ex.html">keras_ex package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">feature_eng package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-feature_eng.lowcols2">feature_eng.lowcols2 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-feature_eng.lowcols3">feature_eng.lowcols3 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-feature_eng.m01f">feature_eng.m01f module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-feature_eng.neg_smpl10">feature_eng.neg_smpl10 module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="som.html">som package</a></li>
 </ul>
-</div>
+
             
           
         </div>
@@ -159,9 +160,6 @@
             
   <section id="feature-eng-package">
 <h1>feature_eng package<a class="headerlink" href="#feature-eng-package" title="Permalink to this headline">¶</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
-</section>
 <section id="module-feature_eng.lowcols2">
 <span id="feature-eng-lowcols2-module"></span><h2>feature_eng.lowcols2 module<a class="headerlink" href="#module-feature_eng.lowcols2" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2018 Norio Tamada
@@ -170,53 +168,6 @@ Released under the MIT license
 <dl class="py class">
 <dt class="sig sig-object py" id="feature_eng.lowcols2.Seq">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols2.</span></span><span class="sig-name descname"><span class="pre">Seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_df_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.Seq" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.utils.data_utils.Sequence</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols2.</span></span><span class="sig-name descname"><span class="pre">WD2vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.get_gamma">
-<span class="sig-name descname"><span class="pre">get_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.get_gamma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.get_seq">
-<span class="sig-name descname"><span class="pre">get_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.get_seq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.get_wgt_bycol">
-<span class="sig-name descname"><span class="pre">get_wgt_bycol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.get_wgt_bycol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.get_wgt_byrow">
-<span class="sig-name descname"><span class="pre">get_wgt_byrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.get_wgt_byrow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.make_model">
-<span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks_add</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.train" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.WD2vec.train2">
-<span class="sig-name descname"><span class="pre">train2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.WD2vec.train2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.lowcols2.make_model">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols2.</span></span><span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_product</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">39</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols2.make_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -228,111 +179,6 @@ Released under the MIT license
 <dl class="py class">
 <dt class="sig sig-object py" id="feature_eng.lowcols3.Seq">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3.</span></span><span class="sig-name descname"><span class="pre">Seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_df_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cor_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.Seq" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.utils.data_utils.Sequence</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3.</span></span><span class="sig-name descname"><span class="pre">WD2vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cor_mat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.get_gamma">
-<span class="sig-name descname"><span class="pre">get_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.get_gamma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.get_seq">
-<span class="sig-name descname"><span class="pre">get_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.get_seq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.get_wgt_bycol">
-<span class="sig-name descname"><span class="pre">get_wgt_bycol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.get_wgt_bycol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.get_wgt_byrow">
-<span class="sig-name descname"><span class="pre">get_wgt_byrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.get_wgt_byrow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.make_model">
-<span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks_add</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.train" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.WD2vec.train2">
-<span class="sig-name descname"><span class="pre">train2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.WD2vec.train2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.lowcols3.make_model">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3.</span></span><span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_product</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.04000000000000001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</section>
-<section id="module-feature_eng.lowcols3_cos">
-<span id="feature-eng-lowcols3-cos-module"></span><h2>feature_eng.lowcols3_cos module<a class="headerlink" href="#module-feature_eng.lowcols3_cos" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2018 Norio Tamada
-Released under the MIT license
-<a class="reference external" href="https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md">https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md</a></p>
-<dl class="py class">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.Seq">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3_cos.</span></span><span class="sig-name descname"><span class="pre">Seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_df_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.Seq" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.utils.data_utils.Sequence</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3_cos.</span></span><span class="sig-name descname"><span class="pre">WD2vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_fet</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.get_gamma">
-<span class="sig-name descname"><span class="pre">get_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.get_gamma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.get_seq">
-<span class="sig-name descname"><span class="pre">get_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.get_seq" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.get_wgt_bycol">
-<span class="sig-name descname"><span class="pre">get_wgt_bycol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.get_wgt_bycol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.get_wgt_byrow">
-<span class="sig-name descname"><span class="pre">get_wgt_byrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.get_wgt_byrow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.make_model">
-<span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.train" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.WD2vec.train2">
-<span class="sig-name descname"><span class="pre">train2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.WD2vec.train2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.lowcols3_cos.make_model">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.lowcols3_cos.</span></span><span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_product</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prod_trainable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.lowcols3_cos.make_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -344,11 +190,53 @@ Released under the MIT license
 <dl class="py class">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">M01F</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Calculate feature vector using lowcols2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>X_df (pandas.DataFrame of shape (n_samples, n_features))</dt><dd><p>training instances</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01F.wgt_row">
+<span class="sig-name descname"><span class="pre">wgt_row</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.wgt_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>feature vector of row side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01F.wgt_col">
+<span class="sig-name descname"><span class="pre">wgt_col</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.wgt_col" title="Permalink to this definition">¶</a></dt>
+<dd><p>feature vector of col side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_features, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01F.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.gamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>RBF parameter gamma</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.calc_cor">
 <span class="sig-name descname"><span class="pre">calc_cor</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.calc_cor" title="Permalink to this definition">¶</a></dt>
-<dd><p>行と列の特徴量を列の特徴量で評価する</p>
+<dd><p>Evaluate row and column features with column features</p>
 </dd></dl>
 
 <dl class="py method">
@@ -360,329 +248,496 @@ Released under the MIT license
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.find_ncomponents">
 <span class="sig-name descname"><span class="pre">find_ncomponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.find_ncomponents" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.gamma">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.gamma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.get_gamma">
-<span class="sig-name descname"><span class="pre">get_gamma</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.get_gamma" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.get_wgt_bycol">
-<span class="sig-name descname"><span class="pre">get_wgt_bycol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.get_wgt_bycol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.get_wgt_byrow">
-<span class="sig-name descname"><span class="pre">get_wgt_byrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.get_wgt_byrow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>investigate the number of significant components</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.make_model">
 <span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>create WordAndDoc2vec model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>num_features (int)</dt><dd><p>number of features, if None, num_features = self.n_sig</p>
+</dd>
+<dt>seed (int, or None)</dt><dd><p>RandomState for embeddings_initializer</p>
+</dd>
+<dt>embeddings_val (float)</dt><dd><p>embeddings_initializer=initializers.RandomUniform(
+minval=-embeddings_val, maxval=embeddings_val, seed=seed)</p>
+</dd>
+<dt>num_neg (int, default=1)</dt><dd><p>number of negative samping (row direction)</p>
+</dd>
+<dt>gamma (float)</dt><dd><p>tf.keras Embedding layer regularizers.l2(gamma)</p>
+</dd>
+<dt>loss_wgt_neg (float)</dt><dd><p>loss_weights={‘y’: 1.0, ‘neg_y’: loss_wgt_neg, ‘cor_y’: 1.0}</p>
+</dd>
+<dt>rscore</dt><dd><p>user_embedding weights</p>
+</dd>
+<dt>cscore</dt><dd><p>prod_embedding weights</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>models created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>model dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.mclust">
 <span class="sig-name descname"><span class="pre">mclust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.mclust" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Simulate with Gaussian Mixture</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.mclust_col">
 <span class="sig-name descname"><span class="pre">mclust_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.mclust_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Simulate with Gaussian Mixture using column features</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.mclust_row">
 <span class="sig-name descname"><span class="pre">mclust_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.mclust_row" title="Permalink to this definition">¶</a></dt>
-<dd><p>self.n_pca must be set</p>
+<dd><p>Simulate with Gaussian Mixture using row features</p>
+<p>self.n_pca must be set</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_eig">
 <span class="sig-name descname"><span class="pre">plot_eig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-o'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_eig" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot sdev</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_hst">
 <span class="sig-name descname"><span class="pre">plot_hst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_hst" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot loss history of 1st phase</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_hst2">
 <span class="sig-name descname"><span class="pre">plot_hst2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_hst2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot loss history of 2nd phase</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_mclust">
 <span class="sig-name descname"><span class="pre">plot_mclust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">15)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_mclust" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot results of mclust</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_mclust_col">
 <span class="sig-name descname"><span class="pre">plot_mclust_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">15)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_mclust_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot results of mclust</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_mclust_row">
 <span class="sig-name descname"><span class="pre">plot_mclust_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">15)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_mclust_row" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.plot_pca_fa_cv">
-<span class="sig-name descname"><span class="pre">plot_pca_fa_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=True)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.plot_pca_fa_cv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot results of mclust</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.set_npca">
 <span class="sig-name descname"><span class="pre">set_npca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.set_npca" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>set n_pca</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F.train">
 <span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks_add</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flag_early_stopping</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F.train" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.wgt_col">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">wgt_col</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.wgt_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F.wgt_row">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">wgt_row</span></span><a class="headerlink" href="#feature_eng.m01f.M01F.wgt_row" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>compute feature vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>epochs</strong> (<em>int</em><em>, </em><em>default=500</em>) – number of epochs to train the model</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default=1024</em>) – number of samples per gradient update</p></li>
+<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>default=0</em>) – verbosity mode</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Fitted estimator</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F_li">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">M01F_li</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.calc_X_df_nonoise">
-<span class="sig-name descname"><span class="pre">calc_X_df_nonoise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.calc_X_df_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.calc_col_score_nonoise">
-<span class="sig-name descname"><span class="pre">calc_col_score_nonoise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.calc_col_score_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.calc_cor_nonoise">
-<span class="sig-name descname"><span class="pre">calc_cor_nonoise</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.calc_cor_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.calc_row_fet">
-<span class="sig-name descname"><span class="pre">calc_row_fet</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.calc_row_fet" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dd><p>Calculate feature vector using noise reduction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>X_df (pandas.DataFrame of shape (n_samples, n_features))</dt><dd><p>training instances</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.find_ncomponents">
 <span class="sig-name descname"><span class="pre">find_ncomponents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pca'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.find_ncomponents" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.mclust_col">
-<span class="sig-name descname"><span class="pre">mclust_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.mclust_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.mclust_row">
-<span class="sig-name descname"><span class="pre">mclust_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.mclust_row" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.m01f.M01F_li.set_n_sig">
-<span class="sig-name descname"><span class="pre">set_n_sig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01F_li.set_n_sig" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>investigate the number of significant components</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">M01Fv2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01Fv2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#feature_eng.m01f.M01F" title="feature_eng.m01f.M01F"><code class="xref py py-class docutils literal notranslate"><span class="pre">feature_eng.m01f.M01F</span></code></a></p>
+<dd><p>Calculate feature vector using lowcols3.</p>
+<p>The correlation coefficient (distance similarity) of
+the feature vector on the column side matches the
+correlation coefficient of original data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>X_df (pandas.DataFrame of shape (n_samples, n_features))</dt><dd><p>training instances</p>
+</dd>
+<dt>n_sig (int)</dt><dd><p>number of significant components</p>
+</dd>
+<dt>n_iter (int)</dt><dd><p>using find_ncomponents_pca</p>
+</dd>
+<dt>figsize (sequence of length 2)</dt><dd><p>using find_ncomponents_pca</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.wgt_row">
+<span class="sig-name descname"><span class="pre">wgt_row</span></span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.wgt_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>feature vector of row side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_samples, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.wgt_col">
+<span class="sig-name descname"><span class="pre">wgt_col</span></span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.wgt_col" title="Permalink to this definition">¶</a></dt>
+<dd><p>feature vector of col side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_features, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.gamma" title="Permalink to this definition">¶</a></dt>
+<dd><p>RBF parameter gamma</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.make_model">
 <span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_wgt_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cscore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>create WordAndDoc2vec model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>num_features (int)</dt><dd><p>number of features, if None, num_features = self.n_sig</p>
+</dd>
+<dt>seed (int, or None)</dt><dd><p>RandomState for embeddings_initializer</p>
+</dd>
+<dt>embeddings_val (float)</dt><dd><p>embeddings_initializer=initializers.RandomUniform(
+minval=-embeddings_val, maxval=embeddings_val, seed=seed)</p>
+</dd>
+<dt>num_neg (int, default=1)</dt><dd><p>number of negative samping (row direction)</p>
+</dd>
+<dt>gamma (float)</dt><dd><p>tf.keras Embedding layer regularizers.l2(gamma)</p>
+</dd>
+<dt>loss_wgt_neg (float)</dt><dd><p>loss_weights={‘y’: 1.0, ‘neg_y’: loss_wgt_neg, ‘cor_y’: 1.0}</p>
+</dd>
+<dt>rscore</dt><dd><p>user_embedding weights</p>
+</dd>
+<dt>cscore</dt><dd><p>prod_embedding weights</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>models created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>model dict</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.mclust_col">
 <span class="sig-name descname"><span class="pre">mclust_col</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_pca</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.mclust_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Simulate with Gaussian Mixture</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.plot_hst">
 <span class="sig-name descname"><span class="pre">plot_hst</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.plot_hst" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot loss history of 1st phase</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="feature_eng.m01f.M01Fv2.plot_hst2">
 <span class="sig-name descname"><span class="pre">plot_hst2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">5)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.M01Fv2.plot_hst2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot loss history of 2nd phase</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.calc_col_score">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">calc_col_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.calc_col_score" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calc scores of columns side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>c (ndarray of shape (n_features, n_features))</dt><dd><p>correlation matrix</p>
+</dd>
+<dt>n_sig (int)</dt><dd><p>number of significant components</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scores created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape(n_features, n_sig)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.calc_cor_nonoise">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">calc_cor_nonoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.calc_cor_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calc correlation matrix using noise reduction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>c (ndarray of shape (n_features, n_features))</dt><dd><p>correlation matrix</p>
+</dd>
+<dt>n_sig (int)</dt><dd><p>number of significant components</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matrix created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape(n_features, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.calc_loadings_nonoise">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">calc_loadings_nonoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.calc_loadings_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calc scores of columns side</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>c (ndarray of shape (n_features, n_features))</dt><dd><p>correlation matrix</p>
+</dd>
+<dt>n_sig (int)</dt><dd><p>number of significant components</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scores created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape(n_features, n_sig)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.calc_mat_nonoise">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">calc_mat_nonoise</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_sig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.calc_mat_nonoise" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calc matrix using noise reduction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>mat (ndarray of shape (n_samples, n_features))</dt><dd><p>matrix</p>
+</dd>
+<dt>n_sig (int)</dt><dd><p>number of significant components</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matrix created</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape(n_samples, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.check_cor">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">check_cor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.check_cor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>check if input x is a correlation matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data to check</p>
+</dd>
+<dt>n_obs (int or None)</dt><dd><p>number of samples</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>isCorrelation (boolean)</em> – input x is a correlation matrix or not</p></li>
+<li><p><em>c (ndarray)</em> – correlation matrix</p></li>
+<li><p><em>n_obs</em> – number of samples</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.cor_smooth">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">cor_smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cor_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-11</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.cor_smooth" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>smooth a non-positive definite correlation matrix
+to make it positive definite</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>cor_mat (ndarray of shape (n_features, n_features))</dt><dd><p>correlation matirx to process</p>
+</dd>
+<dt>tol (float)</dt><dd><p>the minimum acceptable eigenvalue</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the smoothed correlation matrix if smoothing was
+in fact necessary</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape (n_features, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.create_mat_from_cor">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">create_mat_from_cor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_cor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.create_mat_from_cor" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.m01f.create_random_map">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">create_random_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.create_random_map" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.m01f.create_random_map2">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">create_random_map2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_std</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kshape_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.create_random_map2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>create simulated observation matrix using correlation matrix
+of shape (n_samples, selected_cor.shape[0])</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>selected_cor (ndarray of shape (n_features, n_features))</dt><dd><p>correlation matrix</p>
+</dd>
+<dt>n_samples (int)</dt><dd><p>number of samples</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>created matrix with input correlation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray of shape(n_samples, n_features)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.eig">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">eig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cor_mat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.eig" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.m01f.find_nclusters_gap">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">find_nclusters_gap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kshape_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15,</span> <span class="pre">16,</span> <span class="pre">17,</span> <span class="pre">18,</span> <span class="pre">19,</span> <span class="pre">20,</span> <span class="pre">21,</span> <span class="pre">22,</span> <span class="pre">23,</span> <span class="pre">24,</span> <span class="pre">25,</span> <span class="pre">26,</span> <span class="pre">27,</span> <span class="pre">28,</span> <span class="pre">29,</span> <span class="pre">30])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(20,</span> <span class="pre">8)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.find_nclusters_gap" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>quasi PCA</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.find_ncomponents_pca">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">find_ncomponents_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.find_ncomponents_pca" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>investigate the number of significant components
+using PCA</p>
+<p>fa.parallel <a class="reference external" href="https://www.rdocumentation.org/packages/psych/versions/2.1.9/topics/fa.parallel">https://www.rdocumentation.org/packages/psych/versions/2.1.9/topics/fa.parallel</a>
+see References</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data</p>
+</dd>
+<dt>n_obs (int or None)</dt><dd><p>n_obs must be set if x is a correlation matrix</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.get_eigval">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">get_eigval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.get_eigval" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>calc eigenvalues using scikit-learn PCA
+mainly used in find_ncomponents_pca</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.mclust">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">mclust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cov_type_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['full',</span> <span class="pre">'tied',</span> <span class="pre">'diag',</span> <span class="pre">'spherical']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">GaussianMixture()</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.mclust" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Simulate with Gaussian Mixture</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>df_target (pandas.DataFrame or ndarray of shape (n_samples, n_features))</dt><dd><p>data</p>
+</dd>
+<dt>n_init (int)</dt><dd><p>Number of initializations</p>
+</dd>
+<dt>g_range (int)</dt><dd><p>Number of groups to investigate</p>
+</dd>
+<dt>gm (GaussianMixture instance)</dt><dd><p>mixture.GaussianMixture(init_params=’kmeans’)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Results for each cov_type</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>res</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="feature_eng.m01f.plot_mclust">
 <span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">plot_mclust</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(15,</span> <span class="pre">15)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.plot_mclust" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="feature_eng.m01f.plot_pca_fa_cv">
-<span class="sig-prename descclassname"><span class="pre">feature_eng.m01f.</span></span><span class="sig-name descname"><span class="pre">plot_pca_fa_cv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_mat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_obs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">array([2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8,</span> <span class="pre">9,</span> <span class="pre">10,</span> <span class="pre">11,</span> <span class="pre">12,</span> <span class="pre">13,</span> <span class="pre">14,</span> <span class="pre">15])</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">KFold(n_splits=5,</span> <span class="pre">random_state=None,</span> <span class="pre">shuffle=True)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(10,</span> <span class="pre">10)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.m01f.plot_pca_fa_cv" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>plot mclust results</p>
+</dd></dl>
 
 </section>
 <section id="module-feature_eng.neg_smpl10">
 <span id="feature-eng-neg-smpl10-module"></span><h2>feature_eng.neg_smpl10 module<a class="headerlink" href="#module-feature_eng.neg_smpl10" title="Permalink to this headline">¶</a></h2>
-<p>Copyright (c) 2018 Norio Tamada
-Released under the MIT license
-<a class="reference external" href="https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md">https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md</a></p>
-<dl class="py class">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">feature_eng.neg_smpl10.</span></span><span class="sig-name descname"><span class="pre">WordAndDoc2vec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corpus_csr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">word_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doc_dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.create_tfidf">
-<span class="sig-name descname"><span class="pre">create_tfidf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.create_tfidf" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.get_seq">
-<span class="sig-name descname"><span class="pre">get_seq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.get_seq" title="Permalink to this definition">¶</a></dt>
-<dd><p>“shuffle” not implemented yet</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.get_sim">
-<span class="sig-name descname"><span class="pre">get_sim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.get_sim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.get_wgt_bycol">
-<span class="sig-name descname"><span class="pre">get_wgt_bycol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.get_wgt_bycol" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.get_wgt_byrow">
-<span class="sig-name descname"><span class="pre">get_wgt_byrow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.get_wgt_byrow" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.init" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.make_model">
-<span class="sig-name descname"><span class="pre">make_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_neg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">embeddings_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stack_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.make_model" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.sim">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">sim</span></span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.sim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_multiprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callbacks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.train" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.wgt_col">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">wgt_col</span></span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.wgt_col" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="feature_eng.neg_smpl10.WordAndDoc2vec.wgt_row">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">wgt_row</span></span><a class="headerlink" href="#feature_eng.neg_smpl10.WordAndDoc2vec.wgt_row" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</section>
-<section id="module-feature_eng">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-feature_eng" title="Permalink to this headline">¶</a></h2>
 <p>Copyright (c) 2018 Norio Tamada
 Released under the MIT license
 <a class="reference external" href="https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md">https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md</a></p>
@@ -694,6 +749,15 @@ Released under the MIT license
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="som.html" class="btn btn-neutral float-right" title="som package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="keras_ex.gkernel.html" class="btn btn-neutral float-left" title="keras_ex.gkernel package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
