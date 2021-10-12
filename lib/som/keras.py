@@ -580,6 +580,14 @@ class som(sksom_keras2):
 class sksom(TransformerMixin, ClusterMixin, BaseEstimator):
     """som (self-organizing map) scikit-learn api
     
+    Kaggle notebook: [som] scikit-learn api
+        https://www.kaggle.com/wordroid/som-scikit-learn-api
+    
+    Kaggle notebook: [som] moon data 10000 with GPU
+        https://www.kaggle.com/wordroid/som-moon-data-10000-with-gpu
+        
+        Since it is implemented in tf.keras, it can be calculated very fast if you have a GPU.
+    
     Parameters
     ----------
     
