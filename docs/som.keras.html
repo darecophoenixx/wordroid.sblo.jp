@@ -89,7 +89,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="feature_eng.html">feature_eng package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.html">feature_eng module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_eng.m01f.html">feature_eng.m01f module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols2.html">feature_eng.lowcols2 module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols3.html">feature_eng.lowcols3 module</a></li>
@@ -349,6 +349,13 @@ by <cite>Network</cite> (one layer of abstraction above).</p>
 <dt class="sig sig-object py" id="som.keras.sksom">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">som.keras.</span></span><span class="sig-name descname"><span class="pre">sksom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">kshape=(20</span></em>, <em class="sig-param"><span class="pre">30)</span></em>, <em class="sig-param"><span class="pre">init_K=None</span></em>, <em class="sig-param"><span class="pre">initialization='linear'</span></em>, <em class="sig-param"><span class="pre">form=None</span></em>, <em class="sig-param"><span class="pre">rand_stat=None</span></em>, <em class="sig-param"><span class="pre">r1=None</span></em>, <em class="sig-param"><span class="pre">r2=None</span></em>, <em class="sig-param"><span class="pre">epochs=500</span></em>, <em class="sig-param"><span class="pre">early_stopping=(5</span></em>, <em class="sig-param"><span class="pre">1e-07)</span></em>, <em class="sig-param"><span class="pre">batch_size=1024</span></em>, <em class="sig-param"><span class="pre">loss='mae'</span></em>, <em class="sig-param"><span class="pre">optimizer=&lt;tensorflow.python.keras.optimizer_v2.adam.Adam</span> <span class="pre">object&gt;</span></em>, <em class="sig-param"><span class="pre">verbose=0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#som.keras.sksom" title="Permalink to this definition">¶</a></dt>
 <dd><p>som (self-organizing map) scikit-learn api</p>
+<dl>
+<dt>Kaggle notebook: [som] scikit-learn api</dt><dd><p><a class="reference external" href="https://www.kaggle.com/wordroid/som-scikit-learn-api">https://www.kaggle.com/wordroid/som-scikit-learn-api</a></p>
+</dd>
+<dt>Kaggle notebook: [som] moon data 10000 with GPU</dt><dd><p><a class="reference external" href="https://www.kaggle.com/wordroid/som-moon-data-10000-with-gpu">https://www.kaggle.com/wordroid/som-moon-data-10000-with-gpu</a></p>
+<p>Since it is implemented in tf.keras, it can be calculated very fast if you have a GPU.</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
