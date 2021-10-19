@@ -37,7 +37,9 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="feature_eng module" href="feature_eng.html" />
+    <link rel="prev" title="keras_ex package" href="keras_ex.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,14 +83,32 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">keras_ex.gkernel package</a><ul>
-<li><a class="reference internal" href="#module-keras_ex.gkernel">Module contents</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="keras_ex.html">keras_ex package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="keras_ex.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">keras_ex.gkernel package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-keras_ex.gkernel">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.html">feature_eng module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.m01f.html">feature_eng.m01f module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols2.html">feature_eng.lowcols2 module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols3.html">feature_eng.lowcols3 module</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="som.keras.html">som.keras module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="som.som.html">som.som module</a></li>
+</ul>
+
             
           
         </div>
@@ -132,6 +152,8 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
+          <li><a href="keras_ex.html">keras_ex package</a> &raquo;</li>
+        
       <li>keras_ex.gkernel package</li>
     
     
@@ -162,6 +184,25 @@ Released under the MIT license
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">keras_ex.gkernel.</span></span><span class="sig-name descname"><span class="pre">GaussianKernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>train landmarks</p>
+<p>gamma is not traind</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl>
+<dt>num_landmark (int)</dt><dd><p>number of landmarks</p>
+<p>that was number of output features</p>
+</dd>
+<dt>num_feature (int)</dt><dd><p>equal to inputs.shape[1]</p>
+</dd>
+<dt>kernel_gamma (float)</dt><dd><p>kernel parameter</p>
+<p>if ‘auto’, use 1/(2 * d_mean**2)</p>
+<p>d is distance between samples and landmark</p>
+<p>d_mean is mean of d</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel.build" title="Permalink to this definition">¶</a></dt>
@@ -249,6 +290,17 @@ by <cite>Network</cite> (one layer of abstraction above).</p>
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel2">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">keras_ex.gkernel.</span></span><span class="sig-name descname"><span class="pre">GaussianKernel2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>this layer uses fixed landmarks</p>
+<p>train kernel_gamma</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl class="simple">
+<dt>landmarks (ndarray of shape ((num_landmarks, num_features)))</dt><dd><p>landmarks</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel2.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel2.build" title="Permalink to this definition">¶</a></dt>
@@ -336,6 +388,19 @@ by <cite>Network</cite> (one layer of abstraction above).</p>
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel3">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">keras_ex.gkernel.</span></span><span class="sig-name descname"><span class="pre">GaussianKernel3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>train landmarks and gamma</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong></strong> – <dl>
+<dt>num_landmark (int)</dt><dd><p>number of landmarks</p>
+<p>that was number of output features</p>
+</dd>
+<dt>num_feature (int)</dt><dd><p>equal to inputs.shape[1]</p>
+</dd>
+</dl>
+</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="keras_ex.gkernel.GaussianKernel3.build">
 <span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#keras_ex.gkernel.GaussianKernel3.build" title="Permalink to this definition">¶</a></dt>
@@ -427,6 +492,15 @@ by <cite>Network</cite> (one layer of abstraction above).</p>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="feature_eng.html" class="btn btn-neutral float-right" title="feature_eng module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="keras_ex.html" class="btn btn-neutral float-left" title="keras_ex package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
