@@ -38,8 +38,12 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
     def getDF(self):
         '''異なり語数'''
         print('processing d_len')
-        tmp = pd.DataFrame(self.index_csc.nonzero()[0], columns=['idx'])
+        nonzero = self.index_csc.nonzero()
+        tmp = pd.DataFrame(nonzero[0], columns=['idx'])
         d_len = tmp.groupby('idx').size().values
+        print('processing idfs')
+        tmp = pd.DataFrame(nonzero[1], columns=['idx'])
+        self.idfs = np.log(self.num_row / tmp.groupby('idx').size().values)
         '''トータル語数'''
         print('processing d_tot')
         d_tot = self.index_csc.sum(axis=1).flatten()
@@ -66,7 +70,8 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             raise Exception('no such method [%s]' % method)
     
     def calc_idf(self, tgt_mat):
-        idf = np.log(self.num_row / np.array([len(tgt_mat[:,ii].nonzero()[0]) for ii in range(tgt_mat.shape[1])]))
+        #idf = np.log(self.num_row / np.array([len(tgt_mat[:,ii].nonzero()[0]) for ii in range(tgt_mat.shape[1])]))
+        idf = self.idfs[self.idx_word]
         return idf
     
     def create_query_mat(self, wgt_list):
@@ -106,9 +111,10 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             wq = mat_csr_q
             return wq
         elif method == 'WT_SMART2':
-            wq = self.calc_tfn_mx2(query)
-            wq = wq.T.multiply(self.idfs) # tf_n(t|q) * idf(t)
-            return wq.T
+            wq = self.calc_tfn_mx2(mat_csr_q, avg=True)
+            idf = self.calc_idf(tgt_mat)
+            wq = wq.multiply(idf) # tf_n(t|q) * idf(t)
+            return wq
         elif method in ['WT_RAW', 'WT_TF']:
             wq = mat_csr_q
             return wq
@@ -181,6 +187,20 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         mat[nonzero_idx] = 1+np.log(mat[nonzero_idx])
         if avg:
             m = 1 + np.log(mx.mean(axis=1))
+            return mat.multiply(1 / m)
+        else:
+            return mat
+    
+    def calc_tfn_mx2(self, mx, avg=False):
+        '''
+                    log(1 + TF(t|q))
+        tf_n(t|q) = ---------------------
+                    ave(log(1 + TF(.|q)))
+        '''
+        mat = mx.copy()
+        mat = mat.log1p()
+        if avg:
+            m = mat.mean(axis=1)
             return mat.multiply(1 / m)
         else:
             return mat

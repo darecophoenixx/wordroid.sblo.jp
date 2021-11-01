@@ -7,3 +7,4 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/L
 from feature_eng.neg_smpl10 import (WordAndDoc2vec,
                                   calc_gsim,
 )
+from feature_eng.similarity import MySparseMatrixSimilarity as SparseMatrixSimilarity
