@@ -807,7 +807,7 @@ def check_cor(x, n_obs=None):
         number of samples
     """
     isCorrelation = False
-    if x.shape[0] == x.shape[1] and int(np.diag(x).sum()) == x.shape[0]:
+    if x.shape[0] == x.shape[1] and int(np.diag(x).sum().round()) == x.shape[0]:
         isCorrelation = True
         c = x
         if n_obs is None:
@@ -830,7 +830,7 @@ def find_ncomponents_pca(x, n_obs=None, n_iter=10,
     ----------
     .
         x (ndarray of shape (n_samples or n_features, n_features))
-            data
+            data or correlation matrix
         
         n_obs (int or None)
             n_obs must be set if x is a correlation matrix
