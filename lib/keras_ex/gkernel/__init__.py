@@ -10,25 +10,36 @@ from tensorflow.keras.layers import Layer
 from tensorflow.keras import backend as K
 
 class GaussianKernel(Layer):
+    """train landmarks
+    
+    gamma is not traind
+    
+    Parameters
+    ----------
+    .
+        num_landmark (int)
+            number of landmarks
+            
+            that was number of output features
+        
+        num_feature (int)
+            equal to inputs.shape[1]
+        
+        kernel_gamma (float)
+            kernel parameter
+            
+            if 'auto', use 1/(2 * d_mean**2)
+            
+            d is distance between samples and landmark
+            
+            d_mean is mean of d
+    """
     
     def __init__(self, num_landmark, num_feature,
                  kernel_initializer='glorot_uniform',
                  kernel_constraint=None,
                  kernel_gamma='auto',
                  **kwargs):
-        '''
-        num_landmark:
-            number of landmark
-            that was number of output features
-        num_feature:
-            depth of landmark
-            equal to inputs.shape[1]
-        kernel_gamma:
-            kernel parameter
-            if 'auto', use 1/(2 * d_mean**2)
-            d is distance between samples and landmark
-            d_mean is mean of d
-        '''
         super(GaussianKernel, self).__init__(**kwargs)
         
         self.output_dim = num_landmark
@@ -86,12 +97,19 @@ class GaussianKernel(Layer):
 
 
 class GaussianKernel2(Layer):
+    """this layer uses fixed landmarks
+    
+    train kernel_gamma
+    
+    Parameters
+    ----------
+    .
+        landmarks (ndarray of shape ((num_landmarks, num_features)))
+            landmarks
+        
+    """
     
     def __init__(self, landmarks, **kwargs):
-        '''
-        landmarks:
-            fixed landmarks using
-        '''
         super(GaussianKernel2, self).__init__(**kwargs)
         if isinstance(landmarks, (list,)):
             landmarks = np.array(landmarks)
@@ -133,18 +151,24 @@ class GaussianKernel2(Layer):
 
 
 class GaussianKernel3(Layer):
+    """train landmarks and gamma
+    
+    Parameters
+    ----------
+    .
+        num_landmark (int)
+            number of landmarks
+            
+            that was number of output features
+        
+        num_feature (int)
+            equal to inputs.shape[1]
+        
+    """
     
     def __init__(self, num_landmark, num_feature,
                  kernel_initializer='glorot_uniform',
                  **kwargs):
-        '''
-        num_landmark:
-            number of landmark
-            that was number of output features
-        num_feature:
-            depth of landmark
-            equal to inputs.shape[1]
-        '''
         super(GaussianKernel3, self).__init__(**kwargs)
         
         self.output_dim = num_landmark
