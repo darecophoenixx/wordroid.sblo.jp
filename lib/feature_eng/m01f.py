@@ -790,7 +790,7 @@ def check_cor(x, n_obs=None):
     ----------
     .
         x (ndarray of shape (n_samples or n_features, n_features))
-            data to check
+            data to check (data or correlation matrix)
         
         n_obs (int or None)
             number of samples
