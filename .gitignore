@@ -3,6 +3,7 @@
 /.settings/
 
 *.pyc
+*_old.py
 /mecabproc/mysql_con.py
 
 docs/_sources
