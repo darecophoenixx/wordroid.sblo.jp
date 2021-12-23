@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="feature_eng.lowcols2 module" href="feature_eng.lowcols2.html" />
-    <link rel="prev" title="feature_eng package" href="feature_eng.html" /> 
+    <link rel="prev" title="feature_eng module" href="feature_eng.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,13 +84,20 @@
             
             
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="keras_ex.html">keras_ex package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="feature_eng.html">feature_eng package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="feature_eng.html">feature_eng module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">feature_eng.m01f module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols2.html">feature_eng.lowcols2 module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_eng.lowcols3.html">feature_eng.lowcols3 module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="som.html">som package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="som.keras.html">som.keras module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="som.som.html">som.som module</a></li>
 </ul>
 
             
@@ -575,7 +582,7 @@ minval=-embeddings_val, maxval=embeddings_val, seed=seed)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong></strong> – <dl class="simple">
-<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data to check</p>
+<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data to check (data or correlation matrix)</p>
 </dd>
 <dt>n_obs (int or None)</dt><dd><p>number of samples</p>
 </dd>
@@ -658,7 +665,7 @@ see References</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong></strong> – <dl class="simple">
-<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data</p>
+<dt>x (ndarray of shape (n_samples or n_features, n_features))</dt><dd><p>data or correlation matrix</p>
 </dd>
 <dt>n_obs (int or None)</dt><dd><p>n_obs must be set if x is a correlation matrix</p>
 </dd>
@@ -721,7 +728,7 @@ mainly used in find_ncomponents_pca</p>
         <a href="feature_eng.lowcols2.html" class="btn btn-neutral float-right" title="feature_eng.lowcols2 module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="feature_eng.html" class="btn btn-neutral float-left" title="feature_eng package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="feature_eng.html" class="btn btn-neutral float-left" title="feature_eng module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
