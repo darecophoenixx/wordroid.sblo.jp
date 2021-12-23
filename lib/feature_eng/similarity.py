@@ -65,23 +65,25 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         if method in ['WT_RAW', 'WT_TF', 'WT_TFIDF', 'WT_SMART',
                       'WT_SMARTAW', 'WT_SMARTAW2', 'WT_SMARTAW3', 'WT_SMARTAW4',
                       'WT_SMARTWA', 'WT_SMART2']:
-            return self.calc_wq(self.tgt_mat, self.wgt_list, method=method)
+            res = self.calc_wq(self.tgt_mat, self.idx_word, self.wgt_list, method=method)
+            row_ind = np.zeros(shape=(res.data.shape[0],), dtype=int)
+            ret = scipy.sparse.csr_matrix((res.data, (row_ind, self.idx_word)), shape=(1, self.index_csc.shape[1]))
+            return ret
         else:
             raise Exception('no such method [%s]' % method)
     
-    def calc_idf(self, tgt_mat):
-        #idf = np.log(self.num_row / np.array([len(tgt_mat[:,ii].nonzero()[0]) for ii in range(tgt_mat.shape[1])]))
-        idf = self.idfs[self.idx_word]
+    def calc_idf(self, idx_word):
+        idf = self.idfs[idx_word]
         return idf
     
     def create_query_mat(self, wgt_list):
         return csr_matrix(np.array(wgt_list).reshape((1,-1)), dtype=self.DTYPE)
     
-    def calc_wq(self, tgt_mat, wgt_list, method='WT_SMART'):
+    def calc_wq(self, tgt_mat, idx_word, wgt_list, method='WT_SMART'):
         mat_csr_q = self.create_query_mat(wgt_list)
         if method in ['WT_SMART']:
             wq = self.calc_tfn_mx(mat_csr_q, avg=True)
-            idf = self.calc_idf(tgt_mat)
+            idf = self.calc_idf(idx_word)
             wq = wq.multiply(idf) # tf_n(t|q) * idf(t)
             return wq
         elif method == 'WT_SMARTAW':
@@ -99,7 +101,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             b = np.array([(nonzero==ii).sum() for ii in range(tgt_mat.shape[1])])
             m = a / b
             wq = wq.multiply(m)
-            idf = self.calc_idf(tgt_mat)
+            idf = self.calc_idf(idx_word)
             wq = wq.multiply(idf) # tf_n(t|q) * idf(t)
             return wq
         elif method in ['WT_SMARTAW3', 'WT_SMARTAW4']:
@@ -112,7 +114,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             return wq
         elif method == 'WT_SMART2':
             wq = self.calc_tfn_mx2(mat_csr_q, avg=True)
-            idf = self.calc_idf(tgt_mat)
+            idf = self.calc_idf(idx_word)
             wq = wq.multiply(idf) # tf_n(t|q) * idf(t)
             return wq
         elif method in ['WT_RAW', 'WT_TF']:
@@ -120,7 +122,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             return wq
         elif method == 'WT_TFIDF':
             wq = mat_csr_q
-            idf = self.calc_idf(tgt_mat)
+            idf = self.calc_idf(idx_word)
             wq = wq.multiply(idf) # tf_n(t|q) * idf(t)
             return wq
         else:
@@ -205,14 +207,17 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         else:
             return mat
     
-    def calc_sim_WT(self, tgt_mat, idx_word, wgt_list, method='WT_SMART'):
+    #def calc_sim_WT(self, tgt_mat, idx_word, wgt_list, method='WT_SMART'):
+    def calc_sim_WT(self, idx_word, wgt_list, method='WT_SMART'):
         '''
         sim(d|q) = 1 / norm(d) * \sum_t { wq(t|q) * wd(t|d) }
         '''
+        tgt_mat = self.tgt_mat = self.index_csc[:,self.idx_word]
+
         '''
         wq
         '''
-        wq = self.calc_wq(tgt_mat, wgt_list, method=method)
+        wq = self.calc_wq(tgt_mat, idx_word, wgt_list, method=method)
         
         '''
         wd
@@ -233,15 +238,15 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
     def calc_sim(self, query):
         self.idx_word = query.indices
         self.wgt_list = query.data
-        self.tgt_mat = self.index_csc[:,self.idx_word]
+#        self.tgt_mat = self.index_csc[:,self.idx_word]
 
         if self.method is None:
-            ret = self.calc_sim_WT(self.tgt_mat, self.idx_word, self.wgt_list, method='WT_SMART')
+            ret = self.calc_sim_WT(self.idx_word, self.wgt_list, method='WT_SMART')
             return ret
         elif self.method in ['WT_TFIDF', 'WT_TF', 'WT_SMART', 'WT_RAW',
                              'WT_SMARTAW', 'WT_SMARTAW2', 'WT_SMARTAW3', 'WT_SMARTAW4',
                              'WT_SMARTWA', 'WT_SMART2']:
-            ret = self.calc_sim_WT(self.tgt_mat, self.idx_word, self.wgt_list, method=self.method)
+            ret = self.calc_sim_WT(self.idx_word, self.wgt_list, method=self.method)
             return ret
         elif self.method == 'WT_MINE':
             return self.calc_sim_WT_MINE(query)
@@ -276,4 +281,56 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             # otherwise, return a 2d matrix (#queries x #index)
             result = result.toarray().T
         return result
+
+
+def cut(res0, shresh=0.1):
+    max_val = max(list(zip(*res0))[1])
+    res = []
+    for ee in res0:
+        idx, w = ee
+        if max_val*shresh <= w:
+            res.append((int(ee[0]), float(ee[1])))
+    return res
+
+class Collaborative(object):
+    
+    def __init__(self, dic_user, dic_word, sim_user, sim_word):
+        self.dic_user = dic_user
+        self.dic_word = dic_word
+        self.sim_user = sim_user
+        self.sim_word = sim_word
+    
+    def get_query_by_word(self, word_list):
+        query = self.dic_word.doc2bow(word_list)
+        return query
+    
+    def get_query_by_user(self, user_list):
+        query = self.dic_user.doc2bow(user_list)
+        return query
+    
+    def get_sim_user(self, query, num_best=100000, method='WT_SMARTAW', shresh=0.1):
+        self.sim_user.num_best = num_best
+        self.sim_user.method = method
+        res = self.sim_user[query]
+        res1 = cut(res, shresh=shresh)
+        return res1
+    
+    def get_sim_word(self, query, num_best=100000, method='WT_SMARTAW', shresh=0.1):
+        self.sim_word.num_best = num_best
+        self.sim_word.method = method
+        res = self.sim_word[query]
+        res1 = cut(res, shresh=shresh)
+        return res1
+    
+    def transform_user(self, res):
+        ret = []
+        for user_id, wgt in res:
+            ret.append((self.dic_user[user_id], wgt))
+        return ret
+    
+    def transform_word(self, res):
+        ret = []
+        for word_id, wgt in res:
+            ret.append((self.dic_word[word_id], wgt))
+        return ret
 
