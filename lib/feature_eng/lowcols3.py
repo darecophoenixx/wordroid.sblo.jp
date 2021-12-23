@@ -6,6 +6,7 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/L
 
 '''
 gkernelを使わない
+変数間の相関係数行列を考慮
 '''
 
 import numpy as np
@@ -260,6 +261,33 @@ class Seq(Sequence):
 
 
 class WD2vec(object):
+    """Calculate feature vector.
+    
+    The correlation coefficient (distance similarity) of 
+    the feature vector on the column side matches the 
+    correlation coefficient of original data.
+    
+    Parameters
+    ----------
+    .
+        X_df (pandas.DataFrame of shape (n_samples, n_features))
+            training instances
+        
+        cor_mat (ndarray of shape (n_features, n_features))
+            correlation matrix to match
+    
+    Attributes
+    ----------
+    
+    wgt_row : ndarray of shape (n_samples, n_features)
+        feature vector of row side
+    
+    wgt_col : ndarray of shape (n_features, n_features)
+        feature vector of col side
+    
+    gamma : float
+        RBF parameter gamma
+    """
     
     def __init__(self, X_df, cor_mat):
         assert X_df.shape[1] == cor_mat.shape[0]
@@ -387,14 +415,17 @@ class WD2vec(object):
     def get_wgt_byrow(self):
         wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
         return wgt
+    wgt_row = property(get_wgt_byrow)
     
     def get_wgt_bycol(self):
         wgt = self.models['model'].get_layer('prod_embedding').get_weights()[0]
         return wgt
+    wgt_col = property(get_wgt_bycol)
     
     def get_gamma(self):
         gamma = 1 / (self.num_features * SIGMA2)
         return gamma
+    gamma = property(get_gamma)
 
 
 
