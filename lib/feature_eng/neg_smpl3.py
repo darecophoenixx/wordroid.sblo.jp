@@ -152,11 +152,11 @@ def make_model(num_user=20, num_product=10, max_num_prod=5,
     
     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                               embeddings_constraint=MaxNorm(max_value=maxnorm, axis=1),
+                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
                                name='user_embedding', trainable=True)
     prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                               embeddings_constraint=MaxNorm(max_value=maxnorm, axis=1),
+                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
                                name='prod_embedding', trainable=True)
     
     input_user = Input(shape=(1,), name='input_user')
@@ -303,7 +303,7 @@ class WordAndDoc2vec(object):
         self.tfidf = tfidf
     
     def make_model(self, num_features=8, max_num_prod=30,
-                   gamma=0.0, embeddings_val=0.1, maxnorm=3.0,
+                   gamma=0.0, embeddings_val=0.1, maxnorm=None,
                    debug=False
                   ):
         self.num_user = self.corpus_csr.shape[0]
