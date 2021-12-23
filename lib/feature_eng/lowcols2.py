@@ -4,6 +4,10 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md
 '''
 
+'''
+ネガティブサンプリングを導入
+'''
+
 import numpy as np
 from math import ceil
 import random
@@ -303,15 +307,18 @@ class WD2vec(object):
     def get_wgt_byrow(self):
         wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
         return wgt
+    wgt_row = property(get_wgt_byrow)
     
     def get_wgt_bycol(self):
         wgt = self.models['model'].get_layer('gkernel1').get_weights()[0]
         return wgt
+    wgt_col = property(get_wgt_bycol)
     
     def get_gamma(self):
         logged_gamma = self.models['model'].get_layer('gkernel1').get_weights()[1][0]
         gamma = np.exp(logged_gamma)
         return gamma
+    gamma = property(get_gamma)
 
 
 
