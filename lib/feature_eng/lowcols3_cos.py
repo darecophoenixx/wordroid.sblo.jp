@@ -4,6 +4,10 @@ Released under the MIT license
 https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/LICENSE.md
 '''
 
+'''
+gkernelを使わない
+'''
+
 import numpy as np
 from math import ceil
 import random
@@ -13,7 +17,7 @@ import random
 
 from keras_ex.gkernel import GaussianKernel, GaussianKernel2, GaussianKernel3
 
-from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
+from tensorflow.keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, Conv3D, \
     Conv2DTranspose, \
     AveragePooling1D, \
@@ -28,50 +32,49 @@ from keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout, Lambda, \
     Bidirectional, TimeDistributed, \
     SpatialDropout1D, \
     BatchNormalization
-from keras.models import Model, Sequential
-from keras import losses
-from keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
+from tensorflow.keras.models import Model, Sequential
+from tensorflow.keras import losses
+from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
     LearningRateScheduler, EarlyStopping
-from keras.wrappers.scikit_learn import KerasClassifier
-from keras import regularizers
-from keras import initializers
-from keras.metrics import categorical_accuracy
-from keras.constraints import maxnorm, non_neg
-from keras.optimizers import RMSprop
-from keras.utils import to_categorical, Sequence
-from keras import backend as K
-
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+from tensorflow.keras import regularizers
+from tensorflow.keras import initializers
+from tensorflow.keras.metrics import categorical_accuracy
+from tensorflow.keras.constraints import MaxNorm, NonNeg, UnitNorm
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.utils import to_categorical, Sequence
+from tensorflow.keras import backend as K
 
 
 def make_model(num_user=20, num_product=10,
-               num_neg=2, stack_size=5, num_features=8, gamma=0.0,
+               num_neg=2, stack_size=5, num_features=8,
                rscore=None, cscore=None, seed=None,
-               embeddings_val=0.1, loss_wgt_neg=0.1):
+               embeddings_val=0.1, loss_wgt_neg=0.001,
+               prod_trainable=True):
 
     if rscore is None:
         user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val, seed=seed),
-                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   #embeddings_constraint=UnitNorm(axis=1),
                                    name='user_embedding', trainable=True)
     else:
         user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                    weights=[rscore],
-                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   #embeddings_constraint=UnitNorm(axis=1),
                                    name='user_embedding', trainable=True)
     if cscore is None:
         prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   name='prod_embedding', trainable=True)
+                                   name='prod_embedding', trainable=prod_trainable)
     else:
         prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                    weights=[cscore],
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   name='prod_embedding', trainable=True)
+                                   name='prod_embedding', trainable=prod_trainable)
 
     input_user = Input(shape=(1,), name='input_user')
     input_neg_user = Input(shape=(1, num_neg), name='input_neg_user')
     input_prod = Input(shape=(1, num_product,), name='input_prod')
+    input_prod_cor = Input(shape=(1,), name='input_prod_cor')
     input_neg_prod = Input(shape=(1,), name='input_neg_prod')
     input_neg_prod2 = Input(shape=(1, num_neg), name='input_neg_prod2')
 
@@ -81,6 +84,8 @@ def make_model(num_user=20, num_product=10,
     #print('embed_neg_user >', K.int_shape(embed_neg_user))
     embed_prod = prod_embedding(input_prod)
     #print('embed_prod >', K.int_shape(embed_prod))
+    embed_prod_cor = prod_embedding(input_prod_cor)
+    
     embed_neg_prod = prod_embedding(input_neg_prod)
     #print('embed_neg_prod >', K.int_shape(embed_neg_prod))
     embed_neg_prod2 = prod_embedding(input_neg_prod2)
@@ -98,12 +103,10 @@ def make_model(num_user=20, num_product=10,
 
     def reshape_embed_prod(embed_prod):
         embed_prod2 = K.sum(K.square(embed_prod), axis=2)
-        #print('embed_prod2 >', K.int_shape(embed_prod2))
         embed_prod2 = K.expand_dims(embed_prod2)
-        #print('embed_prod2 >', K.int_shape(embed_prod2))
         return embed_prod2
     
-    '''calc prob2'''
+    '''calc prob2: cosine sim'''
     def calc_prob2(x, nn1, nn2):
         embed_prod = x[0] # (None, stack_size, num_features)
         #print('embed_prod (in calc_prob2) >', K.int_shape(embed_prod))
@@ -130,11 +133,16 @@ def make_model(num_user=20, num_product=10,
     '''user x prod'''
     prob1 = Lambda(calc_prob2, name='calc_prob1', arguments={'nn1': 1, 'nn2': num_product})([embed_user, embed_prod])
     #print('prob1 >', K.int_shape(prob1))
-    model_prob1 = Model([input_prod, input_user], prob1, name='model_prob1')
+    model_prob1 = Model([input_user, input_prod], prob1, name='model_prob1')
     
     prob1_cnfm = Lambda(calc_prob2, arguments={'nn1': 1, 'nn2': num_product})([input_user_vec, input_prod_vec])
     model_prob1_cnfm = Model([input_prod_vec, input_user_vec], prob1_cnfm, name='model_prob1_cnfm')
     
+    '''prod_cor x prod'''
+    prob_cor = Lambda(calc_prob2, name='calc_prob_cor', arguments={'nn1': 1, 'nn2': num_product})([embed_prod_cor, embed_prod])
+    #print('prob_cor >', K.int_shape(prob_cor))
+    model_prob_cor = Model([input_prod_cor, input_prod], prob_cor, name='model_prob_cor')
+
     '''neg_prod x neg_prod2'''
     prob2 = Lambda(calc_prob2, name='calc_prob2', arguments={'nn1': 1, 'nn2': num_neg})([embed_neg_prod, embed_neg_prod2])
     #print('prob2 >', K.int_shape(prob2))
@@ -152,6 +160,8 @@ def make_model(num_user=20, num_product=10,
     model_prob3_cnfm = Model([input_user_vec, input_neg_user_vec], prob3_cnfm, name='model_prob3_cnfm')
     
     
+    #print('prob >', K.int_shape(prob))
+    #print('Flatten()(prob2) >', K.int_shape(Flatten()(prob2)))
     prob = Flatten(name='y')(prob1)
     #print('prob >', K.int_shape(prob))
     
@@ -160,12 +170,22 @@ def make_model(num_user=20, num_product=10,
     
     neg_prob = concatenate([prob3, prob2], axis=2)
     neg_prob = Flatten(name='neg_y')(neg_prob)
-    model2 = Model([input_user, input_prod, input_neg_user, input_neg_prod, input_neg_prod2], [prob, neg_prob])
+#    model2 = Model([input_user, input_prod, input_neg_user, input_neg_prod, input_neg_prod2], [prob, neg_prob])
+#    model2.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+#                  loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
+    
+    cor_prob = Flatten(name='cor_y')(prob_cor)
+    neg_prob = Flatten(name='neg_y')(prob3)
+    model2 = Model([input_user, input_prod, input_prod_cor, input_neg_user], [prob, neg_prob, cor_prob])
     model2.compile(loss='mse', optimizer='adam', metrics=['binary_accuracy'],
-                  loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
+                  loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg, 'cor_y': 1.0})
+    model3 = Model([input_user, input_prod, input_prod_cor], [prob, cor_prob])
+    model3.compile(loss='mse', optimizer='adam', metrics=['binary_accuracy'],
+                  loss_weights={'y': 1.0, 'cor_y': 1.0})
     models = {
         'model': model,
         'model2': model2,
+        'model3': model3,
         'model_user': model_user,
         'model_neg_user': model_neg_user,
         'model_prod': model_prod,
@@ -173,6 +193,7 @@ def make_model(num_user=20, num_product=10,
         'model_prob1': model_prob1,
         'model_prob2': model_prob2,
         'model_prob3': model_prob3,
+        'model_prob_cor': model_prob_cor,
         'model_prob1_cnfm': model_prob1_cnfm,
         #'model_prob2_cnfm': model_prob2_cnfm,
         'model_prob3_cnfm': model_prob3_cnfm,
@@ -184,12 +205,11 @@ def make_model(num_user=20, num_product=10,
 
 class Seq(Sequence):
     
-    def __init__(self, user_id_list, X_df_values, batch_size, num_neg=1, only_y=False):
+    def __init__(self, user_id_list, X_df_values, batch_size, num_neg=1):
         self.user_id_list = list(user_id_list)
         self.X_df_values = X_df_values.astype(np.float32)
         self.num_neg = num_neg
         self.batch_size = batch_size
-        self.only_y = only_y
         
         self.len = ceil(len(self.user_id_list) / self.batch_size)
         self.prod_id_list = list(range(self.X_df_values.shape[1]))
@@ -209,47 +229,60 @@ class Seq(Sequence):
             input_neg_user = random.choices(self.user_id_list, ll*self.num_neg)
         input_neg_prod = random.choices(self.prod_id_list, k=ll)
         input_neg_prod2 = random.choices(self.prod_id_list, k=ll*self.num_neg)
+        input_prod_cor = np.random.choice(self.prods_idx[0,:], size=(ll,1))
+        
         y = self.X_df_values[idx_rng_from:idx_rng_to,:]
-        neg_y = np.zeros((ll, self.num_neg*2))
+        #neg_y = np.zeros((ll, self.num_neg*2))
+        neg_y = np.zeros((ll, self.num_neg))
+        #cor_y = self.cor_mat[input_prod_cor[:,0]]
         return (
                 {
                 'input_user': np.array(input_user),
                 'input_neg_user': np.array(input_neg_user).reshape((ll, 1, self.num_neg)),
                 'input_prod': np.tile(self.prods_idx, reps=(ll,1,1)),
                 'input_neg_prod': np.array(input_neg_prod).reshape((ll, 1)),
+                'input_prod_cor': input_prod_cor,
                 'input_neg_prod2': np.array(input_neg_prod2).reshape((ll, 1, self.num_neg)),
                 },
-                {'y': y} if self.only_y else {'y': y, 'neg_y': neg_y}
+                {
+                'y': y,
+                #'neg_y': neg_y,
+                #'cor_y': cor_y,
+                }
                )
 
 
 class WD2vec(object):
     
-    def __init__(self, X_df):
+    def __init__(self, X_df, col_fet):
+        assert X_df.shape[1] == col_fet.shape[0]
         self.X_df = X_df
+        self.col_fet = col_fet
         
     def make_model(self, num_features=12, num_neg=1,
-                         gamma=0.0, embeddings_val=0.1, loss_wgt_neg=0.00,
-                         seed=None, rscore=None, cscore=None):
+                         embeddings_val=0.1, loss_wgt_neg=0.001,
+                         seed=None, rscore=None):
         self.num_features = num_features
         num_user = self.X_df.shape[0]
         num_product = self.X_df.shape[1]
         self.num_neg = num_neg
         self.models = make_model(num_user=num_user, num_product=num_product, num_features=num_features, num_neg=num_neg,
-                                 gamma=gamma, embeddings_val=embeddings_val, seed=seed, loss_wgt_neg=loss_wgt_neg,
-                                 rscore=rscore, cscore=cscore)
+                                 embeddings_val=embeddings_val, seed=seed, loss_wgt_neg=loss_wgt_neg,
+                                 rscore=rscore, cscore=self.col_fet,
+                                 prod_trainable=False)
         return self.models
     
-    def get_seq(self, batch_size=32, only_y=False):
+    def get_seq(self, batch_size=32):
         seq = Seq(user_id_list=np.arange(self.X_df.shape[0]),
                   X_df_values=self.X_df.values,
                   batch_size=batch_size,
-                  num_neg=self.num_neg, only_y=only_y)
+                  num_neg=self.num_neg)
         return seq
     
-    def train(self, epochs=5, batch_size=32, verbose=2,
+    def train(self, epochs=5, batch_size=128, verbose=2,
               use_multiprocessing=False, workers=1, shuffle=True,
-              callbacks=None, callbacks_add=None, lr0=0.005, flag_early_stopping=True,
+              callbacks=None, lr0=0.02, flag_early_stopping=True,
+              patience=5,
               base=8):
         def lr_schedule(epoch, lrx):
             def reduce(epoch, lr):
@@ -295,13 +328,11 @@ class WD2vec(object):
             return lr
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
-            eraly_stopping = EarlyStopping(monitor='loss', patience=3)
+            eraly_stopping = EarlyStopping(monitor='loss', patience=patience)
             callbacks = [eraly_stopping, lr_scheduler]
             #callbacks = [lr_scheduler]
-        if callbacks_add is not None:
-            callbacks = callbacks + callbacks_add
         model = self.models['model']
-        seq = self.get_seq(batch_size=batch_size, only_y=True)
+        seq = self.get_seq(batch_size=batch_size)
         res = model.fit(seq, steps_per_epoch=len(seq),
                         epochs=epochs,
                         verbose=verbose,
@@ -332,11 +363,11 @@ class WD2vec(object):
             return lr
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
-            early_stopping = EarlyStopping(monitor='loss', patience=3)
+            early_stopping = EarlyStopping(monitor='loss', patience=5)
             callbacks = [early_stopping, lr_scheduler] if flag_early_stopping else [lr_scheduler]
             #callbacks = [lr_scheduler]
         model = self.models['model']
-        seq = self.get_seq(batch_size=batch_size, only_y=True)
+        seq = self.get_seq(batch_size=batch_size)
         res = model.fit(seq, steps_per_epoch=len(seq),
                         epochs=epochs,
                         shuffle=shuffle,
@@ -346,6 +377,7 @@ class WD2vec(object):
     
     def get_wgt_byrow(self):
         wgt = self.models['model'].get_layer('user_embedding').get_weights()[0]
+        wgt = wgt / np.sqrt((wgt**2).sum(axis=1)).reshape((wgt.shape[0], 1))
         return wgt
     
     def get_wgt_bycol(self):
