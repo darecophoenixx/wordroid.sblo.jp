@@ -27,6 +27,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         super(MySparseMatrixSimilarity, self).__init__(None, num_features=num_features, num_terms=num_terms, num_docs=num_docs, num_nnz=num_nnz,
                  num_best=num_best, chunksize=chunksize, dtype=dtype, maintain_sparsity=maintain_sparsity)
         self.index_csc = corpus_csc
+        self.index_csr = corpus_csc.tocsr()
         self.normalize = False
         self.method = None
         self.SLOPE = 0.2
@@ -58,7 +59,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         return res
     
     def getCorpusByDoc(self, docid, method='WT_SMART'):
-        query = self.index_csc[docid].tocsr()
+        query = self.index_csr[docid].tocsr()
         self.idx_word = query.indices
         self.wgt_list = query.data
         self.tgt_mat = self.index_csc[:,self.idx_word]
