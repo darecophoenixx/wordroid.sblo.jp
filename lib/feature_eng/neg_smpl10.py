@@ -177,7 +177,7 @@ class Dic4seq(Mapping):
 
 class Seq(object):
     
-    def __init__(self, dic4seq, row_dic, col_dic, csc, row_csr=None, col_csr=None, 
+    def __init__(self, dic4seq, row_dic, col_dic, shape, row_csr=None, col_csr=None, 
                  num_neg=2, stack_size=5,
                  batch_size=32, shuffle=False, state=None):
         self.dic4seq = dic4seq
@@ -191,10 +191,8 @@ class Seq(object):
         self.state = state
         self.num_neg = num_neg
         
-#        self.row_indeces = list(range(row_csr.shape[0]))
-#        self.col_indeces = list(range(col_csr.shape[0]))
-        self.row_indeces = list(range(csc.shape[0]))
-        self.col_indeces = list(range(csc.shape[1]))
+        self.row_indeces = list(range(shape[0]))
+        self.col_indeces = list(range(shape[1]))
         self.user_list = list(self.dic4seq.keys())
         
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
@@ -472,9 +470,11 @@ class WordAndDoc2vec(object):
         #self.corpus_csr = corpus_csr
         self.corpus_csc = corpus_csc
         print('corpus_csc.shape >>>', corpus_csc.shape)
+        self.num_user = self.corpus_csc.shape[0]
+        self.num_product = self.corpus_csc.shape[1]
         
         print('### creating MySparseMatrixSimilarity...')
-        self.mysim = MySparseMatrixSimilarity(self.corpus_csc, num_features=num_features)
+        self.mysim = MySparseMatrixSimilarity(self.corpus_csc, num_features=num_features, use_getCorpusByDoc=True)
         print(self.mysim)
         
         print('### creating Dic4seq...')
@@ -489,8 +489,6 @@ class WordAndDoc2vec(object):
     
     def make_model(self, num_neg=2, num_features=8,
                    gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5):
-        self.num_user = self.corpus_csc.shape[0]
-        self.num_product = self.mysim.index_csc.shape[1]
         self.num_neg = num_neg
         self.stack_size = stack_size
         self.num_features = num_features
@@ -509,7 +507,7 @@ class WordAndDoc2vec(object):
         seq = Seq(self.dic4seq,
                   row_dic=self.dic4seq.row_dic,
                   col_dic=self.dic4seq.col_dic,
-                  csc=self.corpus_csc,
+                  shape=(self.num_user, self.num_product),
 #                  row_csr=self.corpus_csc.tocsr(),
 #                  col_csr=self.corpus_csc.T.tocsr(),
                   num_neg=self.num_neg,
