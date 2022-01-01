@@ -30,7 +30,7 @@ neg_user x nn --- [user = prod] --- neg_prod x nn
 ネガティブサンプリングは、すべてが対象（1のものもネガティブサンプリングされる）
 '''
 
-
+import sys
 import itertools
 import random
 from collections.abc import Mapping
@@ -39,6 +39,7 @@ import logging
 import numpy as np
 import scipy
 import gensim
+from tqdm import tqdm
 from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Conv2DTranspose, \
     GlobalAveragePooling1D, MaxPooling1D, MaxPooling2D, \
@@ -55,6 +56,8 @@ from tensorflow.keras.metrics import categorical_accuracy
 from tensorflow.keras.constraints import MaxNorm, NonNeg
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras import backend as K
+
+from joblib import Parallel, delayed
 
 __all__ = ['WordAndDoc2vec', ]
            
@@ -467,10 +470,12 @@ class WordAndDoc2vec(object):
         print('### creating Comb...')
         self.user_list = list(self.dic4seq.keys())
         comb = []
-        for iuser in self.user_list:
-            p = self.dic4seq[iuser]
-            res = [(iuser, ee) for ee in p]
-            comb.extend(res)
+        with tqdm(total=len(self.user_list), file=sys.stdout) as pbar:
+            for iuser in self.user_list:
+                p = self.dic4seq[iuser]
+                res = [(iuser, ee) for ee in p]
+                comb.extend(res)
+                pbar.update(1)
         self.comb = comb
         print('len(comb) >', len(self.comb))
     
@@ -557,3 +562,41 @@ def calc_gsim(vec, m, gamma=1.0):
     d2 = vec2 + m2 - 2*vec_m
     ret = np.exp(-gamma * d2)
     return ret
+
+
+def create_comb(corpus_csc, doc_dic, word_dic, nn=None):
+    mysim = MySparseMatrixSimilarity(corpus_csc)
+    dic4seq = Dic4seq(mysim, doc_dic, word_dic)
+    user_list = list(dic4seq.keys())
+    cnt = 0
+    comb = []
+    with tqdm(total=len(user_list), file=sys.stdout) as pbar:
+        for iuser in itertools.islice(user_list, nn):
+            p = dic4seq[iuser]
+            res = [(iuser, ee) for ee in p]
+            comb.extend(res)
+            cnt += len(res)
+            print('cnt >', cnt)
+            pbar.update(1)
+    print('len(comb) >', len(comb))
+    return comb
+
+def create_comb_p(corpus_csc, doc_dic, word_dic, nn=None, n_jobs=-1):
+    mysim = MySparseMatrixSimilarity(corpus_csc)
+    print('### creating Dic4seq...')
+    dic4seq = Dic4seq(mysim, doc_dic, word_dic)
+    user_list = list(dic4seq.keys())
+    def func(iuser):
+        p = dic4seq[iuser]
+        res = [(iuser, ee) for ee in p]
+        return res
+    print('### creating Comb...')
+    o = Parallel(n_jobs=n_jobs)(delayed(func)(iuser) for iuser in itertools.islice(user_list, nn))
+    comb = []
+    with tqdm(total=len(o), file=sys.stdout) as pbar:
+        for i_o in o:
+            comb.extend(i_o)
+            pbar.update(1)
+    print('len(comb) >', len(comb))
+    return comb
+

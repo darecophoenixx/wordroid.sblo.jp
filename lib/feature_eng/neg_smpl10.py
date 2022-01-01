@@ -447,6 +447,14 @@ class IlligalDocIndexException(Exception):
     pass
 
 
+class SeqUserListShuffle(Callback):
+    
+    def on_epoch_end(self, epoch, logs=None):
+        random.shuffle(self.model.user_seq.user_list)
+        print('random.shuffle(self.model.seq.user_list)')
+        print(self.model.user_seq.user_list[:5])
+
+
 class WordAndDoc2vec(object):
     
     def __init__(self,
@@ -530,9 +538,13 @@ class WordAndDoc2vec(object):
             lr = a*(1-1/base)*lr0 + lr0/base
             print('Learning rate: ', lr)
             return lr
+        self.model.user_seq = self.seq
+        user_list_sh = SeqUserListShuffle()
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
-            callbacks = [lr_scheduler]
+            callbacks = [lr_scheduler, user_list_sh]
+        else:
+            callbacks.append(user_list_sh)
         self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
