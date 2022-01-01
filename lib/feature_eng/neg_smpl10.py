@@ -323,18 +323,32 @@ class Seq2(Sequence):
 
 def make_model(num_user=20, num_product=10,
                num_neg=2, stack_size=5, num_features=8, gamma=0.0, maxnorm=None,
-               embeddings_val=0.1, sigma2=SIGMA2):
-
-    user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-                               embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                               embeddings_regularizer=regularizers.l2(gamma),
-                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
-                               name='user_embedding', trainable=True)
-    prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
-                               embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                               embeddings_regularizer=regularizers.l2(gamma),
-                               embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
-                               name='prod_embedding', trainable=True)
+               embeddings_val=0.1, sigma2=SIGMA2,
+               wgt_user=None, wgt_prod=None):
+    if wgt_user is None:
+        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   name='user_embedding', trainable=True)
+    else:
+        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                                   weights=[wgt_user],
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   name='user_embedding', trainable=True)
+    if wgt_prod is None:
+        prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   name='prod_embedding', trainable=True)
+    else:
+        prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+                                   weights=[wgt_prod],
+                                   embeddings_regularizer=regularizers.l2(gamma),
+                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   name='prod_embedding', trainable=True)
 
     input_user = Input(shape=(stack_size,), name='input_user')
     input_neg_user = Input(shape=(stack_size, num_neg), name='input_neg_user')
@@ -496,14 +510,16 @@ class WordAndDoc2vec(object):
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
     
     def make_model(self, num_neg=2, num_features=8,
-                   gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5):
+                   gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5,
+                   wgt_user=None, wgt_prod=None):
         self.num_neg = num_neg
         self.stack_size = stack_size
         self.num_features = num_features
         
         models = make_model(num_user=self.num_user, num_product=self.num_product,
                    num_neg=num_neg, num_features=num_features, gamma=gamma,
-                   embeddings_val=embeddings_val, maxnorm=maxnorm, stack_size=stack_size)
+                   embeddings_val=embeddings_val, maxnorm=maxnorm, stack_size=stack_size,
+                   wgt_user=wgt_user, wgt_prod=wgt_prod)
         self.models = models
         self.model = models['model']
         return models
