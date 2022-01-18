@@ -68,7 +68,6 @@ __all__ = ['WordAndDoc2vec', ]
 
 from feature_eng.similarity import MySparseMatrixSimilarity
 from feature_eng.neg_smpl10 import WordAndDoc2vec as WordAndDoc2vec_org
-from feature_eng.neg_smpl10 import WordAndDoc2vec as WordAndDoc2vec_org
 from feature_eng.neg_smpl10 import (
     WordAndDocSimilarity,
     calc_gsim
