@@ -970,6 +970,24 @@ def create_random_map(mat):
     mat_ret = ss.inverse_transform(x2)
     return mat_ret
 
+def linear_init(X, shape=(3, 3), n_std=2):
+    sc = StandardScaler()
+    sc.fit(X)
+    x_sc = sc.transform(X)
+    
+    pca = PCA(n_components=2, random_state=0)
+    pca.fit(x_sc)
+    x_tick = pca.components_[0] * np.sqrt(pca.explained_variance_)[0]
+    y_tick = pca.components_[1] * np.sqrt(pca.explained_variance_)[1]
+        
+    l = []
+    for xi in np.linspace(-n_std, n_std, shape[0]):
+        tmp = np.linspace(-n_std, n_std, shape[1]).reshape(shape[1],1) * y_tick
+        tmp += xi * x_tick
+        l.append(tmp)
+    init_map = np.vstack(l)
+    return sc.inverse_transform(init_map)
+
 def find_nclusters_gap(mat, kshape_start=12, n_range=np.arange(2, 31), nn=20,
                        figsize=(20,8)):
     #rand_map0 = create_random_map(mat, noise=False, kshape_start=kshape_start)
