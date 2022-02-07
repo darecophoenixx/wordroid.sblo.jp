@@ -979,7 +979,7 @@ def linear_init(X, shape=(3, 3), n_std=2):
     pca.fit(x_sc)
     x_tick = pca.components_[0] * np.sqrt(pca.explained_variance_)[0]
     y_tick = pca.components_[1] * np.sqrt(pca.explained_variance_)[1]
-        
+    
     l = []
     for xi in np.linspace(-n_std, n_std, shape[0]):
         tmp = np.linspace(-n_std, n_std, shape[1]).reshape(shape[1],1) * y_tick
@@ -1032,5 +1032,52 @@ def find_nclusters_gap(mat, kshape_start=12, n_range=np.arange(2, 31), nn=20,
 
 
 
+
+
+
+
+from sklearn.mixture._gaussian_mixture import _estimate_gaussian_parameters, _compute_precision_cholesky
+
+class c_GaussianMixture(mixture.GaussianMixture):
+    
+    def _m_step(self, X, log_resp):
+        """M step.
+        Parameters
+        ----------
+        X : array-like of shape (n_samples, n_features)
+        log_resp : array-like of shape (n_samples, n_components)
+            Logarithm of the posterior probabilities (or responsibilities) of
+            the point of each sample in X.
+        """
+        n_samples, _ = X.shape
+        self.weights_, _, self.covariances_ = _estimate_gaussian_parameters(
+            X, np.exp(log_resp), self.reg_covar, self.covariance_type
+        )
+        self.weights_ /= n_samples
+        self.precisions_cholesky_ = _compute_precision_cholesky(
+            self.covariances_, self.covariance_type
+        )
+
+def get_init_lm(mat, lm_candidate, num_lm, covariance_type='spherical'):
+    if covariance_type == 'spherical':
+        precisions_init = np.ones((lm_candidate.shape[0],)) / lm_candidate.var()
+        #precisions_init = np.ones((lm_candidate.shape[0],))
+    else:
+        precisions_init = np.ones((lm_candidate.shape[0],))
+    
+    #gm = mixture.GaussianMixture(n_components=lm_candidate.shape[0],
+    gm = c_GaussianMixture(n_components=lm_candidate.shape[0],
+                           covariance_type=covariance_type,
+                           precisions_init=precisions_init,
+                           means_init=lm_candidate,
+                           weights_init=np.ones((lm_candidate.shape[0],))/lm_candidate.shape[0])
+    gm.fit(mat)
+    log_prob = gm._estimate_weighted_log_prob(mat)
+    idx = np.argsort(log_prob.sum(axis=0))[::-1][:num_lm]
+    #idx = np.argsort(log_prob.sum(axis=0))[:num_lm]
+    #lm_selected = lm_candidate[idx]
+    lm_selected = gm.means_[idx]
+    precisions_selected = gm.precisions_[idx]
+    return lm_selected, precisions_selected
 
 
