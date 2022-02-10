@@ -970,7 +970,7 @@ def create_random_map(mat):
     mat_ret = ss.inverse_transform(x2)
     return mat_ret
 
-def linear_init(X, shape=(3, 3), n_std=2):
+def linear_init(X, shape=(3, 3), n_std=2, adj=True):
     sc = StandardScaler()
     sc.fit(X)
     x_sc = sc.transform(X)
@@ -986,6 +986,17 @@ def linear_init(X, shape=(3, 3), n_std=2):
         tmp += xi * x_tick
         l.append(tmp)
     init_map = np.vstack(l)
+    
+    if adj:
+        '''
+        変数の範囲が小さい場合に、幅を増やす
+        '''
+        for ii in range(x_sc.shape[1]):
+            if np.sqrt(init_map[:,ii].var()) < n_std/2:
+                #print(np.sqrt(x_sc[:,ii].var()))
+                #print(np.sqrt(init_map[:,ii].var()))
+                r = (n_std/2) / np.sqrt(init_map[:,ii].var())
+                init_map[:,ii] *= r
     return sc.inverse_transform(init_map)
 
 def find_nclusters_gap(mat, kshape_start=12, n_range=np.arange(2, 31), nn=20,
