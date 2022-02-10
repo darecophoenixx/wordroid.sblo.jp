@@ -477,7 +477,7 @@ class som(sksom_keras2):
         float
             use same radius during training
         None
-            use (max(kshape)/6.0, 1.0)
+            use (max(kshape) / 6, max(kshape) / 30)
     
     epochs : int, default=500
         number of epochs to train the model
@@ -506,7 +506,7 @@ class som(sksom_keras2):
                  loss='mae', optimizer=Adam(learning_rate=0.001),
                  verbose=0):
         if r is None:
-            r = (max(kshape)/6.0, 1.0)
+            r = (max(kshape) / 6.0, max(kshape) / 30.0)
         super().__init__(
             kshape=kshape, init_K=init_K, form=form,
             r=r,
@@ -559,6 +559,8 @@ class som(sksom_keras2):
         self
             Fitted estimator.
         """
+        if r is None:
+            r = self.r
         hst = super().fit(X,
                           nstep_r_reduce=nstep_r_reduce,
                           batch_size=batch_size, epochs=epochs, verbose=verbose, shuffle=shuffle,
@@ -567,7 +569,7 @@ class som(sksom_keras2):
         self.hst1 = hst.copy()
         
         if r2 is None:
-            r2 = 1.0
+            r2 = r[1] if isinstance(r, tuple) else r
         self.hst2 = super().fit(X,
                            nstep_r_reduce=nstep_r_reduce,
                            batch_size=batch_size, epochs=epochs, verbose=verbose, shuffle=shuffle,
