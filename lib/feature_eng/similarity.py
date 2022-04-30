@@ -23,11 +23,12 @@ import gensim
 class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity):
     
     def __init__(self, corpus_csc, num_features=None, num_terms=None, num_docs=None, num_nnz=None,
-                 num_best=None, chunksize=500, dtype=np.float32, maintain_sparsity=False):
+                 num_best=None, chunksize=500, dtype=np.float32, maintain_sparsity=False, use_getCorpusByDoc=False):
         super(MySparseMatrixSimilarity, self).__init__(None, num_features=num_features, num_terms=num_terms, num_docs=num_docs, num_nnz=num_nnz,
                  num_best=num_best, chunksize=chunksize, dtype=dtype, maintain_sparsity=maintain_sparsity)
         self.index_csc = corpus_csc
-        self.index_csr = corpus_csc.tocsr()
+        if use_getCorpusByDoc:
+            self.index_csr = corpus_csc.tocsr()
         self.normalize = False
         self.method = None
         self.SLOPE = 0.2
@@ -284,12 +285,12 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         return result
 
 
-def cut(res0, shresh=0.1):
+def cut(res0, thresh=0.1):
     max_val = max(list(zip(*res0))[1])
     res = []
     for ee in res0:
         idx, w = ee
-        if max_val*shresh <= w:
+        if max_val*thresh <= w:
             res.append((int(ee[0]), float(ee[1])))
     return res
 
@@ -309,18 +310,18 @@ class Collaborative(object):
         query = self.dic_user.doc2bow(user_list)
         return query
     
-    def get_sim_user(self, query, num_best=100000, method='WT_SMARTAW', shresh=0.1):
+    def get_sim_user(self, query, num_best=100000, method='WT_SMARTAW', thresh=0.1):
         self.sim_user.num_best = num_best
         self.sim_user.method = method
         res = self.sim_user[query]
-        res1 = cut(res, shresh=shresh)
+        res1 = cut(res, thresh=thresh)
         return res1
     
-    def get_sim_word(self, query, num_best=100000, method='WT_SMARTAW', shresh=0.1):
+    def get_sim_word(self, query, num_best=100000, method='WT_SMARTAW', thresh=0.1):
         self.sim_word.num_best = num_best
         self.sim_word.method = method
         res = self.sim_word[query]
-        res1 = cut(res, shresh=shresh)
+        res1 = cut(res, thresh=thresh)
         return res1
     
     def transform_user(self, res):
