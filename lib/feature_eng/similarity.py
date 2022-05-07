@@ -214,7 +214,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         '''
         sim(d|q) = 1 / norm(d) * \sum_t { wq(t|q) * wd(t|d) }
         '''
-        tgt_mat = self.tgt_mat = self.index_csc[:,self.idx_word]
+        tgt_mat = self.tgt_mat = self.index_csc[:,idx_word]
 
         '''
         wq
