@@ -54,6 +54,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         print('processing norm')
         d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean())
         self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
+        print('self.df_stats.shape >', self.df_stats.shape)
         
     def _calc(self, naiseki, norm):
         res = naiseki.multiply(1/norm)
@@ -81,6 +82,13 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
     def create_query_mat(self, wgt_list):
         return csr_matrix(np.array(wgt_list).reshape((1,-1)), dtype=self.DTYPE)
     
+    def calc_smartaw_wq_bunbo(self, tgt_mat):
+        a = np.array(tgt_mat.sum(axis=0)).flatten()
+        nonzero = tgt_mat.nonzero()[1]
+        b = np.array([(nonzero==ii).sum() for ii in range(tgt_mat.shape[1])])
+        m = 1 + np.log(a / b)
+        return m
+    
     def calc_wq(self, tgt_mat, idx_word, wgt_list, method='WT_SMART'):
         mat_csr_q = self.create_query_mat(wgt_list)
         if method in ['WT_SMART']:
@@ -90,10 +98,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             return wq
         elif method == 'WT_SMARTAW':
             wq = self.calc_tfn_mx(mat_csr_q, avg=False)
-            a = np.array(tgt_mat.sum(axis=0)).flatten()
-            nonzero = tgt_mat.nonzero()[1]
-            b = np.array([(nonzero==ii).sum() for ii in range(tgt_mat.shape[1])])
-            m = 1 + np.log(a / b)
+            m = self.calc_smartaw_wq_bunbo(tgt_mat)
             wq = wq.multiply(1 / m)
             return wq
         elif method == 'WT_SMARTAW2':
@@ -156,7 +161,7 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             wd = wd.multiply(idf)
             return wd
         elif method == 'WT_SMART2':
-            wd = self.calc_tfn_mx2(mx)
+            wd = self.calc_tfn_mx2(tgt_mat)
             return wd
         elif method in ['WT_RAW', 'WT_TF', 'WT_TFIDF']:
             return tgt_mat
@@ -164,15 +169,15 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
             raise Exception('no such method [%s]' % method)
     
     def calc_norm(self, wq, wd, method='WT_SMART'):
-        if method in ['WT_SMART', 'WT_SMARTWA']:
+        if method in ['WT_SMART', 'WT_SMART2', 'WT_SMARTWA']:
             norm = self.df_stats['d_norm'].values.reshape((-1,1))
             return norm
         elif method in ['WT_SMARTAW', 'WT_SMARTAW2', 'WT_SMARTAW3', 'WT_SMARTAW4']:
             norm = wq.shape[1]
             return norm
-        elif method == 'WT_SMART2':
-            norm = 1 / ((1-self.SLOPE)*self.DF.mean() + self.SLOPE*self.DF[nonzero_idx2])
-            return norm
+#        elif method == 'WT_SMART2':
+#            norm = 1 / ((1-self.SLOPE)*self.DF.mean() + self.SLOPE*self.DF[nonzero_idx2])
+#            return norm
         elif method in ['WT_TF', 'WT_TFIDF']:
             return self.df_stats['d_tot'].values.reshape((-1,1))
         elif method in ['WT_RAW']:
