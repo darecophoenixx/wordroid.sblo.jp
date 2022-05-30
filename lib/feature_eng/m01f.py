@@ -579,6 +579,35 @@ def calc_mat_nonoise(mat, n_sig=3):
     x_sc2 = u[:,:n_sig].dot(np.diag(s[:n_sig] * s.sum() / s[:n_sig].sum())).dot(vh[:n_sig])
     return x_sc2
 
+def calc_mat_nonoise2(mat, n_sig=3, random_state=0, scale=False):
+    """calc matrix using noise reduction
+    
+    Parameters
+    ----------
+    .
+        mat (ndarray of shape (n_samples, n_features))
+            matrix
+        
+        n_sig (int)
+            number of significant components
+        
+    Returns
+    -------
+    ndarray of shape(n_samples, n_features)
+        matrix created
+    """
+    if scale:
+        ss = StandardScaler()
+        ss.fit(mat)
+        x_sc = ss.transform(mat)
+    else:
+        x_sc = mat.copy()
+    pca = PCA(n_components=n_sig, random_state=random_state)
+    pca.fit(x_sc)
+    mat_transformed = pca.transform(x_sc)
+    mat2 = pca.inverse_transform(mat_transformed)
+    return mat2
+
 
 def calc_cor_nonoise(c, n_sig=3):
     """calc correlation matrix using noise reduction
