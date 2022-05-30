@@ -744,3 +744,217 @@ class Collaborative(object):
             ret.append((self.dic_word[word_id], wgt))
         return ret
 
+
+
+
+
+
+def join_colab_wgt(df_som_xy, user_wgt):
+    '''
+    df_som_xyに、重みをジョインする
+    最大重みを分母にして、基準化する
+    最大重みが1になる
+    '''
+    max_wgt = max(list(zip(*user_wgt))[1])
+    df_wgt = pd.DataFrame(user_wgt, columns=['user_id', 'wgt'])
+    df_wgt.index = df_wgt['user_id']
+    df_wgt['wgt'] = df_wgt['wgt'].values / max_wgt
+    df_som_xy_tmp = pd.merge(df_som_xy, df_wgt, left_index=True, right_index=True, how='left')
+    df_som_xy_tmp.drop(['user_id'], inplace=True, axis=1)
+    df_som_xy_tmp = df_som_xy_tmp.fillna({'wgt': 0.0})
+    return df_som_xy_tmp
+
+class SomXYpCollab(object):
+    
+    THRESH = 0.0
+    MAX_DEG = 20
+
+    def __init__(self, word_list, collab, df_som_xy):
+        self.word_list = word_list
+        self.collab = collab
+        self.df_som_xy = df_som_xy
+        self.cls_cat = list(np.unique(df_som_xy['cls'].values)) # cls一覧
+        self.cls_cat.sort(key=lambda x: int(x.replace('cls', '')))
+        self.query = collab.get_query_by_word(word_list)
+        print('self.query', self.query)
+
+        self.calc_xy_uniq()
+    
+    def calc_xy_uniq(self):
+        '''
+        各クラスのxy座標をユニークにする
+        '''
+        l_res = []
+        for ii in self.cls_cat:
+            res = self.df_som_xy.query('cls=="{}"'.format(ii)).iloc[[0],:]
+            l_res.append(res)
+        self.df_som_xy_uni = pd.concat(l_res, axis=0)
+        self.df_som_xy_uni['cls'] = pd.Categorical(self.df_som_xy_uni['cls'], categories=self.cls_cat)
+        self.df_som_xy_uni.index = self.df_som_xy_uni.cls
+
+    def get_users1(self, num_best=1000000, method='WT_SMART2', thresh=THRESH):
+        if not hasattr(self, '_users1'):
+            self._users1 = self.collab.get_sim_user(self.query, num_best=num_best, method=method, thresh=thresh)
+            print('len(self._users1) >', len(self._users1))
+        return self._users1
+    
+    @property
+    def users1(self):
+        return self.get_users1()
+    
+    def get_words1(self, num_best=1000000, method='WT_SMART2WA', thresh=THRESH):
+        if not hasattr(self, '_words1'):
+            self._words1 = self.collab.get_sim_word(self.users1, num_best=num_best, method=method, thresh=thresh)
+            print('len(self._words1) >', len(self._words1))
+        return self._words1
+    
+    @property
+    def words1(self):
+        return self.get_words1()
+    
+    def get_users2(self, num_best=1000000, method='WT_SMART2WA', thresh=THRESH, bunbo=1000):
+        if not hasattr(self, '_users2'):
+            self._users2 = self.collab.get_sim_user(self.words1[:int(len(self.words1)/bunbo)], num_best=num_best, method=method, thresh=thresh)
+            print('len(self._users2) >', len(self._users2))
+        return self._users2
+    
+    @property
+    def users2(self):
+        return self.get_users2()
+    
+    def get_somxy_user(self, users, df_som_xy, max_deg=MAX_DEG):
+        '''no use'''
+        max_wgt = max(list(zip(*users))[1])
+        idx = [ii for ii, wgt in users for _ in range(int(wgt / max_wgt * max_deg))]
+        # ユーザーがデュプリケイトされる。結果[各クラスの重み]が計算される
+        print('len(idx) >', len(idx), idx[:5])
+        self.df_som_xy2 = df_som_xy.iloc[idx,:].copy()
+        print('df_som_xy2.shape >', self.df_som_xy2.shape)
+        return self.df_som_xy2
+    
+    def get_df_wgt(self, users, drop=True):
+        '''
+        df_som_xyにユーザーの重みをジョインする
+        '''
+        self.df_som_xy_wgt = join_colab_wgt(self.df_som_xy, users)
+        self.df_som_xy_wgt['cls'] = pd.Categorical(self.df_som_xy_wgt['cls'], categories=self.cls_cat)
+        if drop:
+            '''重み0のユーザーを削除'''
+            self.df_som_xy_wgt = self.df_som_xy_wgt.iloc[self.df_som_xy_wgt['wgt'].values != 0,:]
+        return self.df_som_xy_wgt
+    
+    def groupby_cls(self, df_som_xy_wgt):
+        '''
+        [wgt]カラムを[cls]カラムごとに合計する
+        output:
+        cls0, cls1, cls2, cls3 ・・・
+        '''
+        df_som_xy_wgt_size = pd.DataFrame(df_som_xy_wgt.groupby('cls')['wgt'].agg('sum'))
+        df_som_xy_wgt_size_sorted = df_som_xy_wgt_size.sort_values(['cls'], key=lambda k: k.str.replace('cls', '').astype('int'))
+        df_som_xy_wgt_size_sorted['cls'] = pd.Categorical(df_som_xy_wgt_size_sorted.index, categories=self.cls_cat)
+        return df_som_xy_wgt_size_sorted
+
+    def get_df_sumwgt_bycls(self, users):
+        '''
+        [wgt]カラムを[cls]カラムごとに合計する
+        output:
+        cls0, cls1, cls2, cls3 ・・・
+        '''
+        self.df_som_xy_wgt = self.get_df_wgt(users)
+        self.df_sumwgt_bycls = self.groupby_cls(self.df_som_xy_wgt)
+        df_som_xy_uni = self.df_som_xy_uni.copy()
+        df_som_xy_uni.drop(['cls'], axis=1, inplace=True)
+        self.df_sumwgt_bycls = pd.merge(self.df_sumwgt_bycls, df_som_xy_uni, left_index=True, right_index=True)
+        self.total_point = self.df_sumwgt_bycls['wgt'].values.sum()
+        print('total_point >', self.total_point)
+        return self.df_sumwgt_bycls
+    
+    def _calc_cnt(self):
+        '''
+        cnt:
+        self.df_som_xyの各クラスのユーザー数
+        重み0のユーザーも含む
+        cls0, cls1, cls2, cls3 ・・・
+        '''
+        cnt = self.df_som_xy.groupby('cls').size().sort_index(key=lambda k: k.str.replace('cls', '').astype(int)).values
+        return cnt
+    
+    def _calc_cls_sorted(self):
+        '''
+        ランドマークのソートインデックスを返す
+        平均重みの大きい順
+        '''
+        df_groupby_cls = self.df_sumwgt_bycls
+        cnt = self._calc_cnt()
+        df_ratio = df_groupby_cls['wgt'] / cnt # ランドマーク毎の平均重みを計算する
+        df_ratio.fillna(0.0, inplace=True)
+        df_ratio_sorted = df_ratio.sort_values(ascending=False)
+        idx_sorted = df_ratio_sorted.index
+        return idx_sorted
+
+    def calc_som_seg(self, num_cls=3):
+        '''
+        ライト・ミドル・コアなどのセグメントを付与する
+        seg-[0]は、ユーザーが存在しなかったセグメント
+        数値が大きいほどコア
+        '''
+        df_som_xy_wgt = self.df_som_xy_wgt
+        df_groupby_cls = self.df_sumwgt_bycls.copy()
+        
+        cls_sorted = self._calc_cls_sorted()
+        df_groupby_cls_sorted = df_groupby_cls.loc[cls_sorted,:]
+        cumsum = np.cumsum(df_groupby_cls_sorted['wgt'].values / df_groupby_cls_sorted['wgt'].values.sum())
+        
+        res = 1
+        for ii in range(num_cls-1):
+            res += cumsum < ((ii+1)/num_cls)
+        df_seg = pd.DataFrame(res, index=cls_sorted, columns=['seg'])
+        if num_cls not in df_seg['seg'].values:
+            print('{} does not exists'.format(num_cls))
+            top_idx = cls_sorted.values[0]
+            print(top_idx)
+            df_seg.loc[top_idx, 'seg'] = num_cls
+        df_seg = df_seg.loc[self.cls_cat,:]
+        '''重みのないクラスは０'''
+        df_seg.iloc[df_groupby_cls['wgt'].values == 0,:] = 0
+        
+        df_seg['seg'] = pd.Categorical(df_seg['seg'].values, categories=np.arange(num_cls+1), ordered=True)
+        self.df_seg = df_seg
+        self.join_seg(self.df_seg)
+        return self.df_seg
+    
+    def calc_seg_byuser(self, num_cls=3):
+        '''
+        ライト・ミドル・コアなどのセグメントを付与する
+        seg-[0]は、ユーザーが存在しなかったセグメント
+        数値が大きいほどコア
+        '''
+        wgt_sorted = self.df_som_xy_wgt.sort_values('wgt', ascending=False)['wgt'].values
+        idx_sorted = self.df_som_xy_wgt.sort_values('wgt', ascending=False).index.values
+        # wgt_sorted, idx_sorted
+        cumsum = np.cumsum(wgt_sorted) / wgt_sorted.sum()
+        # cumsum
+
+        res = 1
+        for ii in range(num_cls-1):
+            res += cumsum < ((ii+1)/num_cls)
+        res
+        df_res = pd.DataFrame(res, columns=['seg'], index=idx_sorted)
+        df_res['seg'] = pd.Categorical(df_res['seg'].values, categories=np.arange(num_cls+1), ordered=True)
+        df_res.sort_index(inplace=True)
+        return df_res
+    
+    def join_seg(self, df_seg):
+        '''seg列をジョインする'''
+        try:
+            self.df_sumwgt_bycls.drop(['seg'], axis=1, inplace=True)
+            self.df_som_xy_wgt.drop(['seg'], axis=1, inplace=True)
+        except:
+            pass
+        self.df_sumwgt_bycls = pd.merge(self.df_sumwgt_bycls, df_seg, left_index=True, right_index=True, validate='1:1')
+        self.df_som_xy_wgt = pd.merge(self.df_som_xy_wgt, df_seg, left_on='cls', right_index=True, how='left', validate='m:1')
+        '''なぜかカテゴリカルの属性がなくなるので・・・'''
+        self.df_som_xy_wgt['cls'] = pd.Categorical(self.df_som_xy_wgt['cls'], categories=self.cls_cat)
+        return self.df_som_xy_wgt, self.df_sumwgt_bycls
+        
+
