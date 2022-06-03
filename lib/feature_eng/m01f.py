@@ -526,7 +526,8 @@ class M01F_li(object):
         return v
     
     def calc_X_df_nonoise(self):
-        x_sc2 = calc_mat_nonoise(self.X_df.values, self.n_sig)
+        #x_sc2 = calc_mat_nonoise(self.X_df.values, self.n_sig)
+        x_sc2 = calc_mat_nonoise2(self.X_df.values, n_sig=self.n_sig, scale=True)
         self.X_df_nonoise = pd.DataFrame(x_sc2, index=self.X_df.index, columns=self.X_df.columns)
         return self.X_df_nonoise
     
