@@ -123,7 +123,7 @@ def make_model(num_user=20, num_product=39, num_features=12, num_neg=1,
         #print('embed_prod_x_embed_neg (in calc_prob2) >', K.int_shape(embed_prod_x_embed_neg))
         d2 = embed_prod2 + embed_neg2 - 2*embed_prod_x_embed_neg # (None, stack_size, stack_size)
         #print('d2 (in calc_prob2) >', K.int_shape(d2))
-        prob = K.exp(-1. / gamma * d2)
+        prob = K.exp(-1. * gamma * d2)
         #print('prob (in calc_prob2) >', K.int_shape(prob))
         return prob
     
