@@ -911,7 +911,7 @@ def get_eigval(mat, n_features):
     """calc eigenvalues using scikit-learn PCA
     mainly used in find_ncomponents_pca
     """
-    pca = PCA(n_components=n_features)
+    pca = PCA(n_components=n_features, svd_solver='full')
     pca.fit(mat)
     cv = pca.get_covariance()
     cv = cv / np.sqrt(np.diag(cv)) / np.sqrt(np.diag(cv)).T
