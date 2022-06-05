@@ -22,7 +22,7 @@ from sklearn.model_selection import cross_val_score, KFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import f1_score, classification_report, confusion_matrix, log_loss, pairwise
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity, rbf_kernel
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -1028,6 +1028,18 @@ def linear_init(X, shape=(3, 3), n_std=2, adj=True):
                 r = (n_std/2) / np.sqrt(init_map[:,ii].var())
                 init_map[:,ii] *= r
     return sc.inverse_transform(init_map)
+
+def calc_init(n_components, mat, n_std=2):
+    lm_init0 = linear_init(mat, (n_components, n_components), n_std=n_std)
+
+    res = rbf_kernel(mat, lm_init0, gamma=1/(lm_init0.var()*lm_init0.shape[1]))
+
+    res2 = []
+    for ii in range(lm_init0.shape[0]):
+        res2.append(res[res.argmax(axis=1) == ii, ii].sum())
+
+    lm_init = lm_init0[np.argsort(res2)[::-1][:n_components],:]
+    return lm_init0, lm_init
 
 def find_nclusters_gap(mat, kshape_start=12, n_range=np.arange(2, 31), nn=20,
                        figsize=(20,8)):
