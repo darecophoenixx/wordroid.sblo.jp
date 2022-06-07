@@ -1033,10 +1033,11 @@ def calc_init(n_components, mat, n_std=2):
     lm_init0 = linear_init(mat, (n_components, n_components), n_std=n_std)
 
     res = rbf_kernel(mat, lm_init0, gamma=1/(lm_init0.var()*lm_init0.shape[1]))
-
+    res_argmax = res.argmax(axis=1)
+    
     res2 = []
     for ii in range(lm_init0.shape[0]):
-        res2.append(res[res.argmax(axis=1) == ii, ii].sum())
+        res2.append(res[res_argmax == ii, ii].sum())
 
     lm_init = lm_init0[np.argsort(res2)[::-1][:n_components],:]
     return lm_init0, lm_init
