@@ -70,6 +70,7 @@ from feature_eng.similarity import MySparseMatrixSimilarity
 from feature_eng.neg_smpl16 import WordAndDoc2vec as WordAndDoc2vec_org
 from feature_eng.neg_smpl16 import (
     WordAndDocSimilarity,
+    make_model,
     calc_gsim
 )
 
