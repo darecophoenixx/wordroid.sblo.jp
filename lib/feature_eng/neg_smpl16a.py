@@ -155,7 +155,7 @@ class WordAndDoc2vec(WordAndDoc2vec_org):
         print('num_features >>>', num_features)
         
         self.corpus_csc = wtsmart_csr
-        print('corpus_csc.shape >>>', corpus_csc.shape)
+        print('corpus_csc.shape >>>', wtsmart_csr.shape)
         self.num_user = self.corpus_csc.shape[0]
         self.num_product = self.corpus_csc.shape[1]
         
