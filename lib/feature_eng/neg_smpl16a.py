@@ -154,13 +154,13 @@ class WordAndDoc2vec(WordAndDoc2vec_org):
         num_features = max(self.word_dic.keys()) + 1
         print('num_features >>>', num_features)
         
-        self.wtsmart_csr = wtsmart_csr
-        print('wtsmart_csr.shape >>>', wtsmart_csr.shape)
-        self.num_user = self.wtsmart_csr.shape[0]
-        self.num_product = self.wtsmart_csr.shape[1]
+        self.corpus_csc = wtsmart_csr
+        print('corpus_csc.shape >>>', corpus_csc.shape)
+        self.num_user = self.corpus_csc.shape[0]
+        self.num_product = self.corpus_csc.shape[1]
         
         print('### creating Dic4seq...')
-        self.dic4seq = Dic4seq(self.wtsmart_csr, self.doc_dic, self.word_dic)
+        self.dic4seq = Dic4seq(self.corpus_csc, self.doc_dic, self.word_dic)
         print(self.dic4seq)
         
         self.user_list = list(self.dic4seq.keys())
