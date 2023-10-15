@@ -165,7 +165,7 @@ class WordAndDoc2vec(WordAndDoc2vec_org):
         
         self.user_list = list(self.dic4seq.keys())
     
-     def make_model(self, num_neg=2, num_features=8,
+    def make_model(self, num_neg=2, num_features=8,
                    gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5, loss_wgt_neg=0.1):
         self.num_neg = num_neg
         self.stack_size = stack_size
