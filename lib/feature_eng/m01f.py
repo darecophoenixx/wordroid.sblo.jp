@@ -7,7 +7,6 @@ https://github.com/darecophoenixx/wordroid.sblo.jp/blob/master/lib/feature_eng/L
 import sys
 import itertools
 import random
-from collections import Mapping
 import logging
 
 import numpy as np
