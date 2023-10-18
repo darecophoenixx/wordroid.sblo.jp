@@ -460,7 +460,7 @@ class WordAndDoc2vec(object):
         print('corpus_csr.shape >>>', corpus_csr.shape)
         
         print('### creating MySparseMatrixSimilarity...')
-        self.mysim = MySparseMatrixSimilarity(self.corpus_csr, num_features=num_features)
+        self.mysim = MySparseMatrixSimilarity(self.corpus_csr, num_features=num_features, use_getCorpusByDoc=True)
         print(self.mysim)
         
         print('### creating Dic4seq...')
