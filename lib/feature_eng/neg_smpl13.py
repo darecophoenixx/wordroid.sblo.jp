@@ -18,7 +18,7 @@ neg_smpl13 <- neg_smpl4
 
 import itertools
 import random
-from collections import Mapping
+from collections.abc import Mapping
 import logging
 
 import numpy as np
