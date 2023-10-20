@@ -501,7 +501,7 @@ class WordAndDoc2vec(object):
         self.num_product = self.corpus_csc.shape[1]
         
         print('### creating MySparseMatrixSimilarity...')
-        self.mysim = MySparseMatrixSimilarity(self.corpus_csc, num_features=num_features)
+        self.mysim = MySparseMatrixSimilarity(self.corpus_csc, num_features=num_features, use_getCorpusByDoc=True)
         print(self.mysim)
         
         print('### creating Dic4seq...')
