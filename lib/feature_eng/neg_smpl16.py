@@ -497,6 +497,8 @@ class WordAndDoc2vec(object):
         
         self.corpus_csc = corpus_csc
         print('corpus_csc.shape >>>', corpus_csc.shape)
+        self.num_user = self.corpus_csc.shape[0]
+        self.num_product = self.corpus_csc.shape[1]
         
         print('### creating MySparseMatrixSimilarity...')
         self.mysim = MySparseMatrixSimilarity(self.corpus_csc, num_features=num_features)
@@ -515,8 +517,6 @@ class WordAndDoc2vec(object):
     def make_model(self, num_neg=2, num_features=8,
                    gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5, loss_wgt_neg=0.1,
                    wgt_user=None, wgt_prod=None):
-        self.num_user = self.corpus_csc.shape[0]
-        self.num_product = self.mysim.index_csc.shape[1]
         self.num_neg = num_neg
         self.stack_size = stack_size
         self.num_features = num_features
