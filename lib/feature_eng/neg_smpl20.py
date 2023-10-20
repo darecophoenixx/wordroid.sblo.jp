@@ -302,7 +302,7 @@ class Seq(object):
             'input_prod': np.concatenate(x_input_prod, axis=0),
             'input_neg_prod': np.concatenate(x_input_neg_prod, axis=0),
             'input_user': np.concatenate(x_input_user, axis=0),
-            'input_neg_user': np.concatenate(x_input_neg_user, axis=0),
+            #'input_neg_user': np.concatenate(x_input_neg_user, axis=0),
             },
             {
                 'y': np.concatenate(y, axis=0),
