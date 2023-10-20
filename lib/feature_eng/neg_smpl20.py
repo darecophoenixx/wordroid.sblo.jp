@@ -202,7 +202,7 @@ class Seq(object):
         
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
         self.y = np.array([[[1]] * self.stack_size])
-        neg_y = [0]*self.num_neg + [0]*self.num_neg
+        neg_y = [0]*self.num_neg
         self.neg_y = np.array([[neg_y] * self.stack_size])
         
         '''estimate self length'''
