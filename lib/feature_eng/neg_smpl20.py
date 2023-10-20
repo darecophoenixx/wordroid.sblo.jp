@@ -456,7 +456,7 @@ def make_model(num_user=20, num_product=10,
     #print('prob >', K.int_shape(prob))
     #print('Flatten()(prob2) >', K.int_shape(Flatten()(prob2)))
     #prob_neg = concatenate([prob3, prob2], axis=2, name='neg_y')
-    prob_neg = prob4
+    prob_neg = Lambda(lambda x: x, name='neg_y')(prob4)
     #print('prob >', K.int_shape(prob))
     model = Model([input_user, input_prod, input_neg_prod], [prob1, prob_neg])
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
