@@ -37,6 +37,11 @@ neg_user x nn --- [user = prod] --- neg_prod x nn
 上記形式(neg_smpl8)を保持しつつ、スピードアップを図る
 '''
 
+'''
+neg_smpl16 <- neg_smpl10
+ネガティブサンプリングのロス関数を別にして重みを下げる
+アイテム側はフワッと離れてくれれば良い
+'''
 import sys
 import itertools
 import random
