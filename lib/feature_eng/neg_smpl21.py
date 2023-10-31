@@ -335,12 +335,8 @@ class Seq2(Sequence):
         xtrain, ytrain = self.seq.get_part(stacked_combs)
         return xtrain, ytrain
     
-    # def getitem_col(self):
-    #     col_part = self.get_part_col()
-    #     stacked_combs_col = self.seq_col.get_stacked_combs(col_part)
-    #     xtrain_col, ytrain_col = self.seq_col.get_part(stacked_combs_col)
-    #     return xtrain_col, ytrain_col
     def getitem_col(self, length):
+        # 行側のデータの長さに合わせる（=length）
         combs = []
         while True:
           icol = np.random.choice(self.seq_col.user_list, size=1, p=self.col_prob)
@@ -354,31 +350,29 @@ class Seq2(Sequence):
         return xtrain_col, ytrain_col
     
     def __getitem__(self, idx):
-        # bs = self.seq.batch_size
-        # user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
-        # stacked_combs = self.seq.get_stacked_combs(user_part)
-        # res = self.seq.get_part(stacked_combs)
-        self.xtrain, self.ytrain = self.getitem(idx)
-        length = self.xtrain['input_user'].shape[0] * self.xtrain['input_user'].shape[1]
+        # === 行側のデータを取得する
+        xtrain_row, ytrain_row = self.getitem(idx)
+        length = xtrain_row['input_user'].shape[0] * xtrain_row['input_user'].shape[1]
+        # === 列側のデータを取得する
         xtrain_col, ytrain_col = self.getitem_col(length)
         
         # input_user は x_train['input_user'] と x_train_col['input_prod']
-        input_user = np.concatenate([self.xtrain['input_user'], xtrain_col['input_prod']], axis=0)
+        input_user = np.concatenate([xtrain_row['input_user'], xtrain_col['input_prod']], axis=0)
         # input_prod は x_train['input_prod'] と x_train_col['input_user']
-        input_prod = np.concatenate([self.xtrain['input_prod'], xtrain_col['input_user']], axis=0)
-        y = np.concatenate([self.ytrain['y'], ytrain_col['y']], axis=0)
+        input_prod = np.concatenate([xtrain_row['input_prod'], xtrain_col['input_user']], axis=0)
+        y = np.concatenate([ytrain_row['y'], ytrain_col['y']], axis=0)
 
-        input_user_neg = np.concatenate([self.xtrain['input_user']]*2, axis=0)
+        input_user_neg = np.concatenate([xtrain_row['input_user']]*2, axis=0)
         input_prod_neg = np.concatenate([xtrain_col['input_user']]*2, axis=0)
-        input_user_neg_prod2 = np.concatenate([self.seq.get_neg_prod(None) for _ in range(self.xtrain['input_user'].shape[0])], axis=0)
+        input_user_neg_prod2 = np.concatenate([self.seq.get_neg_prod(None) for _ in range(xtrain_row['input_user'].shape[0])], axis=0)
         input_prod_neg_user2 = np.concatenate([self.seq_col.get_neg_prod(None) for _ in range(xtrain_col['input_user'].shape[0])], axis=0)
-        user_neg_prod = np.concatenate([self.ytrain['user_neg_prod']]*2, axis=0)
+        user_neg_prod = np.concatenate([ytrain_row['user_neg_prod']]*2, axis=0)
         prod_neg_user = np.concatenate([ytrain_col['user_neg_prod']]*2, axis=0)
         xtrain = {
           'input_user': input_user, 'input_prod': input_prod,
-          'input_user_neg': np.concatenate([self.xtrain['input_user']]*2, axis=0),
-          'input_user_neg_prod': np.concatenate([self.xtrain['input_user_neg_prod'], input_user_neg_prod2], axis=0),
-          'input_prod_neg': np.concatenate([xtrain_col['input_user']]*2, axis=0),
+          'input_user_neg': input_user_neg,
+          'input_user_neg_prod': np.concatenate([xtrain_row['input_user_neg_prod'], input_user_neg_prod2], axis=0),
+          'input_prod_neg': input_prod_neg,
           'input_prod_neg_user': np.concatenate([xtrain_col['input_user_neg_prod'], input_prod_neg_user2], axis=0),
         }
         ytrain = {
