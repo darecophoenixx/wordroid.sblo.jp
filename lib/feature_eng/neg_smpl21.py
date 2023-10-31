@@ -378,8 +378,8 @@ class Seq2(Sequence):
           'input_user': input_user, 'input_prod': input_prod,
           'input_user_neg': np.concatenate([self.xtrain['input_user']]*2, axis=0),
           'input_user_neg_prod': np.concatenate([self.xtrain['input_user_neg_prod'], input_user_neg_prod2], axis=0),
-          'input_prod_neg': np.concatenate([x_train_col['input_user']]*2, axis=0),
-          'input_prod_neg_user': np.concatenate([x_train_col['input_user_neg_prod'], input_prod_neg_user2], axis=0),
+          'input_prod_neg': np.concatenate([xtrain_col['input_user']]*2, axis=0),
+          'input_prod_neg_user': np.concatenate([xtrain_col['input_user_neg_prod'], input_prod_neg_user2], axis=0),
         }
         ytrain = {
             'y': y,
