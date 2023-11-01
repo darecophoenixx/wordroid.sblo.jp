@@ -341,7 +341,7 @@ class Seq2(Sequence):
         combs = []
         while True:
           #icol = np.random.choice(self.seq_col.user_list, size=1, p=self.col_prob)
-          icol = random.choices(seq2.seq_col.user_list, cum_weights=self.cumsum)
+          icol = random.choices(self.seq_col.user_list, cum_weights=self.cumsum)
           combs0 = self.seq_col.get_combs(icol)
           combs.extend(combs0)
           if length < len(combs):
