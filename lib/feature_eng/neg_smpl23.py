@@ -617,7 +617,7 @@ def make_model(num_user=20, num_product=10,
     #              loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
     
     # wd2v.models['model'].get_layer('prod_embedding'), wd2v.models['model'].get_layer('user_embedding'), wd2v.models['model'].get_layer('gamma')
-    model_gamma = Model([input_user, input_prod, input_user_neg_prod, input_user_col, input_prod_col, input_user_col_neg_prod], [y, y_col, prob_user_neg_prod, prob_user_col_neg_prod])
+    #model_gamma = Model([input_user, input_prod, input_user_neg_prod, input_user_col, input_prod_col, input_user_col_neg_prod], [y, y_col, prob_user_neg_prod, prob_user_col_neg_prod])
     #model_gamma.get_layer('gamma').trainable = True
     #model_gamma.get_layer('user_embedding').trainable = False
     #model_gamma.get_layer('prod_embedding').trainable = False
@@ -625,7 +625,7 @@ def make_model(num_user=20, num_product=10,
     #              loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
     models = {
         'model': model,
-        'model_gamma': model_gamma,
+        #'model_gamma': model_gamma,
         'model_user': model_user,
         'model_prod': model_prod,
         'model_user_neg_prod': model_user_neg_prod,
@@ -731,7 +731,7 @@ class WordAndDoc2vec(object):
         return models
     
     def activate_model_gamma(self):
-        model_gamma = self.models['model_gamma']
+        model_gamma = self.models['model']
         model_gamma.get_layer('gamma').trainable = True
         model_gamma.get_layer('user_embedding').trainable = False
         model_gamma.get_layer('prod_embedding').trainable = False
@@ -739,7 +739,7 @@ class WordAndDoc2vec(object):
                       loss_weights={'y': 1.0, 'user_neg_prod': self.loss_wgt_user_neg_prod, 'y_col': self.loss_wgt_y_col, 'user_col_neg_prod': self.loss_wgt_user_col_neg_prod})
         
     def activate_model(self):
-        model = self.models['model_gamma']
+        model = self.models['model']
         model.get_layer('gamma').trainable = False
         model.get_layer('user_embedding').trainable = True
         model.get_layer('prod_embedding').trainable = True
