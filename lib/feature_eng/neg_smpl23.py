@@ -55,13 +55,6 @@ user --- prod --- neg_prod x nn
 prod --- user --- neg_user x nn
 '''
 
-'''
-neg_smpl23
-ガンマ（単独）もトレーニングできるように
-user --- prod --- neg_prod x nn
-prod --- user --- neg_user x nn
-'''
-
 import sys
 import itertools
 import random
@@ -619,17 +612,17 @@ def make_model(num_user=20, num_product=10,
     prob_user_col_neg_prod = Lambda(lambda x: x, name='user_col_neg_prod')(prob4_col)
     #print('prob >', K.int_shape(prob))
     model = Model([input_user, input_prod, input_user_neg_prod, input_user_col, input_prod_col, input_user_col_neg_prod], [y, y_col, prob_user_neg_prod, prob_user_col_neg_prod])
-    model.get_layer('gamma').trainable = False
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
-                  loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
+    #model.get_layer('gamma').trainable = False
+    #model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+    #              loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
     
     # wd2v.models['model'].get_layer('prod_embedding'), wd2v.models['model'].get_layer('user_embedding'), wd2v.models['model'].get_layer('gamma')
     model_gamma = Model([input_user, input_prod, input_user_neg_prod, input_user_col, input_prod_col, input_user_col_neg_prod], [y, y_col, prob_user_neg_prod, prob_user_col_neg_prod])
-    model_gamma.get_layer('gamma').trainable = True
-    model_gamma.get_layer('user_embedding').trainable = False
-    model_gamma.get_layer('prod_embedding').trainable = False
-    model_gamma.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
-                  loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
+    #model_gamma.get_layer('gamma').trainable = True
+    #model_gamma.get_layer('user_embedding').trainable = False
+    #model_gamma.get_layer('prod_embedding').trainable = False
+    #model_gamma.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+    #              loss_weights={'y': 1.0, 'user_neg_prod': loss_wgt_user_neg_prod, 'y_col': loss_wgt_y_col, 'user_col_neg_prod': loss_wgt_user_col_neg_prod})
     models = {
         'model': model,
         'model_gamma': model_gamma,
@@ -724,6 +717,10 @@ class WordAndDoc2vec(object):
         self.stack_size = stack_size
         self.num_features = num_features
 
+        self.loss_wgt_y_col = loss_wgt_y_col
+        self.loss_wgt_user_neg_prod = loss_wgt_user_neg_prod
+        self.loss_wgt_user_col_neg_prod = loss_wgt_user_col_neg_prod
+
         models = make_model(num_user=self.num_user, num_product=self.num_product,
                             num_neg=num_neg, num_features=num_features, gamma=gamma,
                             embeddings_val=embeddings_val, maxnorm=maxnorm, stack_size=stack_size,
@@ -732,7 +729,23 @@ class WordAndDoc2vec(object):
         self.models = models
         self.model = models['model']
         return models
-
+    
+    def activate_model_gamma(self):
+        model_gamma = self.models['model_gamma']
+        model_gamma.get_layer('gamma').trainable = True
+        model_gamma.get_layer('user_embedding').trainable = False
+        model_gamma.get_layer('prod_embedding').trainable = False
+        model_gamma.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+                      loss_weights={'y': 1.0, 'user_neg_prod': self.loss_wgt_user_neg_prod, 'y_col': self.loss_wgt_y_col, 'user_col_neg_prod': self.loss_wgt_user_col_neg_prod})
+        
+    def activate_model(self):
+        model = self.models['model_gamma']
+        model.get_layer('gamma').trainable = False
+        model.get_layer('user_embedding').trainable = True
+        model.get_layer('prod_embedding').trainable = True
+        model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['binary_accuracy'],
+                      loss_weights={'y': 1.0, 'user_neg_prod': self.loss_wgt_user_neg_prod, 'y_col': self.loss_wgt_y_col, 'user_col_neg_prod': self.loss_wgt_user_col_neg_prod})
+        
     def get_seq(self, batch_size=32, batch_size_col=None, shuffle=False, state=None):
         '''
         "shuffle" not implemented yet
