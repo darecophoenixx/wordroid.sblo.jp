@@ -55,6 +55,13 @@ user --- prod --- neg_prod x nn
 prod --- user --- neg_user x nn
 '''
 
+'''
+neg_smpl23
+user --- prod --- neg_prod x nn
+prod --- user --- neg_user x nn
+gamma をトレーニングできるように
+'''
+
 import sys
 import itertools
 import random
