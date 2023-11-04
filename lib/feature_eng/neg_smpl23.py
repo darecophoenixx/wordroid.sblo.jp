@@ -810,7 +810,11 @@ class WordAndDoc2vec(object):
     wgt_col = property(get_wgt_bycol)
 
     def get_sim(self):
+        gamma = np.exp(wd2v.models['model_prob1'].layers[6].get_weights()[0][0])
+        print('gamma =>', gamma)
+        print('sigma2 =>', 1/gamma / self.num_features)
         sim = WordAndDocSimilarity(self.wgt_row, self.doc_dic, self.wgt_col, self.word_dic)
+        sim.gamma = gamma
         return sim
     sim = property(get_sim)
 
