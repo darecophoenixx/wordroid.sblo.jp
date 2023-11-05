@@ -531,14 +531,14 @@ class WordAndDoc2vec(object):
         if self.logging:
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
     
-    def make_model(self, num_neg=2, num_features=8,
+    def make_model(self, num_neg=2, num_features=8, sigma2=SIGMA2,
                    gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5, loss_wgt_neg=0.1,
                    wgt_user=None, wgt_prod=None):
         self.num_neg = num_neg
         self.stack_size = stack_size
         self.num_features = num_features
         
-        models = make_model(num_user=self.num_user, num_product=self.num_product,
+        models = make_model(num_user=self.num_user, num_product=self.num_product, sigma2=sigma2,
                             num_neg=num_neg, num_features=num_features, gamma=gamma,
                             embeddings_val=embeddings_val, maxnorm=maxnorm, stack_size=stack_size, loss_wgt_neg=loss_wgt_neg,
                             wgt_user=wgt_user, wgt_prod=wgt_prod)
