@@ -47,12 +47,16 @@ user --- neg_prod x nn
 neg_smpl21
 user --- prod --- neg_prod x nn
 prod --- user --- neg_user x nn
+バッチを重ねている
+参照：https://colab.research.google.com/drive/1bjIxHCG6JrK2MJ9DdgwQOw3QakAu0tqJ
 '''
 
 '''
 neg_smpl22
 user --- prod --- neg_prod x nn
 prod --- user --- neg_user x nn
+重ねていない
+参照：https://colab.research.google.com/drive/1fSiAMs34UK0_vBS5sc0iHghzjNuk0mQ1
 '''
 
 '''
