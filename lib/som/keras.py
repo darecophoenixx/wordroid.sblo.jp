@@ -344,7 +344,7 @@ class sksom_keras(object):
         #sample_weight = np.ones((X.shape[0],), dtype=float)
         #labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm.astype(float), self.landmarks_.astype(float))
         d = metrics.pairwise_distances(X, self.landmarks_)
-        labels = sobj.labels_[d.argmin(axis=1)]
+        labels = self.labels_[d.argmin(axis=1)]
         return labels
     
     def score(self, X, y=None):
