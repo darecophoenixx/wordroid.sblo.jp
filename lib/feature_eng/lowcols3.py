@@ -37,7 +37,6 @@ from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras import losses
 from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
     LearningRateScheduler, EarlyStopping
-from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras import regularizers
 from tensorflow.keras import initializers
 from tensorflow.keras.metrics import categorical_accuracy
