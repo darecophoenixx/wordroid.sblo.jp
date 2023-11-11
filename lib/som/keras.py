@@ -17,6 +17,7 @@ from sklearn.cluster import KMeans
 from sklearn.cluster._kmeans import _labels_inertia
 from sklearn.utils.extmath import row_norms
 from sklearn.base import BaseEstimator, ClusterMixin, TransformerMixin
+from sklearn import metrics
 
 from tensorflow.keras import initializers, constraints
 from tensorflow.keras.layers import Layer
@@ -339,9 +340,11 @@ class sksom_keras(object):
     
     def predict(self, X):
         assert X.shape[1] == self.init_K.shape[1]
-        X_squared_norm = row_norms(X, squared=True)
-        sample_weight = np.ones((X.shape[0],), dtype=float)
-        labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm.astype(float), self.landmarks_.astype(float))
+        #X_squared_norm = row_norms(X, squared=True)
+        #sample_weight = np.ones((X.shape[0],), dtype=float)
+        #labels, inertia = _labels_inertia(X.astype(float), sample_weight, X_squared_norm.astype(float), self.landmarks_.astype(float))
+        d = metrics.pairwise_distances(X, self.landmarks_)
+        labels = sobj.labels_[d.argmin(axis=1)]
         return labels
     
     def score(self, X, y=None):
