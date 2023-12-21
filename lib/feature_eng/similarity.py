@@ -62,8 +62,8 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         print('processing log avg')
         avg = 1 + np.log(d_tot / d_len)
         print('processing norm')
-        d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean())
-        self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
+        self.d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean())
+        self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), self.d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
         print('self.df_stats.shape >', self.df_stats.shape)
         
     def _calc(self, naiseki, norm):
