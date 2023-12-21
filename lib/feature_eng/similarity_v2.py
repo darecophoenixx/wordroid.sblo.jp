@@ -21,7 +21,7 @@ from scipy.sparse import csc_matrix, csr_matrix
 
 class MySparseMatrixSimilarity2(gensim.similarities.docsim.SparseMatrixSimilarity):
 
-    def __init__(self, smart_csc, idfs,
+    def __init__(self, smart_csc, idfs, d_norm,
                  num_features=None, num_terms=None, num_docs=None, num_nnz=None,
                  num_best=None, chunksize=500, dtype=np.float32, maintain_sparsity=False):
         super(MySparseMatrixSimilarity2, self).__init__(None, num_features=num_features, num_terms=num_terms, num_docs=num_docs, num_nnz=num_nnz,
@@ -29,6 +29,7 @@ class MySparseMatrixSimilarity2(gensim.similarities.docsim.SparseMatrixSimilarit
         assert smart_csc.shape[1] == idfs.shape[0]
         self.index_csc = smart_csc
         self.idfs = idfs
+        self.d_norm = d_norm.reshape((-1,1))
         #self.normalize = False
         self.method = None
         #self.SLOPE = 0.2
