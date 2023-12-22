@@ -54,9 +54,9 @@ class Dic4seq(Mapping):
       col_keys()    : all column/item names
     '''
     
-    def __init__(self, mysim, row_dic, col_dic, max_count=10):
+    def __init__(self, wtsmart_csr, row_dic, col_dic, max_count=10):
         self.max_count = max_count
-        self.mysim = mysim
+        self.csr = wtsmart_csr
         self.row_dic = row_dic
         self.col_dic = col_dic
         
@@ -77,7 +77,7 @@ class Dic4seq(Mapping):
         return c2
     
     def __len__(self):
-        return self.mysim.index_csc.shape[0]
+        return self.csr.shape[0]
     
     def __iter__(self):
         return iter(list(self.row_dic.token2id.keys()))
