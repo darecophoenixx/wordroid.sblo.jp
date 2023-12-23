@@ -78,7 +78,7 @@ from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, Hist
 from tensorflow.keras import regularizers
 from tensorflow.keras import initializers
 from tensorflow.keras.metrics import categorical_accuracy
-from tensorflow.keras.constraints import NonNeg, MaxNorm
+from tensorflow.keras.constraints import NonNeg, MaxNorm, UnitNorm
 from tensorflow.keras.utils import Sequence
 from tensorflow.keras import backend as K
 
@@ -323,7 +323,7 @@ class Seq2(Sequence):
 
 
 def make_model(num_user=20, num_product=10,
-               num_neg=2, stack_size=5, num_features=8, gamma=0.0, maxnorm=None,
+               num_neg=2, stack_size=5, num_features=8, gamma=0.0, uninorm=None,
                embeddings_val=0.1, sigma2=SIGMA2, loss_wgt_neg=0.1,
                wgt_user=None, wgt_prod=None):
 
@@ -331,27 +331,27 @@ def make_model(num_user=20, num_product=10,
         user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                    embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
                                    name='user_embedding', trainable=True)
     else:
         user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
                                    weights=[wgt_user],
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                    embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
                                    name='user_embedding', trainable=True)
     if wgt_user is None:
         prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                    embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
                                    name='prod_embedding', trainable=True)
     else:
         prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                    weights=[wgt_prod],
                                    embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                    embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if maxnorm is None else MaxNorm(max_value=maxnorm, axis=1),
+                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
                                    name='prod_embedding', trainable=True)
 
     input_user = Input(shape=(stack_size,), name='input_user')
@@ -515,15 +515,16 @@ class WordAndDoc2vec(object):
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
     
     def make_model(self, num_neg=2, num_features=8,
-                   gamma=0.0, embeddings_val=0.1, maxnorm=None, stack_size=5, loss_wgt_neg=0.1,
+                   gamma=0.0, embeddings_val=0.1, uninorm=None, stack_size=5, loss_wgt_neg=0.1,
                    wgt_user=None, wgt_prod=None):
         self.num_neg = num_neg
         self.stack_size = stack_size
         self.num_features = num_features
         
         models = make_model(num_user=self.num_user, num_product=self.num_product,
-                            num_neg=num_neg, num_features=num_features, gamma=gamma,
-                            embeddings_val=embeddings_val, maxnorm=maxnorm, stack_size=stack_size, loss_wgt_neg=loss_wgt_neg,
+                            num_neg=num_neg, num_features=num_features,
+                            gamma=gamma, uninorm=uninorm,
+                            embeddings_val=embeddings_val, stack_size=stack_size, loss_wgt_neg=loss_wgt_neg,
                             wgt_user=wgt_user, wgt_prod=wgt_prod)
         self.models = models
         self.model = models['model']
