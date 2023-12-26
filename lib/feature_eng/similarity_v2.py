@@ -30,8 +30,7 @@ class MySparseMatrixSimilarity2(gensim.similarities.docsim.SparseMatrixSimilarit
         assert smart_csc.shape[0] == d_norm.shape[0]
         self.index_csc = smart_csc
         self.idfs = idfs
-        self.d_norm = d_norm.reshape((-1,1))
-        #self.normalize = False
+        self.d_norm = d_norm
         self.method = None
         #self.SLOPE = 0.2
         self.DTYPE = dtype
