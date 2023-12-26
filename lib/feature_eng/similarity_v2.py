@@ -26,7 +26,9 @@ class MySparseMatrixSimilarity2(gensim.similarities.docsim.SparseMatrixSimilarit
                  num_best=None, chunksize=500, dtype=np.float32, maintain_sparsity=False):
         super(MySparseMatrixSimilarity2, self).__init__(None, num_features=num_features, num_terms=num_terms, num_docs=num_docs, num_nnz=num_nnz,
                  num_best=num_best, chunksize=chunksize, dtype=dtype, maintain_sparsity=maintain_sparsity)
-        assert smart_csc.shape[1] == idfs.shape[0]
+        #assert smart_csc.shape[1] == idfs.shape[0]
+        assert smart_csc.shape[1] == len(idfs)
+        assert smart_csc.shape[0] == len(d_norm)
         self.index_csc = smart_csc
         self.idfs = idfs
         self.d_norm = d_norm.reshape((-1,1))
