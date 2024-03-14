@@ -55,7 +55,7 @@ from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lamb
     multiply, dot, add
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras import losses
-from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History, LearningRateScheduler
+from tensorflow.keras.callbacks import ProgbarLogger, Callback, History, LearningRateScheduler
 #from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras import regularizers
 from tensorflow.keras import initializers
