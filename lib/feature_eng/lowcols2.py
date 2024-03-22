@@ -35,7 +35,6 @@ from tensorflow.keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout,
     MaxPooling1D, MaxPooling2D, MaxPooling3D, \
     GlobalAveragePooling1D, \
     GlobalMaxPooling1D, GlobalMaxPooling2D, \
-    #LocallyConnected1D, LocallyConnected2D, \
     concatenate, Flatten, Average, Activation, \
     RepeatVector, Permute, Reshape, Dot, \
     multiply, dot, add, \
