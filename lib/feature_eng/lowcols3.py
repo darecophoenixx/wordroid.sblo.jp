@@ -25,7 +25,6 @@ from tensorflow.keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout,
     MaxPooling1D, MaxPooling2D, MaxPooling3D, \
     GlobalAveragePooling1D, \
     GlobalMaxPooling1D, GlobalMaxPooling2D, \
-    LocallyConnected1D, LocallyConnected2D, \
     concatenate, Flatten, Average, Activation, \
     RepeatVector, Permute, Reshape, Dot, \
     multiply, dot, add, \
@@ -35,7 +34,7 @@ from tensorflow.keras.layers import Input, Embedding, LSTM, GRU, Dense, Dropout,
     BatchNormalization
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras import losses
-from tensorflow.keras.callbacks import BaseLogger, ProgbarLogger, Callback, History,\
+from tensorflow.keras.callbacks import ProgbarLogger, Callback, History,\
     LearningRateScheduler, EarlyStopping
 from tensorflow.keras import regularizers
 from tensorflow.keras import initializers
