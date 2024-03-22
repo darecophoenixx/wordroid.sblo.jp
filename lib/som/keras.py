@@ -48,7 +48,8 @@ class SOM(Layer):
         r:
             gamma = 1 / (2 * r**2)
         '''
-        kwargs['weights'] = [lm_init]
+        #kwargs['weights'] = [lm_init]
+        self.set_weights([lm_init])
         self.lm_init = lm_init
         super(SOM, self).__init__(**kwargs)
         self.map_shape = map_shape
