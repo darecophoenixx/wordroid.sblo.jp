@@ -37,6 +37,7 @@ class SOM(Layer):
                  r=1.0,
                  kernel_initializer='glorot_uniform',
                  kernel_constraint=None,
+                 name='som',
                  **kwargs):
         '''
         map_shape:
@@ -403,6 +404,7 @@ class sksom_keras2(sksom_keras):
     def _make_keras_model(self, r, LM):
         inp = Input(shape=(self.init_K.shape[1],), name='inp')
         l_som = SOM(map_shape=self.kshape, lm_init=LM, r=r, qd=self.qd, name='som')
+        l_som.set_weights([LM])
         oup = l_som(inp)
         model = Model(inp, oup, name='model')
         
