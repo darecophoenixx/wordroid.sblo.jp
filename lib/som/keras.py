@@ -404,9 +404,9 @@ class sksom_keras2(sksom_keras):
     def _make_keras_model(self, r, LM):
         inp = Input(shape=(self.init_K.shape[1],), name='inp')
         l_som = SOM(map_shape=self.kshape, lm_init=LM, r=r, qd=self.qd, name='som')
-        l_som.set_weights([LM])
         oup = l_som(inp)
         model = Model(inp, oup, name='model')
+        l_som.set_weights([LM])
         
         calc_d = CalcDistance(lm_init=LM, name='calc_d')
         oup_d = calc_d(inp)
