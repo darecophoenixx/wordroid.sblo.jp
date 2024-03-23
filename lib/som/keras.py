@@ -151,7 +151,7 @@ class CalcDistance(Layer):
             initial landmarks
             shape = (2000, num_feature) or (12, num_feature)
         '''
-        kwargs['weights'] = [lm_init]
+        #kwargs['weights'] = [lm_init]
         self.lm_init = lm_init
         super(CalcDistance, self).__init__(**kwargs)
         self.output_dim = lm_init.shape[:1]
@@ -412,6 +412,7 @@ class sksom_keras2(sksom_keras):
         oup_d = calc_d(inp)
         oup_min_d = Lambda(lambda d: K.min(d, axis=1), name='min_d')(oup_d)
         model_min_d = Model(inp, oup_min_d, name='model_min_d')
+        calc_d.set_weights([LM])
         
         self.model = model
         self.models = {
