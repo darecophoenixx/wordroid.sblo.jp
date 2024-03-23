@@ -319,6 +319,9 @@ class sksom_keras(object):
         #LM = self.landmarks_
         for ii, (i_epochs, i_r) in enumerate(sche):
             print(ii+1, ' / ', len(sche))
+            ##########
+            optimizer = Adam(learning_rate=0.001)
+            ##########
             self._fit(i_epochs, i_r, x,
                       batch_size=batch_size, verbose=verbose, shuffle=shuffle,
                       optimizer=optimizer, loss=loss)
