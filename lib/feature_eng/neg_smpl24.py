@@ -327,32 +327,42 @@ def make_model(num_user=20, num_product=10,
                embeddings_val=0.1, sigma2=SIGMA2, loss_wgt_neg=0.1,
                wgt_user=None, wgt_prod=None):
 
-    if wgt_user is None:
-        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-                                   name='user_embedding', trainable=True)
-    else:
-        user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-                                   weights=[wgt_user],
-                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-                                   name='user_embedding', trainable=True)
-    if wgt_user is None:
-        prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
-                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-                                   name='prod_embedding', trainable=True)
-    else:
-        prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
-                                   weights=[wgt_prod],
-                                   embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-                                   embeddings_regularizer=regularizers.l2(gamma),
-                                   embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-                                   name='prod_embedding', trainable=True)
+    user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+                               embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+                               embeddings_regularizer=regularizers.l2(gamma),
+                               embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+                               name='user_embedding', trainable=True)
+    # if wgt_user is None:
+    #     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+    #                                embeddings_regularizer=regularizers.l2(gamma),
+    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+    #                                name='user_embedding', trainable=True)
+    # else:
+    #     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
+    #                                weights=[wgt_user],
+    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+    #                                embeddings_regularizer=regularizers.l2(gamma),
+    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+    #                                name='user_embedding', trainable=True)
+    prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+                               embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+                               embeddings_regularizer=regularizers.l2(gamma),
+                               embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+                               name='prod_embedding', trainable=True)
+    # if wgt_user is None:
+    #     prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+    #                                embeddings_regularizer=regularizers.l2(gamma),
+    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+    #                                name='prod_embedding', trainable=True)
+    # else:
+    #     prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
+    #                                weights=[wgt_prod],
+    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
+    #                                embeddings_regularizer=regularizers.l2(gamma),
+    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
+    #                                name='prod_embedding', trainable=True)
 
     input_user = Input(shape=(stack_size,), name='input_user')
     input_neg_user = Input(shape=(stack_size, num_neg), name='input_neg_user')
@@ -361,10 +371,14 @@ def make_model(num_user=20, num_product=10,
 
     embed_user = user_embedding(input_user)
     #print('embed_user >', K.int_shape(embed_user))
+    if wgt_user is not None:
+        user_embedding.set_weights([wgt_user])
     embed_neg_user = user_embedding(input_neg_user)
     #print('embed_neg_user >', K.int_shape(embed_neg_user))
     embed_prod = prod_embedding(input_prod)
     #print('embed_prod >', K.int_shape(embed_prod))
+    if wgt_prod is not None:
+        prod_embedding.set_weights([wgt_prod])
     embed_neg_prod = prod_embedding(input_neg_prod)
     #print('embed_neg_prod >', K.int_shape(embed_neg_prod))
 
