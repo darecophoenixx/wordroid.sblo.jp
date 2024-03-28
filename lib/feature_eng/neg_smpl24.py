@@ -588,8 +588,7 @@ class WordAndDoc2vec(object):
         self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
-                                            callbacks=callbacks,
-                                            workers=workers)
+                                            callbacks=callbacks)
         return self.hst
     
     def get_wgt_byrow(self):
