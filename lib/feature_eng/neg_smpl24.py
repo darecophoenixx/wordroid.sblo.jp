@@ -458,7 +458,9 @@ def make_model(num_user=20, num_product=10,
     prob_neg = concatenate([prob3, prob2], axis=2, name='neg_y')
     #print('prob >', K.int_shape(prob))
     model = Model([input_user, input_neg_user, input_prod, input_neg_prod], [prob1, prob_neg])
-    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['mse'],
+    # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['mse'],
+    #               loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
+    model.compile(loss={'y': 'binary_crossentropy', 'neg_y': 'binary_crossentropy'}, optimizer='adam', metrics=['mse'],
                   loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
     models = {
         'model': model,
