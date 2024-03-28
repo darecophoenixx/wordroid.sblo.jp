@@ -579,11 +579,16 @@ class WordAndDoc2vec(object):
             callbacks = [lr_scheduler, user_list_sh]
         else:
             callbacks.append(user_list_sh)
+        # self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
+        #                                     epochs=epochs,
+        #                                     verbose=verbose,
+        #                                     callbacks=callbacks,
+        #                                     use_multiprocessing=use_multiprocessing,
+        #                                     workers=workers)
         self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
                                             epochs=epochs,
                                             verbose=verbose,
                                             callbacks=callbacks,
-                                            use_multiprocessing=use_multiprocessing,
                                             workers=workers)
         return self.hst
     
