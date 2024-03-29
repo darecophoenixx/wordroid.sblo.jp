@@ -484,7 +484,8 @@ class IlligalDocIndexException(Exception):
 
 class SeqUserListShuffle(Callback):
     
-    def on_epoch_end(self, epoch, logs=None):
+    # def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_begin(self, epoch, logs=None):
         random.shuffle(self.model.user_seq.user_list)
         print('random.shuffle(self.model.seq.user_list)')
         print(self.model.user_seq.user_list[:5])
