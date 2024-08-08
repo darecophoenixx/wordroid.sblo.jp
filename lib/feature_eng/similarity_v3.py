@@ -40,41 +40,6 @@ class MySparseMatrixSimilarity3(gensim.similarities.docsim.SparseMatrixSimilarit
 
         #self.getDF()
 
-    # def getDF(self):
-    #     '''異なり語数'''
-    #     print('processing d_len')
-    #     nonzero = self.index_csc.nonzero()
-    #     tmp = pd.DataFrame(nonzero[0], columns=['idx'])
-    #     d_len = tmp.groupby('idx').size().values
-    #     print('processing idfs')
-    #     tmp = pd.DataFrame(nonzero[1], columns=['idx'])
-    #     self.idfs = np.log(self.num_row / tmp.groupby('idx').size().values)
-    #     '''トータル語数'''
-    #     print('processing d_tot')
-    #     d_tot = self.index_csc.sum(axis=1).flatten()
-    #     print('processing log avg') # １文書あたり１単語当たりの平均出現度数
-    #     avg = 1 + np.log(d_tot / d_len)
-    #     print('processing norm')
-    #     d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean()) # (1-SLOPE)*d_len.mean() + SLOPE*d_len
-    #     #self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
-    #     #self.logavg = self.df_stats['logavg'].values.reshape((-1,1))
-    #     self.logavg = avg.reshape((-1,1))
-    #     #self.d_norm = self.df_stats['d_norm'].values.reshape((-1,1))
-    #     self.d_norm = d_norm.reshape((-1,1))
-    #     self.freq_max = self.index_csc.max(axis=1)
-    #     print('re-calc index_csc')
-    #     self.index_csc = self.calc_tfn_mx(self.index_csc, avg=False)
-    #     print('re-calc index_csc 001')
-    #     self.index_csc = self.index_csc.multiply(1 / self.logavg)
-    #     print('re-calc index_csc 002')
-    #     self.index_csc = self.index_csc.multiply(self.idfs) # tf_n(t|q) * idf(t)
-    #     print('re-calc index_csc 003')
-    #     max_index_csc = self.index_csc.max(axis=1).todense()
-    #     print('re-calc index_csc 004')
-    #     self.index_csc = self.index_csc.multiply(1.0/max_index_csc)
-    #     print('re-calc index_csc 005')
-    #     self.index_csc = self.index_csc.tocsc()
-
     def _calc(self, naiseki, norm):
         res = naiseki.multiply(1/norm)
         return res
@@ -85,7 +50,7 @@ class MySparseMatrixSimilarity3(gensim.similarities.docsim.SparseMatrixSimilarit
 
     def calc_idf(self, tgt_mat):
         #idf = np.log(self.num_row / np.array([len(tgt_mat[:,ii].nonzero()[0]) for ii in range(tgt_mat.shape[1])]))
-        idf = self.idfs[self.idx_word]
+        idf = self.idfs[0,self.idx_word]
         return idf
 
     def create_query_mat(self, wgt_list):
@@ -110,12 +75,12 @@ class MySparseMatrixSimilarity3(gensim.similarities.docsim.SparseMatrixSimilarit
         else:
             raise Exception('no such method [%s]' % method)
 
-    def calc_norm(self, wq, wd, method='WT_SMART'):
-        if method in ['WT_SMART', 'WT_SMARTWA']:
-            norm = self.d_norm
-            return norm
-        else:
-            raise Exception('no such method [%s]' % method)
+    # def calc_norm(self, wq, wd, method='WT_SMART'):
+    #     if method in ['WT_SMART', 'WT_SMARTWA']:
+    #         norm = self.d_norm
+    #         return norm
+    #     else:
+    #         raise Exception('no such method [%s]' % method)
 
     def calc_tfn_mx(self, mx, avg=False):
         '''
