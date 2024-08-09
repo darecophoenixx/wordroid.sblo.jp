@@ -37,13 +37,45 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
 
         self.getDF()
     
+    # def getDF(self):
+    #     nonzero = self.index_csc.nonzero()
+    #     '''列側'''
+    #     d_tot_col = np.array(self.index_csc.sum(axis=0)).flatten() # 各列の合計度数
+    #     print('processing idfs')
+    #     tmp = pd.DataFrame(nonzero[1], columns=['idx'])
+    #     d_len_col = tmp.groupby('idx').size().values
+    #     self.idfs = np.log(self.num_row / d_len_col)
+    #     print('self.idfs.shape >', self.idfs.shape)
+    #     self.d_stat_col = {
+    #         'd_len_col': d_len_col,
+    #         'd_tot_col': d_tot_col,
+    #         'idfs': self.idfs,
+    #     }
+    #     '''行側'''
+    #     '''異なり語数'''
+    #     print('processing d_len')
+    #     tmp = pd.DataFrame(nonzero[0], columns=['idx'])
+    #     d_len = tmp.groupby('idx').size().values
+    #     '''トータル語数'''
+    #     print('processing d_tot')
+    #     d_tot = self.index_csc.sum(axis=1).flatten()
+    #     print('processing log avg')
+    #     avg = 1 + np.log(d_tot / d_len)
+    #     print('processing norm')
+    #     self.d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean())
+    #     self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), self.d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
+    #     print('self.df_stats.shape >', self.df_stats.shape)
+
     def getDF(self):
-        nonzero = self.index_csc.nonzero()
+        print('processing === getDF ===')
+        now0 = time.perf_counter()
+        print('***', time.perf_counter() - now0)
         '''列側'''
         d_tot_col = np.array(self.index_csc.sum(axis=0)).flatten() # 各列の合計度数
+        print('***', time.perf_counter() - now0)
         print('processing idfs')
-        tmp = pd.DataFrame(nonzero[1], columns=['idx'])
-        d_len_col = tmp.groupby('idx').size().values
+        d_len_col = self.index_csc.getnnz(axis=0)
+        print('***', time.perf_counter() - now0)
         self.idfs = np.log(self.num_row / d_len_col)
         print('self.idfs.shape >', self.idfs.shape)
         self.d_stat_col = {
@@ -54,18 +86,22 @@ class MySparseMatrixSimilarity(gensim.similarities.docsim.SparseMatrixSimilarity
         '''行側'''
         '''異なり語数'''
         print('processing d_len')
-        tmp = pd.DataFrame(nonzero[0], columns=['idx'])
-        d_len = tmp.groupby('idx').size().values
+        d_len = self.index_csc.getnnz(axis=1)
+        print('d_len.shape >>>', d_len.shape)
+        print(d_len[:5])
         '''トータル語数'''
         print('processing d_tot')
         d_tot = self.index_csc.sum(axis=1).flatten()
+        print(d_tot[:5])
         print('processing log avg')
         avg = 1 + np.log(d_tot / d_len)
+        print(avg[:5])
         print('processing norm')
         self.d_norm = d_len.mean() + self.SLOPE * (d_len - d_len.mean())
+        print(self.d_norm[:5])
         self.df_stats = pd.DataFrame(np.c_[d_len.reshape((-1,1)), d_tot.reshape((-1,1)), avg.reshape((-1,1)), self.d_norm.reshape((-1,1))], columns=['d_len','d_tot','logavg','d_norm'])
         print('self.df_stats.shape >', self.df_stats.shape)
-        
+
     def _calc(self, naiseki, norm):
         res = naiseki.multiply(1/norm)
         return res
