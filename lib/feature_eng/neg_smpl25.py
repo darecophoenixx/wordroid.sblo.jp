@@ -151,7 +151,8 @@ class Dic4seq(Mapping):
         return len(self.row_idx)
     
     def __iter__(self):
-        return iter(list(zip(list(self.row_idx), list(self.col_idx))))
+        return zip(self.row_idx, self.col_idx)
+        #return iter(list(zip(list(self.row_idx), list(self.col_idx))))
 
 
 class Seq(object):
