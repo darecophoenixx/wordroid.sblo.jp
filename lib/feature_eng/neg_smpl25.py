@@ -429,8 +429,10 @@ def make_model(num_user=20, num_product=10,
     model = Model([input_user, input_neg_user, input_prod, input_neg_prod], [prob1, prob_neg])
     # model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['mse'],
     #               loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
-    model.compile(loss={'y': 'binary_crossentropy', 'neg_y': 'binary_crossentropy'}, optimizer='adam', metrics={'y': 'binary_crossentropy', 'neg_y': 'binary_crossentropy'}, #metrics={'y': 'mse', 'neg_y': 'mse'},
-                  loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
+    # model.compile(loss={'y': 'binary_crossentropy', 'neg_y': 'binary_crossentropy'}, optimizer='adam', metrics={'y': 'binary_crossentropy', 'neg_y': 'binary_crossentropy'}, #metrics={'y': 'mse', 'neg_y': 'mse'},
+    #               loss_weights={'y': 1.0, 'neg_y': loss_wgt_neg})
+    model.compile(loss=['binary_crossentropy', 'binary_crossentropy'], optimizer='adam', metrics=['binary_crossentropy', 'binary_crossentropy'],
+                  loss_weights=[1.0, loss_wgt_neg])
     models = {
         'model': model,
         'model_user': model_user,
