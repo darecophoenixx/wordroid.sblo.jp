@@ -529,8 +529,6 @@ class WordAndDoc2vec(object):
         self.dic4seq = Dic4seq(self.corpus_csc)
         print(self.dic4seq)
 
-        self.user_list = list(self.dic4seq.keys())
-
     def init(self):
         if self.logging:
             logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
