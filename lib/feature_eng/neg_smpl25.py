@@ -132,27 +132,40 @@ class WordAndDocSimilarity(object):
 class Dic4seq(Mapping):
     '''
     REQUIRE:
-      keys()        : all row/user names (implement __iter__)
       __getitem__() : list of product (by row/user)
     '''
-    
-    def __init__(self, wtsmart_csr_prob):
+
+    def __init__(self, wtsmart_csr_prob, dir='.'):
         self.csr = wtsmart_csr_prob
-        self.row_idx, self.col_idx = wtsmart_csr_prob.nonzero()
-    
+        self.len = self.csr.nnz
+        idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
+        idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
+        self.idx_mm = idx_mm
+
     def __getitem__(self, idxs):
-        row_idx, col_idx = list(zip(*idxs))
+        '''
+        idxs は row_index, col_index のndarray
+        
+        ex.
+        array([[ 0,  3],
+               [ 0, 11],
+               [ 0, 22],
+               [ 0, 24],
+               [ 0, 25]], dtype=uint8)
+        '''
+        row_idx, col_idx = idxs[:,0], idxs[:,1]
         target_val = np.array(self.csr[row_idx, col_idx])[0]
         vals3 = (target_val + 1) / 2
         ret = [(row_idx[ii], col_idx[ii], vals3[ii]) for ii in range(len(row_idx))]
         return ret
-    
+
     def __len__(self):
-        return len(self.row_idx)
-    
+        return self.len
+
     def __iter__(self):
-        return zip(self.row_idx, self.col_idx)
-        #return iter(list(zip(list(self.row_idx), list(self.col_idx))))
+        '''no use'''
+        #return self.idx_mm
+        return iter(self.idx_mm)
 
 
 class Seq(object):
@@ -169,7 +182,7 @@ class Seq(object):
 
         self.row_indeces = list(range(self.dic4seq.csr.shape[0]))
         self.col_indeces = list(range(self.dic4seq.csr.shape[1]))
-        self.user_list = list(self.dic4seq.keys())
+        self.user_list = self.dic4seq.idx_mm
 
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
         self.y = np.array([[[1]] * self.stack_size])
@@ -185,7 +198,7 @@ class Seq(object):
         self.initialize_it()
 
     def initialize_it(self):
-        self.it = iter(range(0, len(self.user_list), self.batch_size*self.stack_size))
+        self.it = iter(range(0, len(self.dic4seq), self.batch_size*self.stack_size))
         self.idx_next = self.it.__next__()
 
     def __len__(self):
@@ -204,10 +217,23 @@ class Seq(object):
         return None
 
     def get_combs(self, user_part):
+        '''
+        user_part は row_index, col_index のndarray
+        
+        ex.
+        array([[ 0,  3],
+               [ 0, 11],
+               [ 0, 22],
+               [ 0, 24],
+               [ 0, 25]], dtype=uint8)
+        '''
         combs = self.dic4seq[user_part]
         return combs
 
     def get_stacked_combs(self, user_part):
+        '''
+        Seq2から呼ばれる
+        '''
         combs = self.get_combs(user_part)
         stacked_combs = [[ee2 if ee2 is not None else random.choice(combs) for ee2 in ee] for ee in itertools.zip_longest(*[iter(combs)]*self.stack_size)]
         return stacked_combs
@@ -279,13 +305,21 @@ class Seq2(PyDataset):
         super().__init__(**kwargs)
         self.seq = seq
         self.cnt = 0
+        self.index = np.arange(len(self.seq.dic4seq))
+
+        bs = self.seq.batch_size * self.seq.stack_size
+        self.index_l = []
+        for ii in range(len(self.seq)):
+            self.index_l.append((self.index[ii*bs], self.index[((ii*bs+bs) if (ii*bs+bs)<len(self.seq.dic4seq) else len(self.seq.dic4seq))-1]))
 
     def __len__(self):
         return len(self.seq)
 
     def __getitem__(self, idx):
         bs = self.seq.batch_size * self.seq.stack_size
-        user_part = self.seq.user_list[(idx*bs):((idx*bs+bs) if (idx*bs+bs)<len(self.seq.user_list) else len(self.seq.user_list))]
+        l, u = self.index_l[idx]
+        idx_user_part = self.index[l:(u+1)]
+        user_part = self.seq.user_list[idx_user_part]
         stacked_combs = self.seq.get_stacked_combs(user_part)
         res = self.seq.get_part(stacked_combs)
         return res
@@ -457,9 +491,9 @@ class SeqUserListShuffle(Callback):
 
     # def on_epoch_end(self, epoch, logs=None):
     def on_epoch_begin(self, epoch, logs=None):
-        random.shuffle(self.model.user_seq.user_list)
-        print('random.shuffle(self.model.seq.user_list)')
-        print(self.model.user_seq.user_list[:5])
+        random.shuffle(self.model.user_seq2.index)
+        print('random.shuffle(self.model.seq2.index)')
+        print(self.model.user_seq2.index[:5])
 
 
 
@@ -474,24 +508,24 @@ class WordAndDoc2vec(object):
             return
         self.logging = logging
         self.init()
-        
+
         self.word_dic = word_dic
         self.doc_dic = doc_dic
-        
+
         print('max(doc_dic.keys()) + 1 >>>', max(doc_dic.keys()) + 1)
-        
+
         num_features = max(self.word_dic.keys()) + 1
         print('num_features >>>', num_features)
-        
+
         self.corpus_csc = wtsmart_csr_prob
         print('corpus_csc.shape >>>', wtsmart_csr_prob.shape)
         self.num_user = self.corpus_csc.shape[0]
         self.num_product = self.corpus_csc.shape[1]
-        
+
         print('### creating Dic4seq...')
         self.dic4seq = Dic4seq(self.corpus_csc)
         print(self.dic4seq)
-        
+
         self.user_list = list(self.dic4seq.keys())
 
     def init(self):
@@ -539,7 +573,7 @@ class WordAndDoc2vec(object):
             lr = a*(1-1/base)*lr0 + lr0/base
             print('Learning rate: ', lr)
             return lr
-        self.model.user_seq = self.seq
+        self.model.user_seq2 = self.seq2
         user_list_sh = SeqUserListShuffle()
         if callbacks is None:
             lr_scheduler = LearningRateScheduler(lr_schedule)
