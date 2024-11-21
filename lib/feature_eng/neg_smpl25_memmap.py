@@ -61,7 +61,7 @@ sparse_matのgetnnz()を利用してデータの数をそろえることがで�
 このタイプはすでに確率になっているマトリックスを利用
 '''
 
-import sys
+import sys, os
 import itertools
 import random
 from collections.abc import Mapping
