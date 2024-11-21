@@ -135,7 +135,7 @@ class Dic4seq(Mapping):
       __getitem__() : list of product (by row/user)
     '''
 
-    def __init__(self, wtsmart_csr_prob, dir='.'):
+    def __init__(self, wtsmart_csr_prob):
         self.csr = wtsmart_csr_prob
         self.len = self.csr.nnz
         idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
