@@ -135,12 +135,25 @@ class Dic4seq(Mapping):
       __getitem__() : list of product (by row/user)
     '''
 
-    def __init__(self, wtsmart_csr_prob):
+    def __init__(self, wtsmart_csr_prob, idfs=None, nn=5):
         self.csr = wtsmart_csr_prob
         self.len = self.csr.nnz
+        if idfs is not None:
+            assert self.csr.shape[1] == idfs.shape[1]
+            self.idfs_sc = np.ceil((idfs - idfs.min()) / (idfs.max() - idfs.min()) * (nn-1) + 1).astype(int)
+        else:
+            self.idfs_sc = None
         idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
         idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
         self.idx_mm = idx_mm
+        if self.idfs_sc is not None:
+            l = []
+            for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
+                idf = self.idfs_sc[0,icol]
+                l.extend([self.idx_mm[[ii]]] * idf)
+                #l.extend([self.idx_mm[[ii]]] * 2) # for test
+            self.idx_mm = np.concatenate(l)
+            self.len = self.idx_mm.shape[0]
 
     def __getitem__(self, idxs):
         '''
@@ -182,7 +195,7 @@ class Seq(object):
 
         self.row_indeces = list(range(self.dic4seq.csr.shape[0]))
         self.col_indeces = list(range(self.dic4seq.csr.shape[1]))
-        self.user_list = self.dic4seq.idx_mm
+        #self.user_list = self.dic4seq.idx_mm
 
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
         self.y = np.array([[[1]] * self.stack_size])
@@ -319,7 +332,8 @@ class Seq2(PyDataset):
         bs = self.seq.batch_size * self.seq.stack_size
         l, u = self.index_l[idx]
         idx_user_part = self.index[l:(u+1)]
-        user_part = self.seq.user_list[idx_user_part]
+        #user_part = self.seq.user_list[idx_user_part]
+        user_part = self.seq.dic4seq.idx_mm[idx_user_part]
         stacked_combs = self.seq.get_stacked_combs(user_part)
         res = self.seq.get_part(stacked_combs)
         return res
@@ -501,6 +515,7 @@ class WordAndDoc2vec(object):
 
     def __init__(self,
                  wtsmart_csr_prob, word_dic, doc_dic,
+                 idfs=None,
                  logging=False,
                  load=False
                  ):
@@ -511,6 +526,7 @@ class WordAndDoc2vec(object):
 
         self.word_dic = word_dic
         self.doc_dic = doc_dic
+        self.idfs = idfs
 
         print('max(doc_dic.keys()) + 1 >>>', max(doc_dic.keys()) + 1)
 
@@ -523,10 +539,10 @@ class WordAndDoc2vec(object):
         self.num_product = self.corpus_csc.shape[1]
 
         print('### creating Dic4seq...')
-        self.dic4seq = Dic4seq(self.corpus_csc)
+        self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs)
         print(self.dic4seq)
 
-        self.user_list = list(self.dic4seq.keys())
+        #self.user_list = list(self.dic4seq.keys())
 
     def init(self):
         if self.logging:
