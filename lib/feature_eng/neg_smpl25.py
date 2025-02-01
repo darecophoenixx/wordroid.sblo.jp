@@ -135,12 +135,14 @@ class Dic4seq(Mapping):
       __getitem__() : list of product (by row/user)
     '''
 
-    def __init__(self, wtsmart_csr_prob, idfs=None, nn=5):
+    def __init__(self, wtsmart_csr_prob, idfs=None, nn=5, pow=1.5):
         self.csr = wtsmart_csr_prob
         self.len = self.csr.nnz
         if idfs is not None:
             assert self.csr.shape[1] == idfs.shape[1]
-            self.idfs_sc = np.ceil((idfs - idfs.min()) / (idfs.max() - idfs.min()) * (nn-1) + 1).astype(int)
+            idfs2 = np.power(idfs, pow)
+            low = 0.5
+            self.idfs_sc = np.ceil((idfs2 - idfs2.min()) / (idfs2.max() - idfs2.min()) * (nn-low) + low).astype(int)
         else:
             self.idfs_sc = None
         idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
@@ -517,7 +519,8 @@ class WordAndDoc2vec(object):
                  wtsmart_csr_prob, word_dic, doc_dic,
                  idfs=None,
                  logging=False,
-                 load=False
+                 load=False,
+                 pow=1.5
                  ):
         if load:
             return
@@ -539,7 +542,7 @@ class WordAndDoc2vec(object):
         self.num_product = self.corpus_csc.shape[1]
 
         print('### creating Dic4seq...')
-        self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs)
+        self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs, pow=pow)
         print(self.dic4seq)
 
         #self.user_list = list(self.dic4seq.keys())
