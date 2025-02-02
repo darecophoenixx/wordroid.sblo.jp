@@ -135,24 +135,40 @@ class Dic4seq(Mapping):
       __getitem__() : list of product (by row/user)
     '''
 
-    def __init__(self, wtsmart_csr_prob, idfs=None, nn=5, pow=1.5):
+    # def __init__(self, wtsmart_csr_prob, idfs=None, nn=5, pow=1.5):
+    #     self.csr = wtsmart_csr_prob
+    #     self.len = self.csr.nnz
+    #     if idfs is not None:
+    #         assert self.csr.shape[1] == idfs.shape[1]
+    #         idfs2 = np.power(idfs, pow)
+    #         low = 0.5
+    #         self.idfs_sc = np.ceil((idfs2 - idfs2.min()) / (idfs2.max() - idfs2.min()) * (nn-low) + low).astype(int)
+    #     else:
+    #         self.idfs_sc = None
+    #     idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
+    #     idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
+    #     self.idx_mm = idx_mm
+    #     if self.idfs_sc is not None:
+    #         l = []
+    #         for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
+    #             idf = self.idfs_sc[0,icol]
+    #             l.extend([self.idx_mm[[ii]]] * idf)
+    #             #l.extend([self.idx_mm[[ii]]] * 2) # for test
+    #         self.idx_mm = np.concatenate(l)
+    #         self.len = self.idx_mm.shape[0]
+    def __init__(self, wtsmart_csr_prob, idfs=None, nn=10):
         self.csr = wtsmart_csr_prob
         self.len = self.csr.nnz
-        if idfs is not None:
-            assert self.csr.shape[1] == idfs.shape[1]
-            idfs2 = np.power(idfs, pow)
-            low = 0.5
-            self.idfs_sc = np.ceil((idfs2 - idfs2.min()) / (idfs2.max() - idfs2.min()) * (nn-low) + low).astype(int)
-        else:
-            self.idfs_sc = None
         idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
         idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
         self.idx_mm = idx_mm
-        if self.idfs_sc is not None:
+        if idfs is not None:
             l = []
             for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                idf = self.idfs_sc[0,icol]
-                l.extend([self.idx_mm[[ii]]] * idf)
+                idf = idfs[0, icol]
+                m = nn / idf
+                m = int(1 if m < 1 else m)
+                l.extend([self.idx_mm[[ii]]] * m)
                 #l.extend([self.idx_mm[[ii]]] * 2) # for test
             self.idx_mm = np.concatenate(l)
             self.len = self.idx_mm.shape[0]
@@ -519,8 +535,7 @@ class WordAndDoc2vec(object):
                  wtsmart_csr_prob, word_dic, doc_dic,
                  idfs=None,
                  logging=False,
-                 load=False,
-                 pow=1.5
+                 load=False
                  ):
         if load:
             return
@@ -542,7 +557,7 @@ class WordAndDoc2vec(object):
         self.num_product = self.corpus_csc.shape[1]
 
         print('### creating Dic4seq...')
-        self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs, pow=pow)
+        self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs)
         print(self.dic4seq)
 
         #self.user_list = list(self.dic4seq.keys())
