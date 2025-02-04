@@ -158,8 +158,8 @@ class Dic4seq(Mapping):
     #         self.len = self.idx_mm.shape[0]
     def __init__(self, wtsmart_csr_prob, idfs=None, nn=10):
         self.csr = wtsmart_csr_prob
-        self.len = self.csr.nnz
-        idx_mm = np.zeros(dtype="uint32", shape=(self.csr.nnz, 2))
+        self.len = wtsmart_csr_prob.count_nonzero() # self.csr.nnz
+        idx_mm = np.zeros(dtype="uint32", shape=(wtsmart_csr_prob.count_nonzero(), 2))
         idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
         self.idx_mm = idx_mm
         if idfs is not None:
