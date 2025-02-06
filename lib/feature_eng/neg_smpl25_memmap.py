@@ -125,9 +125,8 @@ class Dic4seq(Dic4seq_org):
             l = []
             cnt = 0
             with tqdm(total=self.idx_mm.shape[0]) as pbar:
-                for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                    idf = idfs[0, icol]
-                    m = nn / idf
+                for ii, icol in enumerate(self.idx_mm[:,1]):
+                    m = nn / idfs[0, icol]
                     m = int(1 if m < 1 else m)
                     cnt += m
                     pbar.update(1)
@@ -136,9 +135,8 @@ class Dic4seq(Dic4seq_org):
                                    shape=(cnt, 2))
             idx = 0
             with tqdm(total=self.idx_mm.shape[0]) as pbar:
-                for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                    idf = idfs[0, icol]
-                    m = nn / idf
+                for ii, icol in enumerate(self.idx_mm[:,1]):
+                    m = nn / idfs[0, icol]
                     m = int(1 if m < 1 else m)
                     idx_mm_ext[idx:(idx+m),:] = self.idx_mm[[ii],:]
                     idx += m
