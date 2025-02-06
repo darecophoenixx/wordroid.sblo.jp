@@ -70,6 +70,7 @@ import logging
 import numpy as np
 import scipy
 import gensim
+from tqdm import tqdm
 
 from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Conv2DTranspose, \
@@ -123,21 +124,25 @@ class Dic4seq(Dic4seq_org):
         if idfs is not None:
             l = []
             cnt = 0
-            for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                idf = idfs[0, icol]
-                m = nn / idf
-                m = int(1 if m < 1 else m)
-                cnt += m
+            with tqdm(total=self.idx_mm.shape[0]) as pbar:
+                for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
+                    idf = idfs[0, icol]
+                    m = nn / idf
+                    m = int(1 if m < 1 else m)
+                    cnt += m
+                    pbar.update(1)
             self.path_ext = os.path.join(dir, 'dic4seq_ext')
             idx_mm_ext = np.memmap(self.path_ext, dtype="uint32", mode="w+",
                                    shape=(cnt, 2))
-            idx = 0
-            for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                idf = idfs[0, icol]
-                m = nn / idf
-                m = int(1 if m < 1 else m)
-                idx_mm_ext[idx:(idx+m),:] = self.idx_mm[[ii],:]
-                idx += m
+            with tqdm(total=self.idx_mm.shape[0]) as pbar:
+                idx = 0
+                for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
+                    idf = idfs[0, icol]
+                    m = nn / idf
+                    m = int(1 if m < 1 else m)
+                    idx_mm_ext[idx:(idx+m),:] = self.idx_mm[[ii],:]
+                    idx += m
+                    pbar.update(1)
             self.idx_mm = idx_mm_ext
             self.len = self.idx_mm.shape[0]
 
