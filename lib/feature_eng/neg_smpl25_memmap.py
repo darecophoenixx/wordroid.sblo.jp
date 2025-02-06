@@ -134,8 +134,8 @@ class Dic4seq(Dic4seq_org):
             self.path_ext = os.path.join(dir, 'dic4seq_ext')
             idx_mm_ext = np.memmap(self.path_ext, dtype="uint32", mode="w+",
                                    shape=(cnt, 2))
+            idx = 0
             with tqdm(total=self.idx_mm.shape[0]) as pbar:
-                idx = 0
                 for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
                     idf = idfs[0, icol]
                     m = nn / idf
