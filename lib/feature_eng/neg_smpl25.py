@@ -70,6 +70,7 @@ import logging
 import numpy as np
 import scipy
 import gensim
+from tqdm import tqdm
 
 from tensorflow.keras.layers import Input, Embedding, LSTM, Dense, Dropout, Lambda, \
     Conv1D, Conv2D, MaxPooling1D, MaxPooling2D, Conv2DTranspose, \
@@ -159,32 +160,35 @@ class Dic4seq(Mapping):
     def __init__(self, wtsmart_csr_prob, idfs=None, nn=10):
         self.csr = wtsmart_csr_prob
         self.len = wtsmart_csr_prob.count_nonzero() # self.csr.nnz
-        idx_mm = np.zeros(dtype="uint32", shape=(wtsmart_csr_prob.count_nonzero(), 2))
+        # idx_mmは拡張しない
+        idx_mm = np.zeros(dtype="uint32", shape=(self.len, 2))
         idx_mm[:,0], idx_mm[:,1] = wtsmart_csr_prob.nonzero()
         self.idx_mm = idx_mm
+        # self.indexを拡張する
+        self.index = np.arange(self.len)
         if idfs is not None:
-            l = []
-            for ii, icol in itertools.islice(enumerate(self.idx_mm[:,1]), None):
-                idf = idfs[0, icol]
-                m = nn / idf
-                m = int(1 if m < 1 else m)
-                l.extend([self.idx_mm[[ii]]] * m)
-                #l.extend([self.idx_mm[[ii]]] * 2) # for test
-            self.idx_mm = np.concatenate(l)
-            self.len = self.idx_mm.shape[0]
+            index_ex = []
+            with tqdm(total=self.len) as pbar:
+                for idx in self.index:
+                    icol = self.idx_mm[idx,1]
+                    idf = idfs[0, icol]
+                    m = nn / idf
+                    m = int(1 if m < 1 else m)
+                    index_ex.extend([idx] * m)
+                    pbar.update(1)
+            self.index = index_ex = np.array(index_ex)
+            self.len = len(self.index)
 
-    def __getitem__(self, idxs):
+    def __getitem__(self, idx_seq2):
         '''
-        idxs は row_index, col_index のndarray
+        idx_seq2 は Seq2.index
         
         ex.
-        array([[ 0,  3],
-               [ 0, 11],
-               [ 0, 22],
-               [ 0, 24],
-               [ 0, 25]], dtype=uint8)
+        array([356, 63, 3, ...])
         '''
-        row_idx, col_idx = idxs[:,0], idxs[:,1]
+        # self.indexは拡張されている（可能性がある）
+        idx = self.index[idx_seq2]
+        row_idx, col_idx = self.idx_mm[idx,0], self.idx_mm[idx,1]
         target_val = np.array(self.csr[row_idx, col_idx])[0]
         vals3 = (target_val + 1) / 2
         ret = [(row_idx[ii], col_idx[ii], vals3[ii]) for ii in range(len(row_idx))]
@@ -213,7 +217,6 @@ class Seq(object):
 
         self.row_indeces = list(range(self.dic4seq.csr.shape[0]))
         self.col_indeces = list(range(self.dic4seq.csr.shape[1]))
-        #self.user_list = self.dic4seq.idx_mm
 
         y = [0]*self.num_neg + [1] + [0]*self.num_neg
         self.y = np.array([[[1]] * self.stack_size])
@@ -247,7 +250,7 @@ class Seq(object):
             self.initialize_it()
         return None
 
-    def get_combs(self, user_part):
+    def get_combs(self, idx_seq2):
         '''
         user_part は row_index, col_index のndarray
         
@@ -258,14 +261,14 @@ class Seq(object):
                [ 0, 24],
                [ 0, 25]], dtype=uint8)
         '''
-        combs = self.dic4seq[user_part]
+        combs = self.dic4seq[idx_seq2]
         return combs
 
-    def get_stacked_combs(self, user_part):
+    def get_stacked_combs(self, idx_seq2):
         '''
         Seq2から呼ばれる
         '''
-        combs = self.get_combs(user_part)
+        combs = self.get_combs(idx_seq2)
         stacked_combs = [[ee2 if ee2 is not None else random.choice(combs) for ee2 in ee] for ee in itertools.zip_longest(*[iter(combs)]*self.stack_size)]
         return stacked_combs
 
@@ -349,10 +352,10 @@ class Seq2(PyDataset):
     def __getitem__(self, idx):
         bs = self.seq.batch_size * self.seq.stack_size
         l, u = self.index_l[idx]
-        idx_user_part = self.index[l:(u+1)]
+        idx_seq2 = self.index[l:(u+1)]
         #user_part = self.seq.user_list[idx_user_part]
-        user_part = self.seq.dic4seq.idx_mm[idx_user_part]
-        stacked_combs = self.seq.get_stacked_combs(user_part)
+        #user_part = self.seq.dic4seq.idx_mm[idx_user_part]
+        stacked_combs = self.seq.get_stacked_combs(idx_seq2)
         res = self.seq.get_part(stacked_combs)
         return res
 
@@ -367,19 +370,6 @@ def make_model(num_user=20, num_product=10,
                                embeddings_regularizer=regularizers.l2(gamma),
                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
                                name='user_embedding', trainable=True)
-    # if wgt_user is None:
-    #     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-    #                                embeddings_regularizer=regularizers.l2(gamma),
-    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-    #                                name='user_embedding', trainable=True)
-    # else:
-    #     user_embedding = Embedding(output_dim=num_features, input_dim=num_user,
-    #                                weights=[wgt_user],
-    #                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
-    #                                embeddings_regularizer=regularizers.l2(gamma),
-    #                                embeddings_constraint=None if uninorm is None else UnitNorm(axis=1),
-    #                                name='user_embedding', trainable=True)
     prod_embedding = Embedding(output_dim=num_features, input_dim=num_product,
                                embeddings_initializer=initializers.RandomUniform(minval=-embeddings_val, maxval=embeddings_val),
                                embeddings_regularizer=regularizers.l2(gamma),
@@ -521,7 +511,6 @@ class IlligalDocIndexException(Exception):
 
 class SeqUserListShuffle(Callback):
 
-    # def on_epoch_end(self, epoch, logs=None):
     def on_epoch_begin(self, epoch, logs=None):
         random.shuffle(self.model.user_seq2.index)
         print('random.shuffle(self.model.seq2.index)')
@@ -559,8 +548,6 @@ class WordAndDoc2vec(object):
         print('### creating Dic4seq...')
         self.dic4seq = Dic4seq(self.corpus_csc, idfs=self.idfs)
         print(self.dic4seq)
-
-        #self.user_list = list(self.dic4seq.keys())
 
     def init(self):
         if self.logging:
@@ -614,12 +601,6 @@ class WordAndDoc2vec(object):
             callbacks = [lr_scheduler, user_list_sh]
         else:
             callbacks.append(user_list_sh)
-        # self.hst = self.model.fit(self.seq2, steps_per_epoch=len(self.seq),
-        #                                     epochs=epochs,
-        #                                     verbose=verbose,
-        #                                     callbacks=callbacks,
-        #                                     use_multiprocessing=use_multiprocessing,
-        #                                     workers=workers)
         self.hst = self.model.fit(self.seq2, steps_per_epoch=None, #len(self.seq) // batch_size,
                                             epochs=epochs,
                                             verbose=verbose,
