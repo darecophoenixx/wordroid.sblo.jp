@@ -116,7 +116,7 @@ class WordAndDocSimilarity(object):
         self.gamma = 1 / (self.num_features * SIGMA2)
 
     def _get_sim(self, mx, d, query):
-        res = calc_gsim(query, mx, self.gamma)
+        res = 1.0 / (1.0 + np.exp(-query.dot(mx.T)))
         res2 = [(d[ii], ee) for ii, ee in enumerate(res)]
         return res2
 
