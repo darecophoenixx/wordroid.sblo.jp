@@ -742,7 +742,7 @@ def mclust(df_target, n_init=3, g_range=G_RANGE,
             for n_components in g_range:
                 res0 = []
                 for ii in range(n_init):
-                    gm.set_params(n_components=n_components)
+                    gm.set_params(n_components=n_components, covariance_type=cov_type)
                     gm.fit(df_target)
                     # -1 x BIC
                     res0.append(-gm.bic(df_target))
