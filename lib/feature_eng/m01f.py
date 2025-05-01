@@ -695,12 +695,14 @@ def create_mat_from_cor(selected_cor, n_samples=100, state=None):
         created matrix with input correlation
     """
     rs = np.random.RandomState(state)
+    # make i.i.d.
     r = rs.normal(size=(n_samples, selected_cor.shape[1]))
     cor_r = np.corrcoef(r, rowvar=False)
     ss = StandardScaler()
     r_scaled = ss.fit_transform(r)
     r_scaled = r_scaled.dot(np.linalg.inv(np.linalg.cholesky(cor_r).T))
-    np.corrcoef(r_scaled, rowvar=False)
+    # np.corrcoef(r_scaled, rowvar=False)
+    # Apply correlation to a matrix with independent standard normal elements
     try:
         r_calced = r_scaled.dot(np.linalg.cholesky(selected_cor).T)
     except:
