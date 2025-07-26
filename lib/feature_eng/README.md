@@ -87,10 +87,9 @@ col_vectors = wd2v.wgt_col # Vectors for columns (e.g., items)
 
 ## 📚 Examples & Tutorials
 
-For more practical examples, please refer to the following Jupyter Notebooks:
-
-- **[WordAndDoc2vec: Efficient and Interpretable Large-Scale Data Analysis for Marketing](https://www.kaggle.com/code/wordroid/wordanddoc2vec-sparse-data-nl-features)**: A detailed explanation of the method.
-- **[Topic Analysis and Clustering on Reuters News Data (Under Construction)](examples/02_reuters_topic_modeling.ipynb)**: A walkthrough of extracting and interpreting topic structures from real text data.
+- **Overall Method and Explanation:** [WordAndDoc2vec: Efficient and Interpretable Large-Scale Data Analysis for Marketing](https://www.kaggle.com/code/wordroid/wordanddoc2vec-e9v3lz)
+- **In-depth Discussion via a Dialogue with Gemini:** [WordAndDoc2vec: Questions from Gemini 01](https://www.kaggle.com/code/wordroid/wordanddoc2vec-gemini-01)
+- **Detailed Interpretation of Clustering Results:** [WordAndDoc2vec: Cluster Interpretation by Gemini](https://www.kaggle.com/code/wordroid/wordanddoc2vec-gemini)
 
 ## 🆚 Comparison with Other Methods
 
