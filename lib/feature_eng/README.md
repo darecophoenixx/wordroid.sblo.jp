@@ -94,4 +94,4 @@ For more practical examples, please refer to the following Jupyter Notebooks:
 
 ## 🆚 Comparison with Other Methods
 
-WordAndDoc2vec holds a distinct advantage over traditional methods like SVD and complex deep learning models, especially in terms of **computational cost, interpretability, and affinity for clustering**. For a detailed comparison, please see this [Kaggle notebook](https://www.kaggle.com/code/wordroid/wordanddoc2vec-gyh).
+WordAndDoc2vec holds a distinct advantage over traditional methods like SVD and complex deep learning models, especially in terms of **computational cost, interpretability, and affinity for clustering**. For a detailed comparison, please see this [Kaggle notebook]([https://www.kaggle.com/code/wordroid/wordanddoc2vec-gyh](https://www.kaggle.com/code/wordroid/wordanddoc2vec-comparison-with-other-methods)).
