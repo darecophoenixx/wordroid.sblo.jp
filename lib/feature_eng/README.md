@@ -56,8 +56,7 @@ from feature_eng.neg_smpl25 import WordAndDoc2vec, calc_gsim
 from scipy.sparse import csr_matrix
 
 # 1. Prepare your sparse matrix data (e.g., a user-item matrix)
-data = ...
-sparse_matrix = csr_matrix(data)
+wtsmart_col_csc_T_csr_prob = ...
 
 # 2. Create a WordAndDoc2vec instance
 wd2v = WordAndDoc2vec(wtsmart_csr_prob=wtsmart_col_csc_T_csr_prob, word_dic=word_dic, doc_dic=doc_dic,
