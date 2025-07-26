@@ -89,9 +89,9 @@ col_vectors = wd2v.wgt_col # Vectors for columns (e.g., items)
 
 For more practical examples, please refer to the following Jupyter Notebooks:
 
-- **[WordAndDoc2vec: Efficient and Interpretable Large-Scale Data Analysis for Marketing]([https://www.kaggle.com/code/wordroid/wordanddoc2vec-e9v3lz](https://www.kaggle.com/code/wordroid/wordanddoc2vec-sparse-data-nl-features))**: A detailed explanation of the method.
+- **[WordAndDoc2vec: Efficient and Interpretable Large-Scale Data Analysis for Marketing](https://www.kaggle.com/code/wordroid/wordanddoc2vec-sparse-data-nl-features)**: A detailed explanation of the method.
 - **[Topic Analysis and Clustering on Reuters News Data (Under Construction)](examples/02_reuters_topic_modeling.ipynb)**: A walkthrough of extracting and interpreting topic structures from real text data.
 
 ## 🆚 Comparison with Other Methods
 
-WordAndDoc2vec holds a distinct advantage over traditional methods like SVD and complex deep learning models, especially in terms of **computational cost, interpretability, and affinity for clustering**. For a detailed comparison, please see this [Kaggle notebook]([https://www.kaggle.com/code/wordroid/wordanddoc2vec-gyh](https://www.kaggle.com/code/wordroid/wordanddoc2vec-comparison-with-other-methods)).
+WordAndDoc2vec holds a distinct advantage over traditional methods like SVD and complex deep learning models, especially in terms of **computational cost, interpretability, and affinity for clustering**. For a detailed comparison, please see this [Kaggle notebook](https://www.kaggle.com/code/wordroid/wordanddoc2vec-comparison-with-other-methods).
