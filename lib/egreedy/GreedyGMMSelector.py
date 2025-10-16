@@ -279,3 +279,31 @@ def run_greedy_gmm_trials(X,
         best_means = min(best_result['bic_history'], key=lambda x: x[3] if x[3] is not None else np.inf)[1]
 
     return best_result, results
+
+def find_most_frequent_integer_counter(integer_list):
+    """
+    整数のリストから最も多く出現する整数を選択します。
+    collections.Counterを使用します。
+
+    Args:
+        integer_list: 整数のリスト
+
+    Returns:
+        最も多く出現する整数。複数ある場合はそのうちの1つ。
+        リストが空の場合はNone。
+    """
+    if not integer_list:
+        return None
+
+    # Counterを使って各要素の出現回数をカウント
+    counts = Counter(integer_list)
+
+    # most_common(1) で最も出現回数の多い要素を1つ取得
+    # これは [(要素, 出現回数)] のリストを返す
+    most_common_element = counts.most_common(1)
+
+    # リストが空でなければ、最初の要素の0番目（整数）を返す
+    if most_common_element:
+        return most_common_element[0][0]
+    else:
+        return None # 実際にはmost_common_elementが空になることはないはずですが、念のため
