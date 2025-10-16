@@ -1,1 +1,1 @@
-from egreedy import run_greedy_gmm_trials
+from egreedy.GreedyGMMSelector import run_greedy_gmm_trials, GreedyGMMSelector
