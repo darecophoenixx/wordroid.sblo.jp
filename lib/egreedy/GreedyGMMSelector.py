@@ -25,7 +25,7 @@ def stabilize_covariance(cov_k, min_eigval=1e-6):
 
     return cov_k
 
-def em_with_fixed_means(X, means_init, max_iter=100, tol=1e-4, verbose=False):
+def em_with_fixed_means(X, means_init, max_iter=100, tol=1e-3, tol2=1.0e-7, verbose=False):
     """
     EMアルゴリズムで means_init を固定して重みと共分散を推定
     :param X: データ行列 (n_samples, n_features)
@@ -71,12 +71,12 @@ def em_with_fixed_means(X, means_init, max_iter=100, tol=1e-4, verbose=False):
             cov_k /= Nk[k]
             # 安定化対策
             cov_k = stabilize_covariance(cov_k, min_eigval=1e-6)
-            # 動的正則化（スケールに応じて）
-            if 100 <= n_features:
-                eps = 1e-1
-            else:
-                eps = 1e-2 * np.trace(cov_k) / n_features
-            cov_k += eps * np.eye(n_features)
+            # # 動的正則化（スケールに応じて）
+            # if 100 <= n_features:
+            #     eps = 1e-1
+            # else:
+            #     eps = 1e-2 * np.trace(cov_k) / n_features
+            # cov_k += eps * np.eye(n_features)
             covariances[k] = cov_k
 
         # Log-likelihood
@@ -92,6 +92,10 @@ def em_with_fixed_means(X, means_init, max_iter=100, tol=1e-4, verbose=False):
         
         # 収束判定
         if iteration > 0 and abs(log_likelihoods[-1] - log_likelihoods[-2]) < tol:
+            if verbose:
+                print("収束しました。")
+            break
+        if iteration > 0 and abs(log_likelihoods[-1] - log_likelihoods[-2]) / log_likelihoods[-2] < tol2:
             if verbose:
                 print("収束しました。")
             break
@@ -222,6 +226,7 @@ def run_greedy_gmm_trials(X,
     '''
     Iterative Refinement
     '''
+    print('### 初期KMeansを計算中・・・')
     rng = np.random.RandomState(random_state_seed)
     kmeans = cluster.KMeans(n_clusters=init_clusters, random_state=rng, n_init=1)
     init_means = kmeans.fit(X).cluster_centers_
@@ -234,6 +239,7 @@ def run_greedy_gmm_trials(X,
         if best_means is None:
             pass
         else:
+            print('### 追加のクラスタ中心等を選択中・・・')
             my_list = np.arange(best_means.shape[0]).tolist()
             combinations = []
             for _ in range(nn):
@@ -249,7 +255,7 @@ def run_greedy_gmm_trials(X,
             new_centers = np.vstack(new_centers)
             init_means = np.vstack([best_means, new_centers])
 
-        # GreedyGMMSelector の実行
+        print('### GreedyGMMSelector の実行・・・')
         selector = GreedyGMMSelector(init_means=init_means, min_clusters=min_clusters,
                                       n_step3=n_step3, n_step2=n_step2, n_step1=n_step1)
         selector.fit(X)
@@ -270,4 +276,3 @@ def run_greedy_gmm_trials(X,
         best_means = min(best_result['bic_history'], key=lambda x: x[3] if x[3] is not None else np.inf)[1]
 
     return best_result, results
-
