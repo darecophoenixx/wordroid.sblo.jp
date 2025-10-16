@@ -1,1 +1,1 @@
-from egreedy import aaa
+from egreedy import run_greedy_gmm_trials
