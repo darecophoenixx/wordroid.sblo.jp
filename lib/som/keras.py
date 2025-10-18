@@ -528,7 +528,9 @@ class som(sksom_keras2):
     
     def fit(self, X, y=None,
             nstep_r_reduce=50,
-            batch_size=None, epochs=500, verbose=None, shuffle=True,
+            batch_size=None,
+            epochs=500, epochs2=None,
+            verbose=None, shuffle=True,
             r=None, r2=None,
             optimizer=None, loss=None):
         """compute som map
@@ -578,14 +580,20 @@ class som(sksom_keras2):
                           r=r,
                           optimizer=optimizer, loss=loss)
         self.hst1 = hst.copy()
+
         
-        if r2 is None:
-            r2 = r[1] if isinstance(r, tuple) else r
-        self.hst2 = super().fit(X,
-                           nstep_r_reduce=nstep_r_reduce,
-                           batch_size=batch_size, epochs=epochs, verbose=verbose, shuffle=shuffle,
-                           r=r2,
-                           optimizer=optimizer, loss=loss)
+        if epochs2 == 0:
+            pass
+        else:
+            if epochs2 is None:
+                epochs2 = epochs
+            if r2 is None:
+                r2 = r[1] if isinstance(r, tuple) else r
+            self.hst2 = super().fit(X,
+                               nstep_r_reduce=nstep_r_reduce,
+                               batch_size=batch_size, epochs=epochs2, verbose=verbose, shuffle=shuffle,
+                               r=r2,
+                               optimizer=optimizer, loss=loss)
         return self
 
 
