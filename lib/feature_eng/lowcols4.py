@@ -67,7 +67,7 @@ def make_model(num_user=20, num_product=39, num_features=12,
     
     
     model = Model(input_user, oup)
-    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=learning_rate), metrics=['binary_accuracy'])
+    model.compile(loss='binary_crossentropy', optimizer=Adam(learning_rate=learning_rate), metrics=['binary_crossentropy'])
     models = {
         'model': model,
         'model_user': model_user,
