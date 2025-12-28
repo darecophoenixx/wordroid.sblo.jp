@@ -143,8 +143,10 @@ class GaussianKernel2(Layer):
         return ret
     
     def get_config(self):
+        # numpy配列をリストに変換しないと、モデル保存(h5/saved_model)時に
+        # TypeError: Object of type ndarray is not JSON serializable が発生します
         config = {
-            'landmarks': self.landmarks,
+            'landmarks': self.landmarks.tolist(),
         }
         base_config = super(GaussianKernel2, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
