@@ -548,7 +548,7 @@ class som(sksom_keras2):
             batch_size=None,
             epochs=500, epochs2=None,
             verbose=None, shuffle=True,
-            r=None, r2=None,
+            r=None, r2=2.0,
             optimizer=None, loss=None):
         """compute som map
         
@@ -583,6 +583,8 @@ class som(sksom_keras2):
                     use same radius during training
                 None
                     use 1.0
+                
+                はい、忖度なしに申し上げれば、SOM（自己組織化写像）のアイデンティティを保つなら r2=2.0 あたりが「引き際」として非常にバランスが良いです。
         
         Returns
         -------
