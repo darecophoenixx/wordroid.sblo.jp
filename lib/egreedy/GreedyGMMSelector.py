@@ -198,7 +198,11 @@ class GreedyGMMSelector:
             nn += 1
             if nn >= self.get_n_step(len(current_means)):
                 best_covariances = [stabilize_covariance(cov) for cov in best_covariances]
-                full_bic, gmm = self._compute_gmm_bic(X, best_means, best_weights, best_covariances)
+                try:
+                    full_bic, gmm = self._compute_gmm_bic(X, best_means, best_weights, best_covariances)
+                except ValueError as e:
+                    print(e)
+                    break
                 print(f"Full GMM BIC: {full_bic}")
                 current_means = gmm.means_
                 weights = gmm.weights_
