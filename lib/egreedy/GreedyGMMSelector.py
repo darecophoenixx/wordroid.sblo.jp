@@ -202,7 +202,11 @@ class GreedyGMMSelector:
                     full_bic, gmm = self._compute_gmm_bic(X, best_means, best_weights, best_covariances)
                 except ValueError as e:
                     print(e)
-                    break
+                    current_means = best_means.copy()
+                    weights = best_weights.copy()
+                    covariances = best_covariances.copy()
+                    self.bic_history.append((len(current_means), current_means, best_bic, None, None))
+                    continue
                 print(f"Full GMM BIC: {full_bic}")
                 current_means = gmm.means_
                 weights = gmm.weights_
