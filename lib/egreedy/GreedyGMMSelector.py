@@ -112,7 +112,9 @@ class GreedyGMMSelector:
     '''
 
     def __init__(self, init_means, min_clusters=3,
-                 n_step3=60, n_step2=60, n_step1=0):
+                 n_step3=60, n_step2=60, n_step1=0,
+                 stabilize_covariance_min_eigval=1e-6):
+        self.stabilize_covariance_min_eigval = stabilize_covariance_min_eigval
         self.init_means = init_means
         self.min_clusters = min_clusters
         #self.n_step = n_step
@@ -197,12 +199,12 @@ class GreedyGMMSelector:
             print(f"Best BIC (approx): {best_bic}")
             nn += 1
             if nn >= self.get_n_step(len(current_means)):
-                best_covariances = [stabilize_covariance(cov) for cov in best_covariances]
+                best_covariances = [stabilize_covariance(cov, min_eigval=self.stabilize_covariance_min_eigval) for cov in best_covariances]
                 try:
                     full_bic, gmm = self._compute_gmm_bic(X, best_means, best_weights, best_covariances)
                 except ValueError as e:
                     print(e)
-                    best_covariances = [stabilize_covariance(cov) for cov in best_covariances]
+                    best_covariances = [stabilize_covariance(cov, min_eigval=self.stabilize_covariance_min_eigval) for cov in best_covariances]
                     full_bic, gmm = self._compute_gmm_bic(X, best_means, best_weights, best_covariances)
                 print(f"Full GMM BIC: {full_bic}")
                 current_means = gmm.means_
@@ -231,7 +233,8 @@ def run_greedy_gmm_trials(X,
                           min_clusters=1,
                           random_state_seed=42,
                           nn=5, # 作成したい組み合わせの数
-                          n_step3=60, n_step2=60, n_step1=0):
+                          n_step3=60, n_step2=60, n_step1=0,
+                          stabilize_covariance_min_eigval=1e-6):
     '''
     Iterative Refinement
     '''
@@ -266,7 +269,8 @@ def run_greedy_gmm_trials(X,
 
         print('### GreedyGMMSelector の実行・・・')
         selector = GreedyGMMSelector(init_means=init_means, min_clusters=min_clusters,
-                                      n_step3=n_step3, n_step2=n_step2, n_step1=n_step1)
+                                     n_step3=n_step3, n_step2=n_step2, n_step1=n_step1,
+                                     stabilize_covariance_min_eigval=stabilize_covariance_min_eigval)
         selector.fit(X)
 
         # 結果を保存
