@@ -9,6 +9,10 @@ from sklearn import mixture
 from sklearn.metrics import pairwise_distances_argmin
 from sklearn import cluster
 
+```
+前の試行から、meansだけでなく、weightsとcovariancesも与える
+```
+
 def stabilize_covariance(cov_k, min_eigval=1e-6):
     # 対称化（数値誤差対策）
     cov_k = 0.5 * (cov_k + cov_k.T)
