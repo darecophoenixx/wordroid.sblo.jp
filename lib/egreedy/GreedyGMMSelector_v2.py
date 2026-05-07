@@ -193,8 +193,8 @@ class GreedyGMMSelector:
         print('processing em_with_fixed_means...')
         weights, covariances, _, _ = em_with_fixed_means(X,
                                                          means_init=current_means,
-                                                         weights_init=self.init_weights.copy(),
-                                                         covariances_init=self.init_covariances.copy(),
+                                                         weights_init=self.init_weights.copy() if self.init_weights isnot None else None,
+                                                         covariances_init=self.init_covariances.copy() if self.init_covariances is not None else None,
                                                          tol2=1.0e-5,
                                                          stabilize_covariance_min_eigval=self.stabilize_covariance_min_eigval,
                                                          verbose=False)
@@ -264,9 +264,11 @@ def run_greedy_gmm_trials(X,
     rng = np.random.RandomState(random_state_seed)
     kmeans = cluster.KMeans(n_clusters=init_clusters, random_state=rng, n_init=1)
     init_means = kmeans.fit(X).cluster_centers_
-    init_weights = np.ones(kmeans.n_clusters, dtype=np.float64) / kmeans.n_clusters
+    #init_weights = np.ones(kmeans.n_clusters, dtype=np.float64) / kmeans.n_clusters
+    init_weights = None
     #init_covariances = np.array([np.cov(X.T) * np.eye(X.shape[1]) for _ in range(kmeans.n_clusters)])
-    init_covariances = np.array([np.cov(X.T) + 1e-6 * np.eye(X.shape[1]) for _ in range(kmeans.n_clusters)])
+    #init_covariances = np.array([np.cov(X.T) + 1e-6 * np.eye(X.shape[1]) for _ in range(kmeans.n_clusters)])
+    init_covariances = None
     
     results = []
     best_means = None
