@@ -193,7 +193,7 @@ class GreedyGMMSelector:
         print('processing em_with_fixed_means...')
         weights, covariances, _, _ = em_with_fixed_means(X,
                                                          means_init=current_means,
-                                                         weights_init=self.init_weights.copy() if self.init_weights isnot None else None,
+                                                         weights_init=self.init_weights.copy() if self.init_weights is not None else None,
                                                          covariances_init=self.init_covariances.copy() if self.init_covariances is not None else None,
                                                          tol2=1.0e-5,
                                                          stabilize_covariance_min_eigval=self.stabilize_covariance_min_eigval,
