@@ -262,7 +262,7 @@ def run_greedy_gmm_trials(X,
     init_means = kmeans.fit(X).cluster_centers_
     init_weights = np.ones(kmeans.n_clusters, dtype=np.float64) / kmeans.n_clusters
     #init_covariances = np.array([np.cov(X.T) * np.eye(X.shape[1]) for _ in range(kmeans.n_clusters)])
-    init_covariances = np.array([np.cov(X.T) + 1e-6 * np.eye(n_features) for _ in range(kmeans.n_clusters)])
+    init_covariances = np.array([np.cov(X.T) + 1e-6 * np.eye(X.shape[1]) for _ in range(kmeans.n_clusters)])
     
     results = []
     best_means = None
