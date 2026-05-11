@@ -257,6 +257,7 @@ def run_greedy_gmm_trials(X,
                           random_state_seed=42,
                           nn=5, # 作成したい組み合わせの数
                           n_step3=60, n_step2=60, n_step1=0,
+                          random_sampling=False, # 新しいクラスタセンターをXからランダムサンプリングする
                           stabilize_covariance_min_eigval=1.0e-6):
     '''
     Iterative Refinement
@@ -296,19 +297,25 @@ def run_greedy_gmm_trials(X,
             pass
         else:
             print('追加のクラスタ中心を選択')
-            my_list = np.arange(best_means.shape[0]).tolist()
-            combinations = []
-            for _ in range(nn):
-                # my_listから重複なく2つの要素をランダムに選ぶ
-                selected_pair = tuple(random.sample(my_list, 2))
-                combinations.append(selected_pair)
-            
-            new_centers = []
-            for icomb in combinations:
-                new_center = (best_means[icomb[0]] + best_means[icomb[1]]) / 2
-                #new_center = best_means[icomb[0]] + (best_means[icomb[1]] - best_means[icomb[0]]) * 0.3
-                new_centers.append(new_center)
-            new_centers = np.vstack(new_centers)
+            if random_sampling:
+                print('random_sampling')
+                indices = np.random.choice(X.shape[0], nn, replace=False)
+                new_centers = X[indices]
+            else:
+                print('cross over')
+                my_list = np.arange(best_means.shape[0]).tolist()
+                combinations = []
+                for _ in range(nn):
+                    # my_listから重複なく2つの要素をランダムに選ぶ
+                    selected_pair = tuple(random.sample(my_list, 2))
+                    combinations.append(selected_pair)
+                
+                new_centers = []
+                for icomb in combinations:
+                    new_center = (best_means[icomb[0]] + best_means[icomb[1]]) / 2
+                    #new_center = best_means[icomb[0]] + (best_means[icomb[1]] - best_means[icomb[0]]) * 0.3
+                    new_centers.append(new_center)
+                new_centers = np.vstack(new_centers)
             init_means = np.vstack([best_means, new_centers])
 
         print('GreedyGMMSelector の実行')
@@ -340,3 +347,5 @@ def run_greedy_gmm_trials(X,
         best_covariances = best_gmm.covariances_
 
     return best_result, results
+
+
