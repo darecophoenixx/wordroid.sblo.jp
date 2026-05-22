@@ -1006,7 +1006,9 @@ def linear_init(X, shape=(3, 3), n_std=2, adj=True):
     sc.fit(X)
     x_sc = sc.transform(X)
     
-    pca = PCA(n_components=2, random_state=0)
+    #pca = PCA(n_components=2, random_state=0)
+    pca = PCA(n_components=2, svd_solver='full')
+           
     pca.fit(x_sc)
     x_tick = pca.components_[0] * np.sqrt(pca.explained_variance_)[0]
     y_tick = pca.components_[1] * np.sqrt(pca.explained_variance_)[1]
