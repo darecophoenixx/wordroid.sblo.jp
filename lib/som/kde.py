@@ -1,3 +1,5 @@
+import numpy as np
+import scipy
 from sklearn.base import BaseEstimator, DensityMixin
 from sklearn.utils.validation import check_is_fitted
 from sklearn.utils import check_random_state
