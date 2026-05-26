@@ -1028,7 +1028,7 @@ def linear_init(X, shape=(3, 3), n_std=2, adj=True):
             if np.sqrt(init_map[:,ii].var()) < n_std/2:
                 #print(np.sqrt(x_sc[:,ii].var()))
                 #print(np.sqrt(init_map[:,ii].var()))
-                r = (n_std/2) / np.sqrt(init_map[:,ii].var())
+                r = (n_std/2) / np.sqrt(init_map[:,ii].var() + 1.0e-4)
                 init_map[:,ii] *= r
     return sc.inverse_transform(init_map)
 
