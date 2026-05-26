@@ -10,7 +10,7 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
     SOM_kernelやXは適切に次元削減されたデータを入力してください
     '''
     
-    def __init__(self, som_kernel, tgt_prob=0.005):
+    def __init__(self, LM, tgt_prob=0.005):
         self.LM = som_kernel
         self.tgt_prob = tgt_prob
         # ... 必要なパラメータの初期化 ...
