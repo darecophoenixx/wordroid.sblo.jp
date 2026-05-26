@@ -10,14 +10,14 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
     SOM_kernelやXは適切に次元削減されたデータを入力してください
     '''
     
-    def __init__(self, LM, tgt_prob=0.005):
-        self.LM = som_kernel
+    def __init__(self, som_kernel, tgt_prob=0.005):
+        self.som_kernel = som_kernel
         self.tgt_prob = tgt_prob
         # ... 必要なパラメータの初期化 ...
-        self.K_cells, self.D = self.LM.shape
+        self.K_cells, self.D = self.som_kernel.shape
 
     def fit(self, X, y=None):
-        dist_matrix = scipy.spatial.distance.cdist(self.LM, X, metric='sqeuclidean')
+        dist_matrix = scipy.spatial.distance.cdist(self.som_kernel, X, metric='sqeuclidean')
 
         # これが各セルの「データ密度を反映したバンド幅」になる！
         average_distances = np.percentile(dist_matrix, self.tgt_prob * 100, axis=1)
@@ -29,7 +29,7 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         # fitが呼ばれたかどうかをチェック
         check_is_fitted(self, ['gammas', 'log_norm_constants'])
         # ... 対数尤度の算出 ...
-        dist_matrix = scipy.spatial.distance.cdist(self.LM, X, metric='sqeuclidean')
+        dist_matrix = scipy.spatial.distance.cdist(self.som_kernel, X, metric='sqeuclidean')
         log_densities = self.log_norm_constants - self.gammas * dist_matrix.T
         pointwise_log_likelihood = scipy.special.logsumexp(log_densities, axis=1) - np.log(self.K_cells)
         return pointwise_log_likelihood
@@ -59,7 +59,7 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
             List of samples.
         """
         """Generate random samples from the model."""
-        check_is_fitted(self, ['gammas', 'LM'])
+        check_is_fitted(self, ['gammas', 'som_kernel'])
         rng = check_random_state(random_state)
         
         # 1. 各セルは等確率 (1/K) で選択される
@@ -67,7 +67,7 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         component_indices = rng.choice(self.K_cells, size=n_samples)
         
         # 2. 各セルに対応する平均(mu)と標準偏差(sigma)を取得
-        means = self.LM[component_indices]  # shape: (n_samples, D)
+        means = self.som_kernel[component_indices]  # shape: (n_samples, D)
         
         # gamma = 1 / (2 * sigma^2) なので、sigma = sqrt(1 / (2 * gamma))
         # gammasの次元を考慮
