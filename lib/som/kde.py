@@ -17,6 +17,7 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         self.K_cells, self.D = self.som_kernel.shape
 
     def fit(self, X, y=None):
+        self.n_train = X.shape[0]
         dist_matrix = scipy.spatial.distance.cdist(self.som_kernel, X, metric='sqeuclidean')
 
         # これが各セルの「データ密度を反映したバンド幅」になる！
@@ -94,7 +95,11 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         k = self.K_cells 
         
         # 3. データ数 n
-        n = X.shape[0]
+        n = self.n_train
         
         # 4. BICの計算
         return -2 * log_likelihood + k * np.log(n)
+
+
+
+
