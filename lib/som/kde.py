@@ -79,3 +79,22 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         samples = rng.normal(loc=means, scale=stds[:, np.newaxis])
         
         return samples
+
+    def bic(self, X):
+        """
+        BIC を計算します。
+        k (パラメータ数) をランドマーク数 K と定義します。
+        """
+        # 1. 対数尤度の合計
+        log_likelihood = np.sum(self.score_samples(X))
+        
+        # 2. パラメータ数 k の定義
+        # SOMのランドマーク配置は固定（定数）とみなすため、
+        # 自由度は「カーネルの数 K」に依存すると考えます。
+        k = self.K_cells 
+        
+        # 3. データ数 n
+        n = X.shape[0]
+        
+        # 4. BICの計算
+        return -2 * log_likelihood + k * np.log(n)
