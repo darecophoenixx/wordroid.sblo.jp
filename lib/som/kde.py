@@ -92,10 +92,12 @@ class SOMAdaptiveKDE(BaseEstimator, DensityMixin):
         # 2. パラメータ数 k の定義
         # SOMのランドマーク配置は固定（定数）とみなすため、
         # 自由度は「カーネルの数 K」に依存すると考えます。
-        k = self.K_cells 
+        #k = self.K_cells
+        k = self.K_cells * (self.D + 1)
         
         # 3. データ数 n
-        n = self.n_train
+        #n = self.n_train
+        n = X.shape[0]
         
         # 4. BICの計算
         return -2 * log_likelihood + k * np.log(n)
